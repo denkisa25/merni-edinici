@@ -21,6 +21,9 @@ const main = document.querySelector('.app-main');
  * @returns {Object} btnRefs — map of ingredient string → button element
  */
 function renderIngredientSelector(container, onSelect) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'ingredient-scroll-container';
+
   const section = document.createElement('section');
   section.className = 'ingredient-selector';
   section.setAttribute('aria-label', 'Изберете съставка');
@@ -62,7 +65,8 @@ function renderIngredientSelector(container, onSelect) {
     section.appendChild(grid);
   });
 
-  container.appendChild(section);
+  wrapper.appendChild(section);
+  container.appendChild(wrapper);
   return btnRefs;
 }
 

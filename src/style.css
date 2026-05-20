@@ -125,6 +125,21 @@ body {
 }
 
 /* === IngredientSelector (Phase 3, D-01, D-02, D-03) === */
+.ingredient-scroll-container {
+  position: relative;
+}
+
+.ingredient-scroll-container::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 32px;
+  background: linear-gradient(to bottom, transparent, var(--color-bg));
+  pointer-events: none;
+}
+
 .ingredient-selector {
   overflow-y: auto;
   height: 232px;                         /* D-01 fixed height; fits iPhone SE2 667px */
