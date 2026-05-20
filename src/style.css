@@ -199,3 +199,51 @@ body {
 .unit-btn:active {
   opacity: 0.75;
 }
+
+/* === QuantityInput (Phase 3, CONV-03, CONV-05, TECH-08) === */
+.quantity-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.field-label {
+  font-size: var(--font-label);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.qty-input {
+  width: 100%;
+  min-height: 48px;                      /* UI-02 touch target floor */
+  padding: var(--space-sm) var(--space-md);
+  font-family: inherit;
+  font-size: var(--font-body);           /* 18px — readable for older users */
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--space-xs);
+  box-sizing: border-box;
+}
+
+/* === ResultDisplay (Phase 3, UI-04, UI-06, D-05) === */
+.result-display {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.result-value {
+  font-size: var(--font-result);         /* 40px — UI-04 (≥ 32px) */
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+  line-height: 1.1;
+  word-break: break-word;                /* allow wrapping for long messages */
+}
+
+.result-value.is-muted {
+  color: var(--color-text-muted);        /* error and missing-combo messages */
+  font-size: var(--font-body);           /* 18px — long Bulgarian error strings would overflow at 40px */
+  font-weight: 400;
+}
