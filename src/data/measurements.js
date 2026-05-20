@@ -8,7 +8,8 @@
  * - Top-level keys: 20 ingredients per CONV-07.
  * - Per ingredient: all 4 units present (чаена лъжица, супена лъжица, чаена чаша, кафена чаша).
  * - Each leaf: `{ value: number, unit: "гр" | "мл" }` OR explicit `null` when source has no entry (D-02).
- * - Liquids (вода, олио, прясно мляко, кисело мляко, оцет) carry `unit: "мл"` (D-03).
+ * - Liquids (вода, олио, прясно мляко, оцет) carry `unit: "мл"` (D-03).
+ * - кисело мляко uses `unit: "гр"` — yogurt is sold/measured by weight in Bulgaria.
  * - All other ingredients carry `unit: "гр"` (D-03).
  *
  * Phase 2 lookup: `measurements[ingredient][unit]`.
@@ -89,10 +90,10 @@ export const measurements = {
     "кафена чаша":   { value: 85,  unit: "мл" }
   },
   "кисело мляко": {
-    "чаена лъжица":  { value: 8,   unit: "мл" },
-    "супена лъжица": { value: 20,  unit: "мл" },
-    "чаена чаша":    { value: 200, unit: "мл" },
-    "кафена чаша":   { value: 80,  unit: "мл" }
+    "чаена лъжица":  { value: 8,   unit: "гр" },
+    "супена лъжица": { value: 20,  unit: "гр" },
+    "чаена чаша":    { value: 200, unit: "гр" },
+    "кафена чаша":   { value: 80,  unit: "гр" }
   },
   "мед": {
     "чаена лъжица":  null,
