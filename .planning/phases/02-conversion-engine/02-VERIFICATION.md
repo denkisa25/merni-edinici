@@ -81,4 +81,4 @@ Phase 3 MUST NOT transform these strings. If a copy change is required, update `
 ## Status
 
 - [x] All success criteria proven by automated test
-- [ ] User sign-off (Plan 02-02 Task 2)
+- [x] User sign-off — approved 2026-05-20 (no copy changes requested)
