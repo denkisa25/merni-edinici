@@ -102,6 +102,44 @@ Use these entry points:
 Do not make direct repo edits outside a GSD workflow unless the user explicitly asks to bypass it.
 <!-- GSD:workflow-end -->
 
+## Linear Integration
+
+Every phase and task in this project is tracked in Linear. Development must stay in sync with Linear.
+
+### Before editing
+- Read the linked Linear issue (use the `mcp__claude_ai_Linear__get_issue` tool).
+- Identify the acceptance criteria and non-goals from the issue description.
+- Check current implementation patterns before adding new ones.
+- Inspect current git status so unrelated work is not disturbed.
+
+### While editing
+- Implement only the stated acceptance criteria.
+- Do not change unrelated files or refactor opportunistically.
+- Preserve existing behavior unless the issue explicitly changes it.
+- Follow existing code style, architecture, naming, and UI conventions.
+
+### Before opening a PR
+- Run the relevant checks for the files touched.
+- Review the diff for unrelated changes.
+- Create or update the Linear issue status to reflect progress (use `mcp__claude_ai_Linear__save_issue`).
+
+### PR standard
+Every PR must include:
+- What changed and why
+- Linear issue ID and link
+- Acceptance criteria checked (checkboxes)
+- Risk level and how to test
+- What was intentionally not done
+- Agent involvement noted
+
+### PR review standard
+Review against the linked Linear issue only. Look for acceptance criteria gaps, bugs, broken data flow, unnecessary scope expansion, security issues, and missing error/loading states.
+
+Return review feedback in three groups:
+1. Must fix before merge
+2. Should fix soon
+3. Safe to merge
+
 
 
 <!-- GSD:profile-start -->
