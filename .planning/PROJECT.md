@@ -15,15 +15,18 @@ A Bulgarian home cook picks an ingredient, selects a unit, enters a quantity, an
 - [x] Conversion math is correct and robust for all input types — validated in Phase 2: decimal normalization (comma=dot), rounding to ≤1 decimal (no float garbage), missing-combo friendly messages, liquid/solid unit labels (гр/мл) all verified by 32-assertion test harness
 - [x] Conversion data covers all ingredients from supichka.com reference (20 ingredients × 4 units) — validated in Phase 1, data correction in Phase 2: прясно мляко + чаена чаша corrected to 250 мл
 
+### Validated
+
+- [x] User can select an ingredient from a list of common Bulgarian kitchen ingredients — validated in Phase 3: 20 ingredients rendered as tappable buttons in 2 groups (Течности/Сухи), pre-selection on load
+- [x] User can select a measurement unit (чаена лъжица, супена лъжица, чаена чаша, кафена чаша) — validated in Phase 3: all 4 units visible in one row, highlight moves on tap
+- [x] User can enter a quantity and see the gram/ml result instantly — validated in Phase 3: input event fires convert() on every keystroke, result updates live, no submit button
+- [x] App is fully in Bulgarian language — validated in Phase 3: all strings Bulgarian, confirmed in DevTools and human checkpoint
+- [x] App is mobile-first and works on all screen sizes — validated in Phase 3: 375px and 320px viewports verified, no page scroll, ingredient grid scrolls internally with fade gradient hint
+- [x] Interface is intuitive enough for users with minimal internet experience (calculator-style layout) — validated in Phase 3: human checkpoint passed; scroll hint added for ingredient list
+
 ### Active
 
-- [ ] User can select an ingredient from a list of common Bulgarian kitchen ingredients
-- [ ] User can select a measurement unit (чаена лъжица, супена лъжица, чаена чаша, кафена чаша)
-- [ ] User can enter a quantity and see the gram/ml result instantly
 - [ ] Conversion data covers all ingredients from supichka.com reference (water, salt, sugar, powdered sugar, flour, breadcrumbs, rice, oil, butter, margarine, lard, milk, sour milk, honey, semolina, lentils, beans, starch, vinegar, red pepper)
-- [ ] App is fully in Bulgarian language
-- [ ] App is mobile-first and works on all screen sizes
-- [ ] Interface is intuitive enough for users with minimal internet experience (calculator-style layout)
 - [ ] App works offline / without backend (static deployment)
 
 ### Out of Scope
@@ -145,7 +148,10 @@ A Bulgarian home cook picks an ingredient, selects a unit, enters a quantity, an
 |----------|-----------|---------|
 | Static site, no backend | Zero infrastructure cost, instant load, works offline | — Pending (Phase 4) |
 | All data baked in at build time | Measurement data never changes; no API needed | ✓ Validated Phase 1–2 |
-| Bulgarian language only | Target audience is specifically Bulgarian | ✓ Validated Phase 1–2 |
+| Bulgarian language only | Target audience is specifically Bulgarian | ✓ Validated Phase 1–3 |
+| textContent over innerHTML for all DOM writes | XSS safety — no user input can inject markup | ✓ Validated Phase 3 (code review confirmed zero innerHTML) |
+| Liquid group derived from data at runtime | Avoids hardcoded list that drifts if data changes | ✓ Validated Phase 3 |
+| Fade gradient hint on ingredient scroll container | Signals scrollability without instructions — required for older users | ✓ Added Phase 3 (inline defect fix after human checkpoint) |
 
 ## Evolution
 
@@ -165,4 +171,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-20 — Phase 2 (Conversion Engine) complete. `convert()` pure function (src/converter.js) verified by 32-assertion test harness; all CONV-03/04/05/06 + TECH-06 requirements satisfied. Phase 3 contract frozen.*
+*Last updated: 2026-05-20 — Phase 3 (UI Components) complete. All 9 requirements (CONV-01, CONV-02, UI-01–06, TECH-08) verified 12/12 by automated + human checkpoint. Working calculator visible at `npm run dev`. Phase 4 (Deploy) is next.*
