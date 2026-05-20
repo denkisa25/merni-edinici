@@ -123,3 +123,79 @@ body {
   flex-direction: column;
   gap: var(--space-lg);
 }
+
+/* === IngredientSelector (Phase 3, D-01, D-02, D-03) === */
+.ingredient-selector {
+  overflow-y: auto;
+  height: 232px;                         /* D-01 fixed height; fits iPhone SE2 667px */
+  overscroll-behavior: contain;          /* Prevents iOS scroll chain to page */
+}
+
+.group-label {
+  font-size: var(--font-label);
+  color: var(--color-text-muted);
+  margin: var(--space-xs) 0;
+}
+
+.ingredient-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;        /* D-02 — 2 columns */
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.ingredient-btn {
+  min-height: 48px;                      /* UI-02 touch target floor */
+  padding: var(--space-sm);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--space-xs);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: var(--font-label);
+  cursor: pointer;
+  text-align: center;
+  word-break: break-word;                /* Long names like "варен фасул" must not truncate */
+}
+
+.ingredient-btn.is-selected {
+  background: var(--color-accent);       /* UI-05 — highlight */
+  color: var(--color-accent-text);
+  border-color: var(--color-accent);
+}
+
+.ingredient-btn:active {
+  opacity: 0.75;                         /* CSS-only tap feedback */
+}
+
+/* === UnitSelector (Phase 3, CONV-02) === */
+.unit-selector {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;                       /* fallback for narrow screens */
+}
+
+.unit-btn {
+  flex: 1 1 0;                           /* 4 equal-width buttons */
+  min-height: 48px;                      /* UI-02 */
+  min-width: 0;                          /* prevent flex overflow */
+  padding: var(--space-sm) var(--space-xs);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--space-xs);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: var(--font-label);
+  cursor: pointer;
+  text-align: center;
+}
+
+.unit-btn.is-selected {
+  background: var(--color-accent);       /* UI-05 — highlight */
+  color: var(--color-accent-text);
+  border-color: var(--color-accent);
+}
+
+.unit-btn:active {
+  opacity: 0.75;
+}
