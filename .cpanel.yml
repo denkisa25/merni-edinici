@@ -1,0 +1,31 @@
+# cPanel Git Version Control - deployment tasks
+# Runs automatically on the cPanel server after a manual "Update from Remote" pull.
+# Build runs ON the server (D-03). dist/ is produced fresh each deploy (D-04).
+#
+# Before the first deploy, replace the two placeholder tokens below:
+#   __CPANEL_USERNAME__  -> your cPanel account username (so $HOME resolves correctly in path checks)
+#   __PUBLIC_DIR__       -> absolute path of the directory served by your domain or subdomain
+#                          examples:
+#                            /home/__CPANEL_USERNAME__/public_html
+#                            /home/__CPANEL_USERNAME__/public_html/merni
+#                            /home/__CPANEL_USERNAME__/merni.yourdomain.com
+#
+# Node.js binary is resolved by sourcing ~/.bash_profile, which cPanel's Node.js Selector
+# populates with the active ea-nodejs* version's PATH. This avoids hardcoding a specific
+# Node.js major version and works regardless of which version the host upgrades to next.
+
+deployment:
+  tasks:
+    - export DEPLOYPATH=__PUBLIC_DIR__
+    - echo "[deploy] Sourcing cPanel Node.js environment"
+    - source ~/.bash_profile
+    - echo "[deploy] Node version:" && node -v
+    - echo "[deploy] npm version:" && npm -v
+    - echo "[deploy] Installing dependencies (npm ci)"
+    - /bin/npm ci || npm ci
+    - echo "[deploy] Building static site (npm run build)"
+    - /bin/npm run build || npm run build
+    - echo "[deploy] Publishing dist/ to $DEPLOYPATH"
+    - /bin/mkdir -p "$DEPLOYPATH"
+    - /bin/rsync -a --delete dist/ "$DEPLOYPATH"/
+    - echo "[deploy] Done. Site is live at the URL mapped to $DEPLOYPATH"
