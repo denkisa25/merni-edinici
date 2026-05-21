@@ -3,12 +3,12 @@
 # Build runs ON the server (D-03). dist/ is produced fresh each deploy (D-04).
 #
 # Before the first deploy, replace the two placeholder tokens below:
-#   __CPANEL_USERNAME__  -> your cPanel account username (so $HOME resolves correctly in path checks)
+#   __CPANEL_USERNAME__  -> kciksctic
 #   __PUBLIC_DIR__       -> absolute path of the directory served by your domain or subdomain
 #                          examples:
-#                            /home/__CPANEL_USERNAME__/public_html
-#                            /home/__CPANEL_USERNAME__/public_html/merni
-#                            /home/__CPANEL_USERNAME__/merni.yourdomain.com
+# /home/kickstic/public_html/ochen-lekar.com/
+# /home/kickstic/public_html/ochen-lekar.com/merni-edinici/
+# /home/kickstic/public_html/merni.ochen-lekar.com/
 #
 # Node.js binary is resolved by sourcing ~/.bash_profile, which cPanel's Node.js Selector
 # populates with the active ea-nodejs* version's PATH. This avoids hardcoding a specific
@@ -16,7 +16,7 @@
 
 deployment:
   tasks:
-    - export DEPLOYPATH=__PUBLIC_DIR__
+    - export DEPLOYPATH=/home/kickstic/public_html/ochen-lekar.com/merni-edinici/
     - echo "[deploy] Sourcing cPanel Node.js environment"
     - source ~/.bash_profile
     - echo "[deploy] Node version:" && node -v
