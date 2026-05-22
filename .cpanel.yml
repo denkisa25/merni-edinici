@@ -16,4 +16,16 @@
 
 deployment:
   tasks:
-    - echo "[smoke-test] Task runner is working"
+    - export DEPLOYPATH=/home/kickstic/public_html/ochen-lekar.com/merni-edinici/
+    - echo "[deploy] Locating Node.js..."
+    - export PATH="/opt/cpanel/ea-nodejs22/bin:/opt/cpanel/ea-nodejs20/bin:/opt/cpanel/ea-nodejs18/bin:/usr/local/bin:$PATH"
+    - node -v
+    - npm -v
+    - echo "[deploy] Installing dependencies"
+    - npm ci
+    - echo "[deploy] Building"
+    - npm run build
+    - echo "[deploy] Publishing to $DEPLOYPATH"
+    - mkdir -p "$DEPLOYPATH"
+    - rsync -a --delete dist/ "$DEPLOYPATH"/
+    - echo "[deploy] Done."
