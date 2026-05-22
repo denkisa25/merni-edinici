@@ -12,7 +12,7 @@
 - [ ] **Phase 1: Foundation** — Project scaffold, HTML shell, Vite setup, self-hosted font, CSS custom properties, and the validated measurements data file
 - [ ] **Phase 2: Conversion Engine** — Pure conversion logic: decimal normalization, rounding, missing-combo handling, and unit result rendering (гр/мл) — no UI yet
 - [ ] **Phase 3: UI Components** — All 5 interactive components assembled into the complete calculator interface
-- [ ] **Phase 4: Deploy** — Public deployment with auto-deploy on push to main
+- [x] **Phase 4: Deploy** — Public deployment with auto-deploy on push to main (completed 2026-05-22)
 
 ---
 
@@ -78,7 +78,7 @@
 | 1. Foundation | 0/3 | Not started | - |
 | 2. Conversion Engine | 0/? | Not started | - |
 | 3. UI Components | 0/? | Not started | - |
-| 4. Deploy | 0/? | Not started | - |
+| 4. Deploy | 2/2 | Complete   | 2026-05-22 |
 
 ---
 
