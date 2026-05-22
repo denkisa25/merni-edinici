@@ -16,6 +16,6 @@
 
 deployment:
   tasks:
-    - mkdir -p /home/kickstic/public_html/ochen-lekar.com/merni-edinici/
-    - rsync -a --delete dist/ /home/kickstic/public_html/ochen-lekar.com/merni-edinici/
+    - mkdir -p /home/kickstic/public_html/ochen-lekar.com/
+    - rsync -a --delete dist/ /home/kickstic/public_html/ochen-lekar.com/
     - echo "[deploy] Done."

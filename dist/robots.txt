@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://ochen-lekar.com/sitemap.xml
