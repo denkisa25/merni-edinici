@@ -16,16 +16,4 @@
 
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/kickstic/public_html/ochen-lekar.com/merni-edinici/
-    - echo "[deploy] Sourcing cPanel Node.js environment"
-    - source ~/.bash_profile
-    - echo "[deploy] Node version:" && node -v
-    - echo "[deploy] npm version:" && npm -v
-    - echo "[deploy] Installing dependencies (npm ci)"
-    - /bin/npm ci || npm ci
-    - echo "[deploy] Building static site (npm run build)"
-    - /bin/npm run build || npm run build
-    - echo "[deploy] Publishing dist/ to $DEPLOYPATH"
-    - /bin/mkdir -p "$DEPLOYPATH"
-    - /bin/rsync -a --delete dist/ "$DEPLOYPATH"/
-    - echo "[deploy] Done. Site is live at the URL mapped to $DEPLOYPATH"
+    - echo "[smoke-test] Task runner is working"
