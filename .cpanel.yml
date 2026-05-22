@@ -16,6 +16,12 @@
 
 deployment:
   tasks:
-    - mkdir -p /home/kickstic/public_html/ochen-lekar.com/
-    - rsync -a --delete dist/ /home/kickstic/public_html/ochen-lekar.com/
+    # 1. Vite converter — full sync with delete (safe, isolated subdirectory)
+    - mkdir -p /home/kickstic/public_html/ochen-lekar.com/merni-edinici/
+    - rsync -a --delete dist/ /home/kickstic/public_html/ochen-lekar.com/merni-edinici/
+    # 2. SEO pages — overlay on WordPress root WITHOUT --delete (preserves WP files)
+    - mkdir -p /home/kickstic/public_html/ochen-lekar.com/bg/
+    - mkdir -p /home/kickstic/public_html/ochen-lekar.com/assets/
+    - rsync -a dist/bg/ /home/kickstic/public_html/ochen-lekar.com/bg/
+    - rsync -a dist/assets/site.css dist/assets/calc.js dist/assets/data.bg.js /home/kickstic/public_html/ochen-lekar.com/assets/
     - echo "[deploy] Done."
