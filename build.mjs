@@ -433,13 +433,12 @@ function build() {
     }
   }
 
-  // 4. Sitemap + robots.txt + .htaccess
+  // 4. Sitemap + robots.txt + .htaccess (root + bg/ subdirectory)
   write(join(SITE.outDir, "sitemap.xml"), renderSitemap(sitemap));
   write(join(SITE.outDir, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${SITE.domain}/sitemap.xml\n`);
-  write(join(SITE.outDir, ".htaccess"), [
-    "DirectoryIndex index.html",
-    "Options -Indexes",
-  ].join("\n") + "\n");
+  const htaccess = "DirectoryIndex index.html\nOptions -Indexes\n";
+  write(join(SITE.outDir, ".htaccess"), htaccess);
+  write(join(SITE.outDir, "bg", ".htaccess"), htaccess);
 
   // 5. Copy shared assets (includes newly written data.{lang}.js files)
   if (existsSync("assets")) cpSync("assets", join(SITE.outDir, "assets"), { recursive: true });
