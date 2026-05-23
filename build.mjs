@@ -102,6 +102,10 @@ const T = {
     affil_link: "Виж везни →",
     footer: "Мерки · Кухненски калкулатор за грамове и милилитри. Стойностите са приблизителни.",
     arrow_to: "грамове",
+    scaler_title: "Преобразувай цяла рецепта — мерки в грамове",
+    scaler_meta:  "Постави рецепта или въведи съставките и я преобразувай в грамове наведнъж. Смяна на порциите и готов списък за пазаруване.",
+    scaler_h1:   "Преобразувай цяла рецепта",
+    scaler_lead: "Постави рецепта или въведи съставките — и ги получаваш в грамове наведнъж, със смяна на порциите и готов списък за пазаруване.",
     explainer_title: "Защо теглото варира",
     explainer_generic: (ing) => `Когато мерите ${ing} по обем, точното тегло зависи от това колко плътно е натъпкана съставката — затова за прецизност при печене грамовете са по-надеждни от чашите.`,
     explainer_cup: 'Имайте предвид и коя „чаша" ползвате: българската водна чаша е около 250 мл, а американската мерителна чаша (cup) — 240 мл. Този калкулатор смята спрямо 250 мл.',
@@ -299,7 +303,7 @@ function itemListLd(pages) {
 /* ===========================================================================
    RENDER  (link shared cached assets — do not inline CSS per page)
    =========================================================================== */
-const head = ({ lang, title, meta, canonical }) => `<!DOCTYPE html>
+const head = ({ lang, title, meta, canonical, pageScript = "calc.js" }) => `<!DOCTYPE html>
 <html lang="${lang}">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -314,7 +318,7 @@ ${LANGS.map((l) => `<link rel="alternate" hreflang="${l}" href="${canonical}">`)
 <link rel="stylesheet" href="/assets/site.css">
 ${NOINDEX ? '<meta name="robots" content="noindex">' : ""}
 <script src="/assets/data.${lang}.js"></script>
-<script src="/assets/calc.js" defer></script>`;
+<script src="/assets/${pageScript}" defer></script>`;
 
 const crumbsHtml = (crumbs) => crumbs.map((c, i) =>
   (c.url ? `<a href="${c.url}">${c.name}</a>` : `<span class="here">${c.name}</span>`) +
@@ -398,6 +402,51 @@ function renderPillar(p) {
 </div></body></html>`;
 }
 
+function renderScaler(lang) {
+  const t = T[lang];
+  const url = baseUrl(lang, "preobrazuvane-na-recepta");
+  const crumbs = [
+    { name: t.home, url: baseUrl(lang) },
+    { name: "Преобразуване на рецепта", url: "" },
+  ];
+  return `${head({ lang, title: `${t.scaler_title} | ${t.brand}`, meta: t.scaler_meta, canonical: url, pageScript: "scaler.js" })}
+${breadcrumbLd(crumbs) ? `<script type="application/ld+json">${breadcrumbLd(crumbs)}</script>` : ""}
+</head><body><div class="wrap">
+<header><a class="brand" href="/${lang}/"><span class="dot"></span>${t.brand}</a>
+<nav class="crumbs" aria-label="breadcrumb">${crumbsHtml(crumbs)}</nav></header>
+<div class="hero"><h1>${t.scaler_h1}</h1><p class="lead">${t.scaler_lead}</p></div>
+<div class="panel"><div class="panel__body">
+<div class="tabs" role="tablist">
+<button class="tab" id="tab-manual" role="tab" aria-selected="true">Въведи ръчно</button>
+<button class="tab" id="tab-paste" role="tab" aria-selected="false">Постави рецепта</button>
+</div>
+<div id="paste-panel" hidden>
+<textarea id="paste" placeholder="Постави съставките, по една на ред. Напр.:&#10;2 чаши брашно&#10;1 с.л. захар&#10;1/2 ч.л. сол&#10;250 г масло&#10;1 чаша мляко"></textarea>
+<button class="add" id="parse-btn" style="margin-top:12px;border-style:solid">Анализирай и добави съставките</button>
+<p class="hint">Разпознава дроби (1/2, 1½), диапазони (2–3) и мерки като чаша, с.л., ч.л., г, мл, cup, oz. Прегледай резултата по-долу.</p>
+</div>
+<div id="manual-panel">
+<div class="rows" id="rows"></div>
+<button class="add" id="add-row">+ добави съставка</button>
+<datalist id="ing-names"></datalist>
+</div>
+</div></div>
+<div class="panel"><div class="panel__head">Порции и мерки</div><div class="panel__body">
+<div class="controls">
+<div class="ctrl"><label for="src">Рецептата е за</label>
+<div class="stepper"><button type="button" data-step="src" data-d="-1">−</button><input id="src" type="number" min="1" value="4"><button type="button" data-step="src" data-d="1">+</button></div></div>
+<div class="ctrl"><label for="tgt">Искам порции</label>
+<div class="stepper"><button type="button" data-step="tgt" data-d="-1">−</button><input id="tgt" type="number" min="1" value="6"><button type="button" data-step="tgt" data-d="1">+</button></div></div>
+<div class="ctrl"><label>Изход</label>
+<label class="toggle"><input type="checkbox" id="to-grams" checked> Покажи в грамове</label></div>
+</div>
+<p class="factor" id="factor"></p>
+</div></div>
+<div id="output"></div>
+<footer><p>${t.footer}</p></footer>
+</div></body></html>`;
+}
+
 /* ===========================================================================
    SITEMAP (hreflang-aware)
    =========================================================================== */
@@ -431,6 +480,12 @@ function build() {
     const pillar = computePillarPage(lang);
     write(join(SITE.outDir, lang, "merki", "index.html"), renderPillar(pillar));
     sitemap.push({ loc: pillar.url, alternates: [{ lang, href: pillar.url }] });
+    count++;
+
+    // 2b. Recipe scaler page
+    const scalerUrl = baseUrl(lang, "preobrazuvane-na-recepta");
+    write(join(SITE.outDir, lang, "preobrazuvane-na-recepta", "index.html"), renderScaler(lang));
+    sitemap.push({ loc: scalerUrl, alternates: [{ lang, href: scalerUrl }] });
     count++;
 
     // 3. Hub + question pages per ingredient

@@ -5,6 +5,10 @@
     <xhtml:link rel="alternate" hreflang="bg" href="https://merilo.pro/bg/merki/"/>
   </url>
   <url>
+    <loc>https://merilo.pro/bg/preobrazuvane-na-recepta/</loc>
+    <xhtml:link rel="alternate" hreflang="bg" href="https://merilo.pro/bg/preobrazuvane-na-recepta/"/>
+  </url>
+  <url>
     <loc>https://merilo.pro/bg/merki/brashno/</loc>
     <xhtml:link rel="alternate" hreflang="bg" href="https://merilo.pro/bg/merki/brashno/"/>
   </url>
