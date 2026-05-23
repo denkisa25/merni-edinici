@@ -559,10 +559,9 @@ function build() {
   // 4. Sitemap + robots.txt + .htaccess (root + bg/ subdirectory)
   write(join(SITE.outDir, "sitemap.xml"), renderSitemap(sitemap));
   write(join(SITE.outDir, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${SITE.domain}/sitemap.xml\n`);
-  const htaccess = "DirectoryIndex index.html\nOptions -Indexes\n";
-  const rootHtaccess = `DirectoryIndex index.html\nOptions -Indexes\nRedirectMatch 301 ^/$ /bg/merki/\n`;
-  write(join(SITE.outDir, ".htaccess"), rootHtaccess);
-  write(join(SITE.outDir, "bg", ".htaccess"), htaccess);
+  const base = "DirectoryIndex index.html\nOptions -Indexes\n";
+  write(join(SITE.outDir, ".htaccess"), base + "RedirectMatch 301 ^/$ /bg/merki/\n");
+  write(join(SITE.outDir, "bg", ".htaccess"), base + "RedirectMatch 301 ^/bg/?$ /bg/merki/\n");
 
   // 5. Copy shared assets (includes newly written data.{lang}.js files)
   if (existsSync("assets")) cpSync("assets", join(SITE.outDir, "assets"), { recursive: true });
