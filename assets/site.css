@@ -55,8 +55,8 @@ h2{font-family:"Spectral",serif;font-weight:600;font-size:24px;letter-spacing:-.
 .qa-card{display:flex;justify-content:space-between;align-items:center;gap:10px;text-decoration:none;
   background:var(--card);border:1px solid var(--line);border-radius:13px;padding:16px 18px;transition:.15s}
 .qa-card:hover{border-color:var(--paprika);transform:translateY(-2px);box-shadow:var(--shadow)}
-.qa-card b{font-family:"Spectral",serif;font-weight:600;font-size:16px;color:var(--ink)}
-.qa-card .v{font-weight:700;color:var(--paprika);font-variant-numeric:tabular-nums;white-space:nowrap}
+.qa-card b{font-family:"Spectral",serif;font-weight:600;font-size:16px;color:var(--ink);min-width:0;word-break:break-word}
+.qa-card .v{font-weight:700;color:var(--paprika);font-variant-numeric:tabular-nums;white-space:nowrap;flex-shrink:0}
 table{width:100%;border-collapse:collapse;font-size:16px}
 table th,table td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line)}
 table th{font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft)}
