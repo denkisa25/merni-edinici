@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://ochen-lekar.com/sitemap.xml
+Sitemap: https://merilo.pro/sitemap.xml

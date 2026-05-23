@@ -22,7 +22,7 @@ import { join } from "node:path";
 /* ===========================================================================
    CONFIG
    =========================================================================== */
-const SITE = { domain: "https://ochen-lekar.com", outDir: "dist", brandKey: "brand" };
+const SITE = { domain: "https://merilo.pro", outDir: "dist", brandKey: "brand" };
 const LANGS = ["bg"]; // add "sr", "ro", "mk", "el" … later — same engine
 
 const ENVIRONMENT = "experiment"; // flip to "live" to enable indexing
@@ -34,18 +34,18 @@ const NOINDEX = ENVIRONMENT === "experiment";
    names: lowercase, used inside sentences.
    =========================================================================== */
 const INGREDIENTS = [
-  { id: "brashno",     density: 0.50, names: { bg: "брашно" } },
-  { id: "zahar",       density: 0.85, names: { bg: "захар" } },
-  { id: "pudra-zahar", density: 0.50, names: { bg: "пудра захар" } },
-  { id: "oriz",        density: 0.78, names: { bg: "ориз" } },
-  { id: "kakao",       density: 0.36, names: { bg: "какао" } },
-  { id: "oves",        density: 0.38, names: { bg: "овесени ядки" } },
-  { id: "mlyako",      density: 1.03, names: { bg: "мляко" } },
-  { id: "olio",        density: 0.92, names: { bg: "олио" } },
-  { id: "maslo",       density: 0.96, names: { bg: "масло" } },
-  { id: "med",         density: 1.42, names: { bg: "мед" } },
-  { id: "sol",         density: 1.20, names: { bg: "сол" } },
-  { id: "voda",        density: 1.00, names: { bg: "вода" } },
+  { id: "brashno",     density: 0.50, names: { bg: "брашно" },       note: { bg: 'Брашното е „пухкаво“ и задържа въздух, затова една чаша пресято брашно тежи по-малко от натъпкано.' } },
+  { id: "zahar",       density: 0.85, names: { bg: "захар" },         note: { bg: "Кристалната захар е по-плътна, затова една чаша тежи доста повече от чаша брашно." } },
+  { id: "pudra-zahar", density: 0.50, names: { bg: "пудра захар" },   note: { bg: "Пудрата захар е лека и често се сляга — пресявайте я за по-точно мерене." } },
+  { id: "oriz",        density: 0.78, names: { bg: "ориз" },          note: { bg: "Сухият ориз е плътен и се сляга в чашата; при варене обемът му нараства 2–3 пъти, но ориентир остава теглото на сухия." } },
+  { id: "kakao",       density: 0.36, names: { bg: "какао" },         note: { bg: "Какаото е леко и лесно се сбива на бучки — пресявайте го, за да не го натъпчете в чашата." } },
+  { id: "oves",        density: 0.38, names: { bg: "овесени ядки" },  note: { bg: "Овесените ядки са люспести и между тях има много въздух, затова една чаша тежи изненадващо малко." } },
+  { id: "mlyako",      density: 1.03, names: { bg: "мляко" },         note: { bg: "Млякото е течност — теглото в грамове е почти равно на обема в милилитри (1 чаша ≈ 250 г)." } },
+  { id: "olio",        density: 0.92, names: { bg: "олио" },          note: { bg: "Олиото е малко по-леко от водата, затова една чаша тежи малко под 250 г." } },
+  { id: "maslo",       density: 0.96, names: { bg: "масло" },         note: { bg: "Стойностите са за разтопено масло; твърдото масло обикновено се мери на блокчета или по грамажа на опаковката." } },
+  { id: "med",         density: 1.42, names: { bg: "мед" },           note: { bg: "Медът е гъст и тежък — една чаша мед тежи значително повече от чаша вода." } },
+  { id: "sol",         density: 1.20, names: { bg: "сол" },           note: { bg: "Солта е тежка и плътна; фината сол се сбива повече от едрата, затова за точност я мерете на грамове." } },
+  { id: "voda",        density: 1.00, names: { bg: "вода" },          note: { bg: "Водата е еталонът: 1 мл тежи точно 1 г, затова 1 чаша (250 мл) е 250 г." } },
 ];
 
 // Units. Volume units carry ml; mass units carry g. slug + per-language labels.
@@ -102,6 +102,9 @@ const T = {
     affil_link: "Виж везни →",
     footer: "Мерки · Кухненски калкулатор за грамове и милилитри. Стойностите са приблизителни.",
     arrow_to: "грамове",
+    explainer_title: "Защо теглото варира",
+    explainer_generic: (ing) => `Когато мерите ${ing} по обем, точното тегло зависи от това колко плътно е натъпкана съставката — затова за прецизност при печене грамовете са по-надеждни от чашите.`,
+    explainer_cup: 'Имайте предвид и коя „чаша" ползвате: българската водна чаша е около 250 мл, а американската мерителна чаша (cup) — 240 мл. Този калкулатор смята спрямо 250 мл.',
   },
 };
 
@@ -192,6 +195,7 @@ function computeQuestionPage(ing, pair, lang) {
       { q: t.faq2_q(name), a: t.faq2_a(name, cupsIn500) },
     ],
     related: relatedFor(ing, lang, slug),
+    explainer: buildExplainer(ing, lang),
   };
 }
 
@@ -222,6 +226,7 @@ function computeHubPage(ing, lang) {
     questionPages,
     referenceRows: computeReferenceRows(ing.density),
     related: relatedFor(ing, lang, null),
+    explainer: buildExplainer(ing, lang),
   };
 }
 
@@ -253,6 +258,15 @@ function relatedFor(ing, lang, currentSlug) {
       ? baseUrl(lang, "merki", x.id, currentSlug)
       : baseUrl(lang, "merki", x.id),
   }));
+}
+
+function buildExplainer(ing, lang) {
+  const t = T[lang];
+  const paragraphs = [];
+  if (ing.note && ing.note[lang]) paragraphs.push(ing.note[lang]);
+  paragraphs.push(t.explainer_generic(ing.names[lang]));
+  paragraphs.push(t.explainer_cup);
+  return { title: t.explainer_title, paragraphs };
 }
 
 /* ===========================================================================
@@ -338,6 +352,7 @@ ${calcMarkup(t, p.prefill)}
 <div class="table-card"><table><thead><tr><th>${t.tbl_measure}</th><th>${t.tbl_weight}</th></tr></thead>
 <tbody>${tableHtml(p.referenceRows)}</tbody></table></div></section>
 <div class="affil"><span>${t.affil}</span><a href="#" rel="sponsored nofollow">${t.affil_link}</a></div>
+<section class="explainer"><h2>${p.explainer.title}</h2>${p.explainer.paragraphs.map(x=>`<p>${x}</p>`).join("")}</section>
 <section><h2>${t.faq_title}</h2>${p.faq.map(f=>`<details><summary>${f.q}</summary><p>${f.a}</p></details>`).join("")}</section>
 <section><a class="cta" href="${t.cta_url}">${t.cta}<small>${t.cta_sub}</small></a></section>
 <section><h2>${t.related}</h2><div class="related">${p.related.map(r=>`<a href="${r.url}">${r.name}</a>`).join("")}</div></section>
@@ -362,6 +377,7 @@ ${calcMarkup(t, p.prefill)}
 <div class="table-card"><table><thead><tr><th>${t.tbl_measure}</th><th>${t.tbl_weight}</th></tr></thead>
 <tbody>${tableHtml(p.referenceRows)}</tbody></table></div></section>
 <div class="affil"><span>${t.affil}</span><a href="#" rel="sponsored nofollow">${t.affil_link}</a></div>
+<section class="explainer"><h2>${p.explainer.title}</h2>${p.explainer.paragraphs.map(x=>`<p>${x}</p>`).join("")}</section>
 <section><a class="cta" href="${t.cta_url}">${t.cta}<small>${t.cta_sub}</small></a></section>
 <section><h2>${t.related}</h2><div class="related">${p.related.map(r=>`<a href="${r.url}">${r.name}</a>`).join("")}</div></section>
 <footer><p>${t.footer}</p></footer>
