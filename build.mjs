@@ -560,7 +560,8 @@ function build() {
   write(join(SITE.outDir, "sitemap.xml"), renderSitemap(sitemap));
   write(join(SITE.outDir, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${SITE.domain}/sitemap.xml\n`);
   const htaccess = "DirectoryIndex index.html\nOptions -Indexes\n";
-  write(join(SITE.outDir, ".htaccess"), htaccess);
+  const rootHtaccess = `DirectoryIndex index.html\nOptions -Indexes\nRedirectMatch 301 ^/$ /bg/merki/\n`;
+  write(join(SITE.outDir, ".htaccess"), rootHtaccess);
   write(join(SITE.outDir, "bg", ".htaccess"), htaccess);
 
   // 5. Copy shared assets (includes newly written data.{lang}.js files)
