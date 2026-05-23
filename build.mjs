@@ -34,39 +34,63 @@ const NOINDEX = ENVIRONMENT === "experiment";
    names: lowercase, used inside sentences.
    =========================================================================== */
 const INGREDIENTS = [
-  { id: "brashno",     density: 0.50, names: { bg: "брашно" },       note: { bg: 'Брашното е „пухкаво“ и задържа въздух, затова една чаша пресято брашно тежи по-малко от натъпкано.' } },
-  { id: "zahar",       density: 0.85, names: { bg: "захар" },         note: { bg: "Кристалната захар е по-плътна, затова една чаша тежи доста повече от чаша брашно." } },
-  { id: "pudra-zahar", density: 0.50, names: { bg: "пудра захар" },   note: { bg: "Пудрата захар е лека и често се сляга — пресявайте я за по-точно мерене." } },
-  { id: "oriz",        density: 0.78, names: { bg: "ориз" },          note: { bg: "Сухият ориз е плътен и се сляга в чашата; при варене обемът му нараства 2–3 пъти, но ориентир остава теглото на сухия." } },
-  { id: "kakao",       density: 0.36, names: { bg: "какао" },         note: { bg: "Какаото е леко и лесно се сбива на бучки — пресявайте го, за да не го натъпчете в чашата." } },
-  { id: "oves",        density: 0.38, names: { bg: "овесени ядки" },  note: { bg: "Овесените ядки са люспести и между тях има много въздух, затова една чаша тежи изненадващо малко." } },
-  { id: "mlyako",      density: 1.03, names: { bg: "мляко" },         note: { bg: "Млякото е течност — теглото в грамове е почти равно на обема в милилитри (1 чаша ≈ 250 г)." } },
-  { id: "olio",        density: 0.92, names: { bg: "олио" },          note: { bg: "Олиото е малко по-леко от водата, затова една чаша тежи малко под 250 г." } },
-  { id: "maslo",       density: 0.96, names: { bg: "масло" },         note: { bg: "Стойностите са за разтопено масло; твърдото масло обикновено се мери на блокчета или по грамажа на опаковката." } },
-  { id: "med",         density: 1.42, names: { bg: "мед" },           note: { bg: "Медът е гъст и тежък — една чаша мед тежи значително повече от чаша вода." } },
-  { id: "sol",         density: 1.20, names: { bg: "сол" },           note: { bg: "Солта е тежка и плътна; фината сол се сбива повече от едрата, затова за точност я мерете на грамове." } },
-  { id: "voda",        density: 1.00, names: { bg: "вода" },          note: { bg: "Водата е еталонът: 1 мл тежи точно 1 г, затова 1 чаша (250 мл) е 250 г." } },
+  { id: "brashno",               density: 0.50, names: { bg: "брашно" },               note: { bg: 'Брашното е „пухкаво" и задържа въздух, затова една чаша пресято брашно тежи по-малко от натъпкано.' } },
+  { id: "zahar",                 density: 0.85, names: { bg: "захар" },                 note: { bg: "Кристалната захар е по-плътна, затова една чаша тежи доста повече от чаша брашно." } },
+  { id: "pudra-zahar",           density: 0.50, names: { bg: "пудра захар" },           note: { bg: "Пудрата захар е лека и често се сляга — пресявайте я за по-точно мерене." } },
+  { id: "kafyava-zahar",         density: 0.90, names: { bg: "кафява захар" },          note: { bg: "Кафявата захар се натъпква в чашата, затова тежи повече от кристалната." } },
+  { id: "oriz",                  density: 0.78, names: { bg: "ориз" },                  note: { bg: "Сухият ориз е плътен и се сляга в чашата; при варене обемът му нараства 2–3 пъти, но ориентир остава теглото на сухия." } },
+  { id: "bulgur",                density: 0.78, names: { bg: "булгур" },                note: { bg: "Сухият булгур е плътен; при варене обемът му нараства неколкократно." } },
+  { id: "gris",                  density: 0.67, names: { bg: "грис" },                  note: { bg: "Грисът е ситен и се сипе плътно, без много въздух между зрънцата." } },
+  { id: "kakao",                 density: 0.36, names: { bg: "какао" },                 note: { bg: "Какаото е леко и лесно се сбива на бучки — пресявайте го, за да не го натъпчете в чашата." } },
+  { id: "oves",                  density: 0.38, names: { bg: "овесени ядки" },          note: { bg: "Овесените ядки са люспести и между тях има много въздух, затова една чаша тежи изненадващо малко." } },
+  { id: "nisheste",              density: 0.52, names: { bg: "нишесте" },               note: { bg: "Нишестето е леко и пухкаво и лесно се сбива — разрохквайте го преди мерене." } },
+  { id: "palnozarnesto-brashno", density: 0.55, names: { bg: "пълнозърнесто брашно" }, note: { bg: "Малко по-тежко от бялото брашно заради триците, които съдържа." } },
+  { id: "carevichno-brashno",    density: 0.60, names: { bg: "царевично брашно" },      note: { bg: "По-плътно от пшеничното, със ситна, песъчлива структура." } },
+  { id: "mlyako",                density: 1.03, names: { bg: "мляко" },                 note: { bg: "Млякото е течност — теглото в грамове е почти равно на обема в милилитри (1 чаша ≈ 250 г)." } },
+  { id: "kiselo-mlyako",         density: 1.03, names: { bg: "кисело мляко" },          note: { bg: "Гъсто е и тежи почти колкото водата (1 чаша ≈ 258 г)." } },
+  { id: "zakvasena-smetana",     density: 0.96, names: { bg: "заквасена сметана" },     note: { bg: "Гъста млечна съставка — мери се добре с лъжица или чаша." } },
+  { id: "olio",                  density: 0.92, names: { bg: "олио" },                  note: { bg: "Олиото е малко по-леко от водата, затова една чаша тежи малко под 250 г." } },
+  { id: "maslo",                 density: 0.96, names: { bg: "масло" },                 note: { bg: "Стойностите са за разтопено масло; твърдото масло обикновено се мери на блокчета или по грамажа на опаковката." } },
+  { id: "med",                   density: 1.42, names: { bg: "мед" },                   note: { bg: "Медът е гъст и тежък — една чаша мед тежи значително повече от чаша вода." } },
+  { id: "klenov-sirop",          density: 1.32, names: { bg: "кленов сироп" },          note: { bg: "Сиропът е гъст и тежък — една чаша тежи доста повече от чаша вода." } },
+  { id: "sol",                   density: 1.20, names: { bg: "сол" },                   note: { bg: "Солта е тежка и плътна; фината сол се сбива повече от едрата, затова за точност я мерете на грамове." } },
+  { id: "soda",                  density: 0.92, names: { bg: "сода бикарбонат" },       note: { bg: "Използва се в малки количества — една чаена лъжичка тежи около 5 г." } },
+  { id: "bakpulver",             density: 0.80, names: { bg: "бакпулвер" },             note: { bg: "Мери се на лъжички — една чаена лъжичка е около 4 г." } },
+  { id: "lesha",                 density: 0.85, names: { bg: "леща" },                  note: { bg: "Стойностите са за суха леща — сварена набъбва около 2–3 пъти." } },
+  { id: "orehi",                 density: 0.50, names: { bg: "орехи" },                 note: { bg: "За едро счукани орехи; целите ядки заемат повече място и тежат по-малко на чаша." } },
+  { id: "stafidi",               density: 0.62, names: { bg: "стафиди" },               note: { bg: "Стафидите са лепкави и се сбиват леко в чашата." } },
+  { id: "kokos",                 density: 0.35, names: { bg: "кокосови стърготини" },   note: { bg: "Много леки и обемисти — една чаша тежи съвсем малко." } },
+  { id: "ocet",                  density: 1.01, names: { bg: "оцет" },                  note: { bg: "Оцетът е течност с тегло, почти равно на това на водата." } },
+  { id: "voda",                  density: 1.00, names: { bg: "вода" },                  note: { bg: "Водата е еталонът: 1 мл тежи точно 1 г, затова 1 чаша (250 мл) е 250 г." } },
 ];
 
-// Units. Volume units carry ml; mass units carry g. slug + per-language labels.
+// Units. slug/label used for SEO URLs and sentences; c used for calculator/scaler UI labels.
 const UNITS = {
-  chasha: { ml: 250,      slug: "chasha",           label: { bg: "чаша" },          label_pl: { bg: "чаши" } },
-  sl:     { ml: 15,       slug: "supena-lazhica",   label: { bg: "супена лъжица" }, abbr: { bg: "с.л." } },
-  chl:    { ml: 5,        slug: "chaena-lazhichka", label: { bg: "чаена лъжичка" }, abbr: { bg: "ч.л." } },
-  g:      { g: 1,         slug: "gramove",          label: { bg: "грам" },          gen: { bg: "грама" } },
-  ml:     { ml: 1,        slug: "ml",               label: { bg: "милилитър" },     gen: { bg: "милилитра" } },
-  cup_us: { ml: 240,      slug: "cup-us",           label: { bg: "cup (US)" } },
-  floz:   { ml: 29.5735,  slug: "fl-oz",            label: { bg: "fl oz" } },
-  kg:     { g: 1000,      slug: "kg",               label: { bg: "кг" } },
-  oz:     { g: 28.3495,   slug: "oz",               label: { bg: "oz" } },
-  lb:     { g: 453.592,   slug: "lb",               label: { bg: "lb" } },
+  chasha: { ml: 250,     slug: "chasha",           label: { bg: "чаша" },            label_pl: { bg: "чаши" }, c: { bg: "чаша" } },
+  sl:     { ml: 15,      slug: "supena-lazhica",   label: { bg: "супена лъжица" },   abbr: { bg: "с.л." },     c: { bg: "с.л." } },
+  chl:    { ml: 5,       slug: "chaena-lazhichka", label: { bg: "чаена лъжичка" },   abbr: { bg: "ч.л." },     c: { bg: "ч.л." } },
+  ml:     { ml: 1,       slug: "ml",               label: { bg: "милилитър" },       gen: { bg: "милилитра" }, c: { bg: "мл" } },
+  l:      { ml: 1000,    slug: "l",                label: { bg: "литър" },                                     c: { bg: "л" } },
+  cup_us: { ml: 240,     slug: "cup",              label: { bg: "американска чаша" },                          c: { bg: "cup (US)" } },
+  floz:   { ml: 29.5735, slug: "fl-oz",            label: { bg: "течна унция" },                               c: { bg: "fl oz" } },
+  g:      { g: 1,        slug: "gramove",          label: { bg: "грам" },            gen: { bg: "грама" },     c: { bg: "г" } },
+  kg:     { g: 1000,     slug: "kg",               label: { bg: "килограм" },                                  c: { bg: "кг" } },
+  oz:     { g: 28.3495,  slug: "oz",               label: { bg: "унция" },                                     c: { bg: "oz" } },
+  lb:     { g: 453.592,  slug: "lb",               label: { bg: "паунд" },                                     c: { bg: "lb" } },
 };
+
+// Order units appear in the calculator/scaler UI (emitted into data.{lang}.js).
+const CLIENT_UNIT_ORDER = ["chasha", "sl", "chl", "ml", "l", "cup_us", "floz", "g", "kg", "oz", "lb"];
+
+// Anchor amount (grams) for reverse mass→volume question pages.
+const REV_ANCHOR = 100;
 
 // Which conversions become their own pages (high-intent, ingredient-specific).
 const UNIT_PAIRS = [
   { from: "chasha", to: "g" },
   { from: "sl",     to: "g" },
   { from: "chl",    to: "g" },
+  { from: "g",      to: "chasha" }, // reverse: "Колко чаши са 100 грама X?"
 ];
 
 // Per-language micro-copy and sentence templates. Add a block per new language.
@@ -78,8 +102,12 @@ const T = {
     cup_note_ml: 250,
     // {ing}=name, {ml}=volume, {n}=number, {unit}=unit phrase
     q_h1:   (unitPhrase, ing) => `Колко грама е една ${unitPhrase} ${ing}?`,
-    q_ans:  (unitPhrase, ml, ing, n) => `Една ${unitPhrase} (${ml} мл) ${ing} тежи около ${n} грама.`,
-    q_meta: (unitPhrase, ing, n) => `Една ${unitPhrase} ${ing} тежи около ${n} г. Калкулатор и таблица за чаши, лъжици и грамове.`,
+    q_ans:  (unitPhrase, ml, ing, n) => `Една ${unitPhrase} (${ml} мл) ${ing} тежи около ${num(n)} грама.`,
+    q_meta: (unitPhrase, ing, n) => `Една ${unitPhrase} ${ing} тежи около ${num(n)} г. Калкулатор и таблица за чаши, лъжици и грамове.`,
+    qr_h1:   (toPl, ing, anchor) => `Колко ${toPl} са ${anchor} грама ${ing}?`,
+    qr_ans:  (toPl, ing, anchor, n) => `${anchor} грама ${ing} са приблизително ${num(n)} ${toPl}.`,
+    qr_meta: (toPl, ing, anchor, n) => `${anchor} грама ${ing} са около ${num(n)} ${toPl}. Калкулатор за грамове, чаши и лъжици.`,
+    qr_crumb:(toPl, anchor) => `${anchor} г в ${toPl}`,
     hub_h1:   (ing) => `${cap(ing)}: чаши, лъжици и грамове`,
     hub_meta: (ing) => `Колко тежи ${ing}? Калкулатор и таблица за чаши, супени и чаени лъжици в грамове.`,
     hub_intro:(ing) => `Колко грама е една чаша ${ing}, колко тежи една лъжица — изчисли наведнъж или виж таблицата по-долу.`,
@@ -123,6 +151,7 @@ function round(n) {
   if (n >= 10)  return Math.round(n * 10) / 10;
   return Math.round(n * 100) / 100;
 }
+const num = (n) => String(n).replace(".", ","); // Bulgarian decimal comma for display
 const gramsFromVolume = (ml, density) => ml * density;
 
 const baseUrl = (lang, ...parts) => `${SITE.domain}/${lang}/${parts.join("/")}/`.replace(/\/+/g, "/").replace(":/", "://");
@@ -142,12 +171,11 @@ function renderClientData(lang) {
   for (const ing of INGREDIENTS)
     ingredients[ing.id] = { name: ing.names[lang], density: ing.density };
   const units = {};
-  for (const [k, u] of Object.entries(UNITS))
-    units[k] = u.g != null
-      ? { g: u.g, label: u.label[lang] }
-      : { ml: u.ml, label: u.label[lang] };
-  const order = ["chasha", "sl", "chl", "ml", "cup_us", "floz", "g", "kg", "oz", "lb"];
-  return `window.__KITCHEN_DATA__=${JSON.stringify({ ingredients, units, order })};`;
+  for (const [k, u] of Object.entries(UNITS)) {
+    const label = (u.c && u.c[lang]) || (u.abbr && u.abbr[lang]) || u.label[lang];
+    units[k] = u.g != null ? { g: u.g, label } : { ml: u.ml, label };
+  }
+  return `window.__KITCHEN_DATA__=${JSON.stringify({ ingredients, units, order: CLIENT_UNIT_ORDER })};`;
 }
 
 /* ===========================================================================
@@ -155,7 +183,7 @@ function renderClientData(lang) {
    =========================================================================== */
 function computeReferenceRows(density) {
   const c = UNITS.chasha.ml, sl = UNITS.sl.ml, chl = UNITS.chl.ml;
-  const g = (ml) => `≈ ${round(gramsFromVolume(ml, density))} г`;
+  const g = (ml) => `≈ ${num(round(gramsFromVolume(ml, density)))} г`;
   return [
     { label: "¼ чаша", value: g(c * 0.25) },
     { label: "⅓ чаша", value: g(c / 3) },
@@ -167,37 +195,66 @@ function computeReferenceRows(density) {
   ];
 }
 
+function pairCard(ing, pair, lang) {
+  const fromU = UNITS[pair.from], toU = UNITS[pair.to];
+  if (typeof fromU.ml === "number" && typeof toU.g === "number") {
+    const grams = round(gramsFromVolume(fromU.ml, ing.density));
+    const slug = `${fromU.slug}-v-${toU.slug}`;
+    return { dir: "v2m", slug, name: `${cap(unitPhrase(pair.from, lang))} → грамове`,
+             value: `≈ ${num(grams)} г`, url: baseUrl(lang, "merki", ing.id, slug) };
+  }
+  const toPl = (toU.label_pl && toU.label_pl[lang]) || toU.label[lang];
+  const nVol = round((REV_ANCHOR / ing.density) / toU.ml);
+  const slug = `${REV_ANCHOR}-grama-v-${toU.slug}`;
+  return { dir: "m2v", slug, name: `${REV_ANCHOR} г → ${toPl}`,
+           value: `≈ ${num(nVol)} ${toPl}`, url: baseUrl(lang, "merki", ing.id, slug) };
+}
+
 function computeQuestionPage(ing, pair, lang) {
   const t = T[lang];
   const name = ing.names[lang];
-  const fromU = UNITS[pair.from];
-  const ml = fromU.ml;
-  const grams = round(gramsFromVolume(ml, ing.density));
-  const phrase = unitPhrase(pair.from, lang);
-  const slug = `${fromU.slug}-v-${UNITS[pair.to].slug}`;
-  const url = baseUrl(lang, "merki", ing.id, slug);
+  const fromU = UNITS[pair.from], toU = UNITS[pair.to];
+  const card = pairCard(ing, pair, lang);
+  const { slug, url } = card;
 
   const slGrams = round(gramsFromVolume(UNITS.sl.ml, ing.density));
   const cupsIn500 = round((500 / ing.density) / UNITS.chasha.ml);
+  const faq = [
+    { q: t.faq1_q(name), a: t.faq1_a(name, slGrams) },
+    { q: t.faq2_q(name), a: t.faq2_a(name, cupsIn500) },
+  ];
+
+  let title, meta, h1, answer, crumbLeaf, prefill;
+  if (card.dir === "v2m") {
+    const ml = fromU.ml, grams = round(gramsFromVolume(ml, ing.density)), phrase = unitPhrase(pair.from, lang);
+    h1 = t.q_h1(phrase, name);
+    title = `${h1} | ${t.brand}`;
+    meta = t.q_meta(phrase, name, grams);
+    answer = t.q_ans(phrase, ml, name, grams);
+    crumbLeaf = `${cap(phrase)} в грамове`;
+    prefill = { ing: ing.id, from: pair.from, to: pair.to, amt: 1 };
+  } else {
+    const toPl = (toU.label_pl && toU.label_pl[lang]) || toU.label[lang];
+    const nVol = round((REV_ANCHOR / ing.density) / toU.ml);
+    h1 = t.qr_h1(toPl, name, REV_ANCHOR);
+    title = `${h1} | ${t.brand}`;
+    meta = t.qr_meta(toPl, name, REV_ANCHOR, nVol);
+    answer = t.qr_ans(toPl, name, REV_ANCHOR, nVol);
+    crumbLeaf = t.qr_crumb(toPl, REV_ANCHOR);
+    prefill = { ing: ing.id, from: pair.from, to: pair.to, amt: REV_ANCHOR };
+  }
 
   return {
-    lang, url, slug, ingId: ing.id,
-    title: `${t.q_h1(phrase, name)} | ${t.brand}`,
-    meta: t.q_meta(phrase, name, grams),
-    h1: t.q_h1(phrase, name),
-    answer: t.q_ans(phrase, ml, name, grams),
+    lang, url, slug, ingId: ing.id, title, meta, h1, answer,
     breadcrumbs: [
       { name: t.home, url: baseUrl(lang) },
       { name: t.section, url: baseUrl(lang, "merki") },
       { name: cap(name), url: baseUrl(lang, "merki", ing.id) },
-      { name: `${cap(phrase)} в грамове`, url: "" },
+      { name: crumbLeaf, url: "" },
     ],
-    prefill: { ing: ing.id, from: pair.from, to: pair.to, amt: 1 },
+    prefill,
     referenceRows: computeReferenceRows(ing.density),
-    faq: [
-      { q: t.faq1_q(name), a: t.faq1_a(name, slGrams) },
-      { q: t.faq2_q(name), a: t.faq2_a(name, cupsIn500) },
-    ],
+    faq,
     related: relatedFor(ing, lang, slug),
     explainer: buildExplainer(ing, lang),
   };
@@ -207,13 +264,8 @@ function computeHubPage(ing, lang) {
   const t = T[lang];
   const name = ing.names[lang];
   const questionPages = UNIT_PAIRS.map((pair) => {
-    const fromU = UNITS[pair.from];
-    const grams = round(gramsFromVolume(fromU.ml, ing.density));
-    return {
-      name: `${cap(unitPhrase(pair.from, lang))} → грамове`,
-      value: `≈ ${grams} г`,
-      url: baseUrl(lang, "merki", ing.id, `${fromU.slug}-v-${UNITS[pair.to].slug}`),
-    };
+    const c = pairCard(ing, pair, lang);
+    return { name: c.name, value: c.value, url: c.url };
   });
   return {
     lang, ingId: ing.id, url: baseUrl(lang, "merki", ing.id),
