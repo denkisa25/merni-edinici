@@ -2,25 +2,13 @@
 # Runs automatically on the cPanel server after a manual "Update from Remote" pull.
 # Build runs ON the server (D-03). dist/ is produced fresh each deploy (D-04).
 #
-# Before the first deploy, replace the two placeholder tokens below:
-#   __CPANEL_USERNAME__  -> kciksctic
-#   __PUBLIC_DIR__       -> absolute path of the directory served by your domain or subdomain
-#                          examples:
-# /home/kickstic/public_html/ochen-lekar.com/
-# /home/kickstic/public_html/ochen-lekar.com/merni-edinici/
-# /home/kickstic/public_html/merni.ochen-lekar.com/
+# merilo.pro is a dedicated domain — full dist/ syncs to its document root.
+# Typical cPanel addon domain root: /home/kickstic/public_html/merilo.pro/
 #
 # Node.js binary is resolved by sourcing ~/.bash_profile, which cPanel's Node.js Selector
-# populates with the active ea-nodejs* version's PATH. This avoids hardcoding a specific
-# Node.js major version and works regardless of which version the host upgrades to next.
+# populates with the active ea-nodejs* version's PATH.
 
 deployment:
   tasks:
-    # 1. Vite converter — full sync with delete (safe, isolated subdirectory)
-    - mkdir -p /home/kickstic/public_html/ochen-lekar.com/merni-edinici/
-    - rsync -a --delete dist/ /home/kickstic/public_html/ochen-lekar.com/merni-edinici/
-    # 2. SEO pages — overlay on WordPress root WITHOUT --delete (preserves WP files)
-    # bg/ and assets/ must be pre-created manually in cPanel File Manager (mkdir fails on WP root)
-    - rsync -a dist/bg/ /home/kickstic/public_html/ochen-lekar.com/bg/
-    - rsync -a dist/assets/site.css dist/assets/calc.js dist/assets/data.bg.js /home/kickstic/public_html/ochen-lekar.com/assets/
+    - rsync -a --delete dist/ /home/kickstic/public_html/merilo.pro/
     - echo "[deploy] Done."
