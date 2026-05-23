@@ -1,0 +1,22 @@
+{
+  "langs": ["bg"],
+  "environment": "experiment",
+  "site": {
+    "domain": "https://merilo.pro",
+    "outDir": "dist"
+  },
+  "clientUnitOrder": ["chasha", "sl", "chl", "ml", "l", "cup_us", "floz", "g", "kg", "oz", "lb"],
+  "revAnchor": 100,
+  "unitPairs": [
+    { "from": "chasha", "to": "g" },
+    { "from": "sl",     "to": "g" },
+    { "from": "chl",    "to": "g" },
+    { "from": "g",      "to": "chasha" }
+  ],
+  "unitPairsLiquid": [
+    { "from": "chasha", "to": "ml" },
+    { "from": "sl",     "to": "ml" },
+    { "from": "chl",    "to": "ml" },
+    { "from": "g",      "to": "chasha" }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "chasha": { "ml": 250,     "slug": "chasha",           "label": { "bg": "чаша" },            "label_pl": { "bg": "чаши" }, "c": { "bg": "чаша" } },
+  "sl":     { "ml": 15,      "slug": "supena-lazhica",   "label": { "bg": "супена лъжица" },   "abbr": { "bg": "с.л." },     "c": { "bg": "с.л." } },
+  "chl":    { "ml": 5,       "slug": "chaena-lazhichka", "label": { "bg": "чаена лъжичка" },   "abbr": { "bg": "ч.л." },     "c": { "bg": "ч.л." } },
+  "ml":     { "ml": 1,       "slug": "mililitri",         "label": { "bg": "милилитър" },  "label_pl": { "bg": "милилитри" },  "gen": { "bg": "милилитра" }, "c": { "bg": "мл" } },
+  "l":      { "ml": 1000,    "slug": "l",                "label": { "bg": "литър" },                                         "c": { "bg": "л" } },
+  "cup_us": { "ml": 240,     "slug": "cup",              "label": { "bg": "американска чаша" },                              "c": { "bg": "cup (US)" } },
+  "floz":   { "ml": 29.5735, "slug": "fl-oz",            "label": { "bg": "течна унция" },                                   "c": { "bg": "fl oz" } },
+  "g":      { "g": 1,        "slug": "gramove",          "label": { "bg": "грам" },            "gen": { "bg": "грама" },     "c": { "bg": "г" } },
+  "kg":     { "g": 1000,     "slug": "kg",               "label": { "bg": "килограм" },                                      "c": { "bg": "кг" } },
+  "oz":     { "g": 28.3495,  "slug": "oz",               "label": { "bg": "унция" },                                         "c": { "bg": "oz" } },
+  "lb":     { "g": 453.592,  "slug": "lb",               "label": { "bg": "паунд" },                                         "c": { "bg": "lb" } }
+}

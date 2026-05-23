@@ -125,14 +125,18 @@
       el.to.add(new Option(UNITS[u].label, u));
     });
 
-    // resolve initial state by priority: URL > __PREFILL__ > data-* > defaults
+    // resolve initial state by priority: URL > __PREFILL__ > data-* > ingredient-type default
     var params  = new URLSearchParams(window.location.search);
     var prefill = window.__PREFILL__ || null;
     var ds      = root.dataset || {};
+    var resolvedIng = pick("ing", params, prefill, ds);
+    var explicitTo  = params.get("to") ||
+                      (prefill && prefill.to != null && prefill.to !== "" ? String(prefill.to) : null) ||
+                      (ds && ds.to) || null;
     var state = {
-      ing:  pick("ing",  params, prefill, ds),
+      ing:  resolvedIng,
       from: pick("from", params, prefill, ds),
-      to:   pick("to",   params, prefill, ds),
+      to:   explicitTo || ((ING[resolvedIng] && ING[resolvedIng].liquid) ? "ml" : "g"),
       amt:  pick("amt",  params, prefill, ds)
     };
     if (!valid(state)) state = { ing: DEFAULTS.ing, from: DEFAULTS.from, to: DEFAULTS.to, amt: state.amt || DEFAULTS.amt };
@@ -167,8 +171,16 @@
     }
 
     /* ------------------------------ events ------------------------------ */
-    [el.ing, el.from, el.to, el.amt].forEach(function (node) {
+    [el.from, el.to, el.amt].forEach(function (node) {
       node.addEventListener("input", compute);
+    });
+    el.ing.addEventListener("input", function () {
+      // auto-switch to-unit between g and ml when user picks a different ingredient
+      var ing = ING[el.ing.value];
+      if (ing && (el.to.value === "g" || el.to.value === "ml")) {
+        el.to.value = ing.liquid ? "ml" : "g";
+      }
+      compute();
     });
 
     if (el.chips) {
