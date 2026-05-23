@@ -16,7 +16,7 @@
  * ---------------------------------------------------------------------------
  */
 
-import { writeFileSync, mkdirSync, cpSync, existsSync, readFileSync } from "node:fs";
+import { writeFileSync, mkdirSync, cpSync, existsSync } from "node:fs";
 import { join } from "node:path";
 
 /* ===========================================================================
@@ -26,8 +26,8 @@ const SITE = { domain: "https://merilo.pro", outDir: "dist", brandKey: "brand" }
 const LANGS = ["bg"]; // add "sr", "ro", "mk", "el" … later — same engine
 
 const ENVIRONMENT = "experiment"; // flip to "live" to enable indexing
+const BUILD_V = Date.now().toString(36);
 const NOINDEX = ENVIRONMENT === "experiment";
-const SITE_CSS = existsSync("assets/site.css") ? readFileSync("assets/site.css", "utf8") : "";
 
 /* ===========================================================================
    DATA LAYER
@@ -368,7 +368,7 @@ ${LANGS.map((l) => `<link rel="alternate" hreflang="${l}" href="${canonical}">`)
 <meta property="og:title" content="${title}"><meta property="og:description" content="${meta}"><meta property="og:url" content="${canonical}">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;0,800;1,400&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>${SITE_CSS}</style>
+<link rel="stylesheet" href="/assets/site.css?v=${BUILD_V}">
 ${NOINDEX ? '<meta name="robots" content="noindex">' : ""}
 <script src="/assets/data.${lang}.js"></script>
 <script src="/assets/${pageScript}" defer></script>`;
