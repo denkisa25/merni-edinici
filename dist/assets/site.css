@@ -20,7 +20,10 @@ nav.crumbs span.sep{opacity:.45}
 nav.crumbs span.here{color:var(--ink)}
 .hero{padding:26px 0 8px}
 h1{font-family:"Spectral",serif;font-weight:800;font-size:clamp(28px,6.5vw,42px);line-height:1.08;letter-spacing:-.015em;max-width:16ch}
-.answer{margin-top:16px;font-size:clamp(17px,4vw,20px);color:var(--ink);font-weight:500}
+.answer{margin-top:18px;font-size:clamp(18px,4.4vw,21px);color:var(--ink);padding:16px 18px;
+  background:linear-gradient(180deg,var(--card),var(--paper-2));border:1px solid var(--line);
+  border-left:4px solid var(--paprika);border-radius:12px}
+.answer b{color:var(--paprika-dk)}
 .intro{margin-top:16px;font-size:clamp(17px,4vw,19px);color:var(--ink)}
 .calc{margin:26px 0;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
 .calc__head{padding:16px 20px;border-bottom:1px solid var(--line);font-family:"Spectral",serif;font-weight:600;font-size:18px}
@@ -73,9 +76,13 @@ table td:last-child{text-align:right;font-weight:600;font-variant-numeric:tabula
   background:repeating-linear-gradient(45deg,var(--paper-2),var(--paper-2) 10px,var(--paper) 10px,var(--paper) 20px);
   color:var(--ink-soft);font-size:12px;letter-spacing:.05em;margin:30px 0}
 footer{border-top:1px solid var(--line);margin-top:40px;padding:26px 0 40px;font-size:13.5px;color:var(--ink-soft)}
-details summary{cursor:pointer;font-weight:600;padding:12px 0;list-style:none}
+details{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:4px 18px;margin-bottom:10px}
+details summary{font-family:"Spectral",serif;font-weight:600;font-size:17px;padding:14px 0;cursor:pointer;
+  list-style:none;display:flex;justify-content:space-between;gap:12px}
 details summary::-webkit-details-marker{display:none}
-details p{padding:0 0 12px;color:var(--ink-soft)}
+details summary::after{content:"+";color:var(--paprika);font-size:22px;line-height:1;flex-shrink:0}
+details[open] summary::after{content:"–"}
+details p{padding:0 0 16px;color:var(--ink-soft)}
 
 /* ── Recipe Scaler page ─────────────────────────────────────── */
 :root{--warn:#B5791B}
