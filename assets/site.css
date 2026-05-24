@@ -135,6 +135,7 @@ textarea:focus{outline:none;border-color:var(--paprika);box-shadow:0 0 0 3px rgb
 .empty{color:#D9CDBC;font-size:15px}
 .trust{font-size:12.5px;color:var(--ink-soft);margin-top:10px}
 .updated{font-size:11.5px;color:var(--ink-soft);margin-top:6px}
+.us-equiv{font-size:13px;color:var(--ink-soft);margin-top:10px;padding:8px 12px;background:var(--paper-2);border-radius:8px}
 @media(max-width:480px){.ing-row{grid-template-columns:1fr 70px 1fr 34px;gap:6px}}
 @media print{header,nav,.panel__body .tabs,#paste-panel,.rows,.add,.controls,.out-actions,footer,.hero .lead{display:none!important}
   .out{background:#fff!important;color:#000!important;border:1px solid #ccc}.out h3{color:#000!important}.out-list .amt{color:#000!important}}

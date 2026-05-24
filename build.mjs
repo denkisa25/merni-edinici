@@ -284,6 +284,16 @@ function buildExplainer(ing, lang) {
   return { title: t.explainer_title, paragraphs };
 }
 
+const US = { cup: 240, tbsp: 14.7868, tsp: 4.9289 }; // ml
+
+function usEquivLine(ing) {
+  const d = ing.density;
+  if (ing.liquid) {
+    return `В американски рецепти: 1 cup = 240 мл · 1 tbsp ≈ 15 мл · 1 tsp ≈ 5 мл (1 cup ≈ ${num(round(US.cup * d))} г)`;
+  }
+  return `В американски рецепти: 1 cup ≈ ${num(round(US.cup * d))} г · 1 tbsp ≈ ${num(round(US.tbsp * d))} г · 1 tsp ≈ ${num(round(US.tsp * d))} г`;
+}
+
 function trustLine(ing, lang) {
   const t = T[lang];
   let s = ing.liquid ? t.trust_liquid : t.trust_dry;
@@ -399,7 +409,8 @@ ${calcMarkup(t, p.prefill)}
 <div class="ad" role="complementary">РЕКЛАМА</div>
 <section><h2>${p.tableTitle}</h2>
 <div class="table-card"><table><thead><tr><th>${t.tbl_measure}</th><th>${t.tbl_weight}</th></tr></thead>
-<tbody>${tableHtml(p.referenceRows)}</tbody></table></div></section>
+<tbody>${tableHtml(p.referenceRows)}</tbody></table></div>
+<p class="us-equiv">${usEquivLine(ing)}</p></section>
 <div class="affil"><span>${t.affil}</span><a href="#" rel="sponsored nofollow">${t.affil_link}</a></div>
 <section class="explainer"><h2>${p.explainer.title}</h2>${p.explainer.paragraphs.map(x=>`<p>${x}</p>`).join("")}${trustLine(INGREDIENTS.find(i=>i.id===p.ingId), p.lang)}</section>
 <section><h2>${t.faq_title}</h2>${p.faq.map(f=>`<details><summary>${f.q}</summary><p>${f.a}</p></details>`).join("")}</section>
@@ -427,7 +438,8 @@ ${calcMarkup(t, p.prefill)}
 <div class="ad" role="complementary">РЕКЛАМА</div>
 <section><h2>${p.tableTitle}</h2>
 <div class="table-card"><table><thead><tr><th>${t.tbl_measure}</th><th>${t.tbl_weight}</th></tr></thead>
-<tbody>${tableHtml(p.referenceRows)}</tbody></table></div></section>
+<tbody>${tableHtml(p.referenceRows)}</tbody></table></div>
+<p class="us-equiv">${usEquivLine(ing)}</p></section>
 <div class="affil"><span>${t.affil}</span><a href="#" rel="sponsored nofollow">${t.affil_link}</a></div>
 <section class="explainer"><h2>${p.explainer.title}</h2>${p.explainer.paragraphs.map(x=>`<p>${x}</p>`).join("")}${trustLine(INGREDIENTS.find(i=>i.id===p.ingId), p.lang)}</section>
 ${p.faq.length > 2 ? `<section><h2>${t.faq_title}</h2>${p.faq.map(f=>`<details><summary>${f.q}</summary><p>${f.a}</p></details>`).join("")}</section>` : ""}
