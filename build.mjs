@@ -497,8 +497,9 @@ ${p.siblingUrl ? `<p class="sibling-link"><a href="${p.siblingUrl}">↔ Обра
 <section><h2>${t.faq_title}</h2>${p.faq.map(f=>`<details><summary>${f.q}</summary><p>${f.a}</p></details>`).join("")}</section>
 <section><a class="cta" href="${t.cta_url}">${t.cta}<small>${t.cta_sub}</small></a></section>
 <section><h2>${t.related}</h2><div class="related">${p.related.map(r=>`<a href="${r.url}">${r.name}</a>`).join("")}</div></section>
+<div class="feedback" id="feedback"><span>Беше ли полезно?</span><button data-vote="up">👍</button><button data-vote="down">👎</button><span class="feedback-msg"></span></div>
 <footer><p>${t.footer}</p></footer>
-</div></body></html>`;
+</div><script src="/assets/feedback.js" defer></script></body></html>`;
 }
 
 function renderHub(p) {
@@ -528,8 +529,9 @@ ${calcMarkup(t, p.prefill)}
 ${p.faq.length > 0 ? `<section><h2>${t.faq_title}</h2>${p.faq.map(f=>`<details><summary>${f.q}</summary><p>${f.a}</p></details>`).join("")}</section>` : ""}
 <section><a class="cta" href="${t.cta_url}">${t.cta}<small>${t.cta_sub}</small></a></section>
 <section><h2>${t.related}</h2><div class="related">${p.related.map(r=>`<a href="${r.url}">${r.name}</a>`).join("")}</div></section>
+<div class="feedback" id="feedback"><span>Беше ли полезно?</span><button data-vote="up">👍</button><button data-vote="down">👎</button><span class="feedback-msg"></span></div>
 <footer><p>${t.footer}</p></footer>
-</div></body></html>`;
+</div><script src="/assets/feedback.js" defer></script></body></html>`;
 }
 
 function renderPillar(p) {

@@ -145,6 +145,10 @@ textarea:focus{outline:none;border-color:var(--paprika);box-shadow:0 0 0 3px rgb
 .btn-print:hover{background:var(--line)}
 .btn-pin{background:#E60023;border:none;color:#fff}
 .btn-pin:hover{background:#c0001d}
+.feedback{display:flex;align-items:center;gap:10px;margin:24px 0;font-size:14px;color:var(--ink-soft)}
+.feedback button{font-size:20px;background:none;border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+.feedback button:hover{border-color:var(--paprika)}
+.feedback-msg{font-size:13px;color:var(--paprika-dk);font-weight:600}
 @media(max-width:480px){.ing-row{grid-template-columns:1fr 70px 1fr 34px;gap:6px}}
 @media print{header,nav,.panel__body .tabs,#paste-panel,.rows,.add,.controls,.out-actions,footer,.hero .lead,.page-actions,.calc,.ad,.affil,.sibling-link,.cta,.related{display:none!important}
   .out{background:#fff!important;color:#000!important;border:1px solid #ccc}.out h3{color:#000!important}.out-list .amt{color:#000!important}
