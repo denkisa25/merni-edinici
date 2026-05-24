@@ -284,6 +284,14 @@ function buildExplainer(ing, lang) {
   return { title: t.explainer_title, paragraphs };
 }
 
+function trustLine(ing, lang) {
+  const t = T[lang];
+  let s = ing.liquid ? t.trust_liquid : t.trust_dry;
+  if (ing.source)     s += " " + tmpl(t.trust_source,   { source: ing.source });
+  if (ing.verifiedOn) s += " " + tmpl(t.trust_verified, { verifiedOn: ing.verifiedOn });
+  return `<p class="trust">${s}</p>`;
+}
+
 /* ===========================================================================
    JSON-LD
    =========================================================================== */
@@ -367,7 +375,7 @@ ${calcMarkup(t, p.prefill)}
 <div class="table-card"><table><thead><tr><th>${t.tbl_measure}</th><th>${t.tbl_weight}</th></tr></thead>
 <tbody>${tableHtml(p.referenceRows)}</tbody></table></div></section>
 <div class="affil"><span>${t.affil}</span><a href="#" rel="sponsored nofollow">${t.affil_link}</a></div>
-<section class="explainer"><h2>${p.explainer.title}</h2>${p.explainer.paragraphs.map(x=>`<p>${x}</p>`).join("")}</section>
+<section class="explainer"><h2>${p.explainer.title}</h2>${p.explainer.paragraphs.map(x=>`<p>${x}</p>`).join("")}${trustLine(INGREDIENTS.find(i=>i.id===p.ingId), p.lang)}</section>
 <section><h2>${t.faq_title}</h2>${p.faq.map(f=>`<details><summary>${f.q}</summary><p>${f.a}</p></details>`).join("")}</section>
 <section><a class="cta" href="${t.cta_url}">${t.cta}<small>${t.cta_sub}</small></a></section>
 <section><h2>${t.related}</h2><div class="related">${p.related.map(r=>`<a href="${r.url}">${r.name}</a>`).join("")}</div></section>
@@ -393,7 +401,7 @@ ${calcMarkup(t, p.prefill)}
 <div class="table-card"><table><thead><tr><th>${t.tbl_measure}</th><th>${t.tbl_weight}</th></tr></thead>
 <tbody>${tableHtml(p.referenceRows)}</tbody></table></div></section>
 <div class="affil"><span>${t.affil}</span><a href="#" rel="sponsored nofollow">${t.affil_link}</a></div>
-<section class="explainer"><h2>${p.explainer.title}</h2>${p.explainer.paragraphs.map(x=>`<p>${x}</p>`).join("")}</section>
+<section class="explainer"><h2>${p.explainer.title}</h2>${p.explainer.paragraphs.map(x=>`<p>${x}</p>`).join("")}${trustLine(INGREDIENTS.find(i=>i.id===p.ingId), p.lang)}</section>
 ${p.faq.length > 2 ? `<section><h2>${t.faq_title}</h2>${p.faq.map(f=>`<details><summary>${f.q}</summary><p>${f.a}</p></details>`).join("")}</section>` : ""}
 <section><a class="cta" href="${t.cta_url}">${t.cta}<small>${t.cta_sub}</small></a></section>
 <section><h2>${t.related}</h2><div class="related">${p.related.map(r=>`<a href="${r.url}">${r.name}</a>`).join("")}</div></section>

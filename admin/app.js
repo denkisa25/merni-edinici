@@ -339,6 +339,16 @@ function renderIngDrawer() {
         <input type="text" value="${esc(ing.id)}" disabled>
       </div>
     </div>
+    <div class="row row-2">
+      <div class="field">
+        <label>Source <span style="color:var(--muted);font-size:10px;text-transform:none;letter-spacing:0">(URL or name of measurement source)</span></label>
+        <input type="text" data-field="source" value="${esc(ing.source || '')}" placeholder="e.g. USDA, личен тест">
+      </div>
+      <div class="field">
+        <label>Verified on <span style="color:var(--muted);font-size:10px;text-transform:none;letter-spacing:0">(YYYY-MM-DD)</span></label>
+        <input type="text" data-field="verifiedOn" value="${esc(ing.verifiedOn || '')}" placeholder="2026-05-24">
+      </div>
+    </div>
     <hr>
     ${langSections}
     <hr>

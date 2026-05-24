@@ -133,6 +133,7 @@ textarea:focus{outline:none;border-color:var(--paprika);box-shadow:0 0 0 3px rgb
 .out-actions button.primary{background:var(--paprika);border-color:var(--paprika)}
 .out-actions button.primary:hover{background:var(--paprika-dk)}
 .empty{color:#D9CDBC;font-size:15px}
+.trust{font-size:12.5px;color:var(--ink-soft);margin-top:10px}
 @media(max-width:480px){.ing-row{grid-template-columns:1fr 70px 1fr 34px;gap:6px}}
 @media print{header,nav,.panel__body .tabs,#paste-panel,.rows,.add,.controls,.out-actions,footer,.hero .lead{display:none!important}
   .out{background:#fff!important;color:#000!important;border:1px solid #ccc}.out h3{color:#000!important}.out-list .amt{color:#000!important}}

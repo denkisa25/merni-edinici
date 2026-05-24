@@ -25,7 +25,9 @@
           "bg": "Бяло Брашно 505<br>\nПълнозърнесто Брашно обозначено с <b><i>1100</i></b>"
         }
       }
-    ]
+    ],
+    "source": "",
+    "verifiedOn": ""
   },
   {
     "id": "zahar",
@@ -40,7 +42,9 @@
     "title": {},
     "desc": {},
     "liquid": false,
-    "faqs": []
+    "faqs": [],
+    "source": "",
+    "verifiedOn": ""
   },
   {
     "id": "pudra-zahar",
@@ -55,7 +59,9 @@
     "title": {},
     "desc": {},
     "liquid": false,
-    "faqs": []
+    "faqs": [],
+    "source": "",
+    "verifiedOn": ""
   },
   {
     "id": "kafyava-zahar",
@@ -70,7 +76,9 @@
     "title": {},
     "desc": {},
     "liquid": false,
-    "faqs": []
+    "faqs": [],
+    "source": "",
+    "verifiedOn": ""
   },
   {
     "id": "oriz",
@@ -85,7 +93,9 @@
     "title": {},
     "desc": {},
     "liquid": false,
-    "faqs": []
+    "faqs": [],
+    "source": "",
+    "verifiedOn": ""
   },
   {
     "id": "bulgur",
@@ -100,7 +110,9 @@
     "title": {},
     "desc": {},
     "liquid": false,
-    "faqs": []
+    "faqs": [],
+    "source": "",
+    "verifiedOn": ""
   },
   {
     "id": "gris",
@@ -115,7 +127,9 @@
     "title": {},
     "desc": {},
     "liquid": false,
-    "faqs": []
+    "faqs": [],
+    "source": "",
+    "verifiedOn": ""
   },
   {
     "id": "kakao",
@@ -130,7 +144,9 @@
     "title": {},
     "desc": {},
     "liquid": false,
-    "faqs": []
+    "faqs": [],
+    "source": "",
+    "verifiedOn": ""
   },
   {
     "id": "oves",
@@ -145,7 +161,9 @@
     "title": {},
     "desc": {},
     "liquid": false,
-    "faqs": []
+    "faqs": [],
+    "source": "",
+    "verifiedOn": ""
   },
   {
     "id": "nisheste",
@@ -160,7 +178,9 @@
     "title": {},
     "desc": {},
     "liquid": false,
-    "faqs": []
+    "faqs": [],
+    "source": "",
+    "verifiedOn": ""
   },
   {
     "id": "palnozarnesto-brashno",
@@ -175,7 +195,9 @@
     "title": {},
     "desc": {},
     "liquid": false,
-    "faqs": []
+    "faqs": [],
+    "source": "",
+    "verifiedOn": ""
   },
   {
     "id": "carevichno-brashno",
@@ -190,7 +212,9 @@
     "title": {},
     "desc": {},
     "liquid": false,
-    "faqs": []
+    "faqs": [],
+    "source": "",
+    "verifiedOn": ""
   },
   {
     "id": "mlyako",
@@ -205,7 +229,9 @@
     "title": {},
     "desc": {},
     "liquid": true,
-    "faqs": []
+    "faqs": [],
+    "source": "",
+    "verifiedOn": ""
   },
   {
     "id": "kiselo-mlyako",
@@ -220,7 +246,9 @@
     "title": {},
     "desc": {},
     "liquid": true,
-    "faqs": []
+    "faqs": [],
+    "source": "",
+    "verifiedOn": ""
   },
   {
     "id": "zakvasena-smetana",
@@ -235,7 +263,9 @@
     "title": {},
     "desc": {},
     "liquid": true,
-    "faqs": []
+    "faqs": [],
+    "source": "",
+    "verifiedOn": ""
   },
   {
     "id": "olio",
@@ -250,7 +280,9 @@
     "title": {},
     "desc": {},
     "liquid": true,
-    "faqs": []
+    "faqs": [],
+    "source": "",
+    "verifiedOn": ""
   },
   {
     "id": "maslo",
@@ -265,7 +297,9 @@
     "title": {},
     "desc": {},
     "liquid": true,
-    "faqs": []
+    "faqs": [],
+    "source": "",
+    "verifiedOn": ""
   },
   {
     "id": "med",
@@ -280,7 +314,9 @@
     "title": {},
     "desc": {},
     "liquid": true,
-    "faqs": []
+    "faqs": [],
+    "source": "",
+    "verifiedOn": ""
   },
   {
     "id": "klenov-sirop",
@@ -295,7 +331,9 @@
     "title": {},
     "desc": {},
     "liquid": true,
-    "faqs": []
+    "faqs": [],
+    "source": "",
+    "verifiedOn": ""
   },
   {
     "id": "sol",
@@ -310,7 +348,9 @@
     "title": {},
     "desc": {},
     "liquid": false,
-    "faqs": []
+    "faqs": [],
+    "source": "",
+    "verifiedOn": ""
   },
   {
     "id": "soda",
@@ -325,7 +365,9 @@
     "title": {},
     "desc": {},
     "liquid": false,
-    "faqs": []
+    "faqs": [],
+    "source": "",
+    "verifiedOn": ""
   },
   {
     "id": "bakpulver",
@@ -340,7 +382,9 @@
     "title": {},
     "desc": {},
     "liquid": false,
-    "faqs": []
+    "faqs": [],
+    "source": "",
+    "verifiedOn": ""
   },
   {
     "id": "lesha",
@@ -355,7 +399,9 @@
     "title": {},
     "desc": {},
     "liquid": false,
-    "faqs": []
+    "faqs": [],
+    "source": "",
+    "verifiedOn": ""
   },
   {
     "id": "orehi",
@@ -370,7 +416,9 @@
     "title": {},
     "desc": {},
     "liquid": false,
-    "faqs": []
+    "faqs": [],
+    "source": "",
+    "verifiedOn": ""
   },
   {
     "id": "stafidi",
@@ -385,7 +433,9 @@
     "title": {},
     "desc": {},
     "liquid": false,
-    "faqs": []
+    "faqs": [],
+    "source": "",
+    "verifiedOn": ""
   },
   {
     "id": "kokos",
@@ -400,7 +450,9 @@
     "title": {},
     "desc": {},
     "liquid": false,
-    "faqs": []
+    "faqs": [],
+    "source": "",
+    "verifiedOn": ""
   },
   {
     "id": "ocet",
@@ -415,7 +467,9 @@
     "title": {},
     "desc": {},
     "liquid": true,
-    "faqs": []
+    "faqs": [],
+    "source": "",
+    "verifiedOn": ""
   },
   {
     "id": "voda",
@@ -430,6 +484,8 @@
     "title": {},
     "desc": {},
     "liquid": true,
-    "faqs": []
+    "faqs": [],
+    "source": "",
+    "verifiedOn": ""
   }
 ]
