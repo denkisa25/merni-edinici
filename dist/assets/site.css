@@ -139,6 +139,14 @@ textarea:focus{outline:none;border-color:var(--paprika);box-shadow:0 0 0 3px rgb
 .sibling-link{font-size:13.5px;margin-bottom:12px}
 .sibling-link a{color:var(--paprika-dk);font-weight:600;text-decoration:none}
 .sibling-link a:hover{text-decoration:underline}
+.page-actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.btn-print,.btn-pin{font:inherit;font-size:13px;font-weight:600;padding:8px 14px;border-radius:10px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+.btn-print{background:var(--paper-2);border:1px solid var(--line);color:var(--ink)}
+.btn-print:hover{background:var(--line)}
+.btn-pin{background:#E60023;border:none;color:#fff}
+.btn-pin:hover{background:#c0001d}
 @media(max-width:480px){.ing-row{grid-template-columns:1fr 70px 1fr 34px;gap:6px}}
-@media print{header,nav,.panel__body .tabs,#paste-panel,.rows,.add,.controls,.out-actions,footer,.hero .lead{display:none!important}
-  .out{background:#fff!important;color:#000!important;border:1px solid #ccc}.out h3{color:#000!important}.out-list .amt{color:#000!important}}
+@media print{header,nav,.panel__body .tabs,#paste-panel,.rows,.add,.controls,.out-actions,footer,.hero .lead,.page-actions,.calc,.ad,.affil,.sibling-link,.cta,.related{display:none!important}
+  .out{background:#fff!important;color:#000!important;border:1px solid #ccc}.out h3{color:#000!important}.out-list .amt{color:#000!important}
+  body{background:#fff!important;background-image:none!important}
+  .table-card{box-shadow:none!important;border:1px solid #ccc}}
