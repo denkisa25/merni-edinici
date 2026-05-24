@@ -40,6 +40,25 @@ const INGREDIENTS = JSON.parse(readFileSync("data/ingredients.json", "utf8"));
 const UNITS       = JSON.parse(readFileSync("data/units.json", "utf8"));
 const CATEGORIES  = JSON.parse(readFileSync("data/categories.json", "utf8"));
 
+const CATEGORY_ICONS = {
+  brasna:    '<path d="M7 8h10l1.2 11a2 2 0 0 1-2 2.2H7.8a2 2 0 0 1-2-2.2L7 8z"/><path d="M7 8c0-2 1.2-3 2.5-3.5C8.8 3.8 9.2 3 10 3M17 8c0-2-1.2-3-2.5-3.5"/><path d="M9.5 13.5h5"/>',
+  technosti: '<path d="M12 3.5c3.4 4 5.5 6.7 5.5 9.6a5.5 5.5 0 0 1-11 0C6.5 10.2 8.6 7.5 12 3.5z"/>',
+  zahari:    '<rect x="6" y="8" width="12" height="13" rx="2"/><path d="M7.5 8V6.5h9V8"/><path d="M9 5h6"/><path d="M12 12v5"/>',
+  yadki:     '<path d="M6 10a6 6 0 0 1 12 0c0 4-3 8-6 8s-6-4-6-8z"/><path d="M6.5 10h11"/><path d="M12 4.5V3"/>',
+  mlechni:   '<path d="M8 8h8v11a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V8z"/><path d="M8 8l1.5-3h5L16 8"/><path d="M10.5 5V3.5h3V5"/>',
+  podpravki: '<path d="M8 9h8l.6 10a2 2 0 0 1-2 2.1H9.4a2 2 0 0 1-2-2.1L8 9z"/><path d="M8 9V6.5a4 4 0 0 1 8 0V9"/><circle cx="10.5" cy="5" r=".5"/><circle cx="13.5" cy="5" r=".5"/><circle cx="12" cy="4" r=".5"/>',
+  zrna:      '<path d="M12 21V9"/><path d="M12 9c0-2-1.5-3.5-3.5-4 0 2 1.5 3.5 3.5 4z"/><path d="M12 9c0-2 1.5-3.5 3.5-4 0 2-1.5 3.5-3.5 4z"/><path d="M12 14c0-2-1.5-3.5-3.5-4 0 2 1.5 3.5 3.5 4z"/><path d="M12 14c0-2 1.5-3.5 3.5-4 0 2-1.5 3.5-3.5 4z"/>',
+};
+
+const brandHtml = (lang) =>
+  `<a class="brand" href="/${lang}/" aria-label="Мерило — начало">` +
+  `<span class="brand__mark" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 30 30" fill="none">` +
+  `<rect x="1.2" y="1.2" width="27.6" height="27.6" rx="8" stroke="#C2522C" stroke-width="2.4"/>` +
+  `<line x1="8" y1="9" x2="8" y2="21" stroke="#C2522C" stroke-width="2.4" stroke-linecap="round"/>` +
+  `<line x1="15" y1="6" x2="15" y2="24" stroke="#E0A12E" stroke-width="2.4" stroke-linecap="round"/>` +
+  `<line x1="22" y1="9" x2="22" y2="21" stroke="#C2522C" stroke-width="2.4" stroke-linecap="round"/>` +
+  `</svg></span><span class="brand__name">Мерило<b>.</b></span></a>`;
+
 const T = Object.fromEntries(
   LANGS.map(l => [l, JSON.parse(readFileSync(`data/translations.${l}.json`, "utf8"))])
 );
@@ -453,6 +472,9 @@ ${GA4_ID ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${GA4
 ${LANGS.map((l) => `<link rel="alternate" hreflang="${l}" href="${canonical}">`).join("\n")}
 <link rel="alternate" hreflang="x-default" href="${canonical}">
 <meta property="og:title" content="${title}"><meta property="og:description" content="${meta}"><meta property="og:url" content="${canonical}">${ogImage ? `\n<meta property="og:image" content="${ogImage}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">\n<meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${ogImage}">` : ""}
+<link rel="icon" href="/assets/brand/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/brand/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/brand/favicon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;0,800;1,400&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/site.css?v=${BUILD_V}">
@@ -490,7 +512,7 @@ function renderQuestion(p) {
 <script type="application/ld+json">${faqLd(p.faq)}</script>
 <script type="application/ld+json">${webpageLd(p.url, p.title, ing.verifiedOn || "")}</script>
 </head><body><div class="wrap">
-<header><a class="brand" href="/${p.lang}/"><span class="dot"></span>${t.brand}</a>
+<header>${brandHtml(p.lang)}
 <nav class="crumbs" aria-label="breadcrumb">${crumbsHtml(p.breadcrumbs)}</nav></header>
 <div class="hero"><h1>${p.h1}</h1><p class="answer">${p.answer}</p>${ing.verifiedOn ? `<p class="updated">обновено: ${ing.verifiedOn}</p>` : ""}</div>
 ${calcMarkup(t, p.prefill)}
@@ -521,7 +543,7 @@ function renderHub(p) {
 ${p.faq.length > 0 ? `<script type="application/ld+json">${faqLd(p.faq)}</script>` : ""}
 <script type="application/ld+json">${webpageLd(p.url, p.title, ing.verifiedOn || "")}</script>
 </head><body><div class="wrap">
-<header><a class="brand" href="/${p.lang}/"><span class="dot"></span>${t.brand}</a>
+<header>${brandHtml(p.lang)}
 <nav class="crumbs" aria-label="breadcrumb">${crumbsHtml(p.breadcrumbs)}</nav></header>
 <div class="hero"><h1>${p.h1}</h1>${p.desc ? `<p class="answer">${p.desc}</p>` : `<p class="intro">${p.intro}</p>`}${ing.verifiedOn ? `<p class="updated">обновено: ${ing.verifiedOn}</p>` : ""}</div>
 ${calcMarkup(t, p.prefill)}
@@ -545,19 +567,56 @@ ${p.faq.length > 0 ? `<section><h2>${t.faq_title}</h2>${p.faq.map(f=>`<details><
 
 function renderPillar(p) {
   const t = T[p.lang];
-  return `${head({ lang: p.lang, title: p.title, meta: p.meta, canonical: p.url })}
+  const lang = p.lang;
+  const svgIcon = (paths) =>
+    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`;
+  const chevron = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
+
+  const accordionHtml = CATEGORIES.map(cat => {
+    const items = INGREDIENTS.filter(i => i.category === cat.id);
+    const itemsHtml = items.map((ing, idx) => {
+      const val = ing.liquid ? `≈ 250 мл/чаша` : `≈ ${round(ing.density * 250)} г/чаша`;
+      return `<a class="home-ing" href="${baseUrl(lang,"merki",ing.id)}" style="animation-delay:${idx*40}ms">` +
+        `<span class="nm">${cap(ing.names[lang])}</span><span class="vl">${val}</span></a>`;
+    }).join("");
+    return `<div class="cat" id="cat-${cat.id}">` +
+      `<button class="cat-head" onclick="toggleCat('${cat.id}')" aria-expanded="false">` +
+      `<span class="cat-badge">${svgIcon(CATEGORY_ICONS[cat.id] || "")}</span>` +
+      `<span class="cat-meta"><span class="cat-name">${cat.names[lang]}</span><span class="cat-count">${items.length} съставки</span></span>` +
+      `<a class="cat-link" href="${baseUrl(lang,"merki","kategoria",cat.slug)}" onclick="event.stopPropagation()">цялата категория →</a>` +
+      `<span class="cat-chev">${chevron}</span>` +
+      `</button>` +
+      `<div class="cat-body" id="body-${cat.id}"><div class="cat-body-inner"><div class="home-ing-grid">${itemsHtml}</div></div></div>` +
+      `</div>`;
+  }).join("\n");
+
+  const homeIngs = JSON.stringify(INGREDIENTS.map(ing => ({
+    slug: ing.id,
+    name: cap(ing.names[lang]),
+    val:  ing.liquid ? "≈ 250 мл/чаша" : `≈ ${round(ing.density * 250)} г/чаша`,
+    url:  baseUrl(lang, "merki", ing.id),
+  })));
+
+  return `${head({ lang, title: p.title, meta: p.meta, canonical: p.url, pageScript: "merki-home.js" })}
 <script type="application/ld+json">${breadcrumbLd(p.breadcrumbs)}</script>
 <script type="application/ld+json">${orgAndSiteLd()}</script>
 <script type="application/ld+json">${webpageLd(p.url, p.title, "")}</script>
 </head><body><div class="wrap">
-<header><a class="brand" href="/${p.lang}/"><span class="dot"></span>${t.brand}</a>
+<header>${brandHtml(lang)}
 <nav class="crumbs" aria-label="breadcrumb">${crumbsHtml(p.breadcrumbs)}</nav></header>
-<div class="hero"><h1>${p.h1}</h1><p class="intro">${p.intro}</p></div>
-<section><div class="qa-grid">${p.categories.map(c=>`<a class="qa-card" href="${c.url}"><b>${c.name}</b><span class="v">${c.count} съставки</span></a>`).join("")}</div></section>
-<section><div class="qa-grid">${p.hubs.map(h=>`<a class="qa-card" href="${h.url}"><b>${h.name}</b><span class="v">${h.value}</span></a>`).join("")}</div></section>
+<div class="hero"><h1>${p.h1}</h1><p class="lead">${p.intro}</p></div>
+<div class="search">
+<span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+<input id="q" type="text" placeholder="Търсете съставка — напр. брашно, захар, мляко…" autocomplete="off">
+<div class="results" id="results"></div>
+</div>
+<p class="section-label">Категории</p>
+<div class="cats">${accordionHtml}</div>
 <section><a class="cta" href="${t.cta_url}">${t.cta}<small>${t.cta_sub}</small></a></section>
 <footer><p>${t.footer}</p></footer>
-</div></body></html>`;
+</div>
+<script>window.__HOME_INGS__=${homeIngs};</script>
+</body></html>`;
 }
 
 function renderCategory(p) {
@@ -567,7 +626,7 @@ function renderCategory(p) {
 <script type="application/ld+json">${itemListLd(p.items)}</script>
 <script type="application/ld+json">${webpageLd(p.url, p.title, "")}</script>
 </head><body><div class="wrap">
-<header><a class="brand" href="/${p.lang}/"><span class="dot"></span>${t.brand}</a>
+<header>${brandHtml(p.lang)}
 <nav class="crumbs" aria-label="breadcrumb">${crumbsHtml(p.breadcrumbs)}</nav></header>
 <div class="hero"><h1>${p.h1}</h1></div>
 <section><div class="qa-grid">${p.items.map(i=>`<a class="qa-card" href="${i.url}"><b>${i.name}</b><span class="v">${i.value}</span></a>`).join("")}</div></section>
@@ -586,7 +645,7 @@ function renderScaler(lang) {
   return `${head({ lang, title: `${t.scaler_title} | ${t.brand}`, meta: t.scaler_meta, canonical: url, pageScript: "scaler.js" })}
 ${breadcrumbLd(crumbs) ? `<script type="application/ld+json">${breadcrumbLd(crumbs)}</script>` : ""}
 </head><body><div class="wrap">
-<header><a class="brand" href="/${lang}/"><span class="dot"></span>${t.brand}</a>
+<header>${brandHtml(lang)}
 <nav class="crumbs" aria-label="breadcrumb">${crumbsHtml(crumbs)}</nav></header>
 <div class="hero"><h1>${t.scaler_h1}</h1><p class="lead">${t.scaler_lead}</p></div>
 <div class="panel"><div class="panel__body">
