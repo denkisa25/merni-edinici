@@ -319,6 +319,30 @@ function itemListLd(pages) {
   });
 }
 
+const SITE_LD_ID = `${SITE.domain}/#website`;
+const ORG_LD_ID  = `${SITE.domain}/#org`;
+
+function orgAndSiteLd() {
+  return JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      { "@type": "Organization", "@id": ORG_LD_ID, "name": "Мерки", "url": SITE.domain },
+      { "@type": "WebSite", "@id": SITE_LD_ID, "url": SITE.domain, "name": "Мерки",
+        "inLanguage": "bg", "publisher": { "@id": ORG_LD_ID } },
+    ],
+  });
+}
+
+function webpageLd(url, title, dateModified) {
+  const node = {
+    "@context": "https://schema.org", "@type": "WebPage",
+    "@id": url, "url": url, "name": title,
+    "inLanguage": "bg", "isPartOf": { "@id": SITE_LD_ID },
+  };
+  if (dateModified) node.dateModified = dateModified;
+  return JSON.stringify(node);
+}
+
 /* ===========================================================================
    RENDER  (link shared cached assets — do not inline CSS per page)
    =========================================================================== */
@@ -362,13 +386,15 @@ const calcMarkup = (t, prefill) => `
 
 function renderQuestion(p) {
   const t = T[p.lang];
+  const ing = INGREDIENTS.find(i => i.id === p.ingId);
   return `${head({ lang: p.lang, title: p.title, meta: p.meta, canonical: p.url })}
 <script type="application/ld+json">${breadcrumbLd(p.breadcrumbs)}</script>
 <script type="application/ld+json">${faqLd(p.faq)}</script>
+<script type="application/ld+json">${webpageLd(p.url, p.title, ing.verifiedOn || "")}</script>
 </head><body><div class="wrap">
 <header><a class="brand" href="/${p.lang}/"><span class="dot"></span>${t.brand}</a>
 <nav class="crumbs" aria-label="breadcrumb">${crumbsHtml(p.breadcrumbs)}</nav></header>
-<div class="hero"><h1>${p.h1}</h1><p class="answer">${p.answer}</p></div>
+<div class="hero"><h1>${p.h1}</h1><p class="answer">${p.answer}</p>${ing.verifiedOn ? `<p class="updated">обновено: ${ing.verifiedOn}</p>` : ""}</div>
 ${calcMarkup(t, p.prefill)}
 <div class="ad" role="complementary">РЕКЛАМА</div>
 <section><h2>${p.tableTitle}</h2>
@@ -385,14 +411,16 @@ ${calcMarkup(t, p.prefill)}
 
 function renderHub(p) {
   const t = T[p.lang];
+  const ing = INGREDIENTS.find(i => i.id === p.ingId);
   return `${head({ lang: p.lang, title: p.title, meta: p.meta, canonical: p.url })}
 <script type="application/ld+json">${breadcrumbLd(p.breadcrumbs)}</script>
 <script type="application/ld+json">${itemListLd(p.questionPages)}</script>
 ${p.faq.length > 2 ? `<script type="application/ld+json">${faqLd(p.faq)}</script>` : ""}
+<script type="application/ld+json">${webpageLd(p.url, p.title, ing.verifiedOn || "")}</script>
 </head><body><div class="wrap">
 <header><a class="brand" href="/${p.lang}/"><span class="dot"></span>${t.brand}</a>
 <nav class="crumbs" aria-label="breadcrumb">${crumbsHtml(p.breadcrumbs)}</nav></header>
-<div class="hero"><h1>${p.h1}</h1>${p.desc ? `<p class="answer">${p.desc}</p>` : `<p class="intro">${p.intro}</p>`}</div>
+<div class="hero"><h1>${p.h1}</h1>${p.desc ? `<p class="answer">${p.desc}</p>` : `<p class="intro">${p.intro}</p>`}${ing.verifiedOn ? `<p class="updated">обновено: ${ing.verifiedOn}</p>` : ""}</div>
 ${calcMarkup(t, p.prefill)}
 <section><h2>${tmpl(t.quick, { ing: INGREDIENTS.find(i=>i.id===p.ingId).names[p.lang] })}</h2>
 <div class="qa-grid">${p.questionPages.map(q=>`<a class="qa-card" href="${q.url}"><b>${q.name}</b><span class="v">${q.value}</span></a>`).join("")}</div></section>
@@ -413,6 +441,8 @@ function renderPillar(p) {
   const t = T[p.lang];
   return `${head({ lang: p.lang, title: p.title, meta: p.meta, canonical: p.url })}
 <script type="application/ld+json">${breadcrumbLd(p.breadcrumbs)}</script>
+<script type="application/ld+json">${orgAndSiteLd()}</script>
+<script type="application/ld+json">${webpageLd(p.url, p.title, "")}</script>
 </head><body><div class="wrap">
 <header><a class="brand" href="/${p.lang}/"><span class="dot"></span>${t.brand}</a>
 <nav class="crumbs" aria-label="breadcrumb">${crumbsHtml(p.breadcrumbs)}</nav></header>
