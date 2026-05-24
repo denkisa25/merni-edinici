@@ -138,6 +138,27 @@ function pairCard(ing, pair, lang) {
            value: `≈ ${num(nVol)} ${toPl}`, url: baseUrl(lang, "merki", ing.id, slug) };
 }
 
+function pairDir(pair) {
+  const fromU = UNITS[pair.from], toU = UNITS[pair.to];
+  if (typeof fromU.ml === "number" && typeof toU.ml === "number") return "v2v";
+  if (typeof fromU.ml === "number" && typeof toU.g  === "number") return "v2m";
+  return "m2v";
+}
+
+function siblingUrl(ing, pair, lang) {
+  const dir = pairDir(pair);
+  const pairs = getUnitPairs(ing);
+  if (dir === "v2m") {
+    const m2v = pairs.find(p => pairDir(p) === "m2v");
+    return m2v ? pairCard(ing, m2v, lang).url : null;
+  }
+  if (dir === "m2v") {
+    const v2m = pairs.find(p => pairDir(p) === "v2m");
+    return v2m ? pairCard(ing, v2m, lang).url : null;
+  }
+  return null;
+}
+
 function computeQuestionPage(ing, pair, lang) {
   const t = T[lang];
   const name = ing.names[lang];
@@ -187,6 +208,7 @@ function computeQuestionPage(ing, pair, lang) {
     prefill,
     referenceRows: computeReferenceRows(ing.density, ing.liquid),
     faq,
+    siblingUrl: siblingUrl(ing, pair, lang),
     related: relatedFor(ing, lang, slug),
     explainer: buildExplainer(ing, lang),
   };
@@ -418,6 +440,7 @@ function renderQuestion(p) {
 <div class="hero"><h1>${p.h1}</h1><p class="answer">${p.answer}</p>${ing.verifiedOn ? `<p class="updated">обновено: ${ing.verifiedOn}</p>` : ""}</div>
 ${calcMarkup(t, p.prefill)}
 <div class="ad" role="complementary">РЕКЛАМА</div>
+${p.siblingUrl ? `<p class="sibling-link"><a href="${p.siblingUrl}">↔ Обратно изчисление</a></p>` : ""}
 <section><h2>${p.tableTitle}</h2>
 <div class="table-card"><table><thead><tr><th>${t.tbl_measure}</th><th>${t.tbl_weight}</th></tr></thead>
 <tbody>${tableHtml(p.referenceRows)}</tbody></table></div>
