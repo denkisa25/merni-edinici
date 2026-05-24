@@ -209,6 +209,7 @@ function computeQuestionPage(ing, pair, lang) {
     prefill,
     referenceRows: computeReferenceRows(ing.density, ing.liquid),
     faq,
+    ogSlug: slug, ogAnswer: answer,
     siblingUrl: siblingUrl(ing, pair, lang),
     related: relatedFor(ing, lang, slug),
     explainer: buildExplainer(ing, lang),
@@ -229,6 +230,9 @@ function computeHubPage(ing, lang) {
     { ing: name }
   );
   const faq = computeFaqs(ing, lang);
+  const ogAnswer = ing.liquid
+    ? `1 чаша = ${UNITS.chasha.ml} мл`
+    : `1 чаша ≈ ${num(round(gramsFromVolume(UNITS.chasha.ml, ing.density)))} г`;
   return {
     lang, ingId: ing.id, url: baseUrl(lang, "merki", ing.id),
     title: `${h1} | ${t.brand}`,
@@ -236,6 +240,7 @@ function computeHubPage(ing, lang) {
     h1,
     intro: tmpl(t.hub_intro, { ing: name }),
     desc,
+    ogSlug: "hub", ogAnswer,
     breadcrumbs: [
       { name: t.home, url: baseUrl(lang) },
       { name: t.section, url: baseUrl(lang, "merki") },
@@ -421,10 +426,15 @@ function webpageLd(url, title, dateModified) {
   return JSON.stringify(node);
 }
 
+function ogImageSvg(ingName, answerLine) {
+  const x = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  return `<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630"><rect width="1200" height="630" fill="#2A2420"/><text x="60" y="220" font-family="Georgia,serif" font-size="80" font-weight="700" fill="#FBF6EC">${x(ingName)}</text><text x="60" y="360" font-family="Georgia,serif" font-size="64" font-weight="600" fill="#E0A12E">${x(answerLine)}</text><text x="1140" y="600" font-family="Georgia,serif" font-size="36" fill="#9a8878" text-anchor="end">Мерки</text></svg>`;
+}
+
 /* ===========================================================================
    RENDER  (link shared cached assets — do not inline CSS per page)
    =========================================================================== */
-const head = ({ lang, title, meta, canonical, pageScript = "calc.js" }) => `<!DOCTYPE html>
+const head = ({ lang, title, meta, canonical, pageScript = "calc.js", ogImage = "" }) => `<!DOCTYPE html>
 <html lang="${lang}">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -433,7 +443,7 @@ const head = ({ lang, title, meta, canonical, pageScript = "calc.js" }) => `<!DO
 <link rel="canonical" href="${canonical}">
 ${LANGS.map((l) => `<link rel="alternate" hreflang="${l}" href="${canonical}">`).join("\n")}
 <link rel="alternate" hreflang="x-default" href="${canonical}">
-<meta property="og:title" content="${title}"><meta property="og:description" content="${meta}"><meta property="og:url" content="${canonical}">
+<meta property="og:title" content="${title}"><meta property="og:description" content="${meta}"><meta property="og:url" content="${canonical}">${ogImage ? `\n<meta property="og:image" content="${ogImage}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">\n<meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${ogImage}">` : ""}
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;0,800;1,400&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/site.css?v=${BUILD_V}">
@@ -465,7 +475,8 @@ const calcMarkup = (t, prefill) => `
 function renderQuestion(p) {
   const t = T[p.lang];
   const ing = INGREDIENTS.find(i => i.id === p.ingId);
-  return `${head({ lang: p.lang, title: p.title, meta: p.meta, canonical: p.url })}
+  const ogImage = `${SITE.domain}/assets/og/${p.ingId}-${p.ogSlug}.svg`;
+  return `${head({ lang: p.lang, title: p.title, meta: p.meta, canonical: p.url, ogImage })}
 <script type="application/ld+json">${breadcrumbLd(p.breadcrumbs)}</script>
 <script type="application/ld+json">${faqLd(p.faq)}</script>
 <script type="application/ld+json">${webpageLd(p.url, p.title, ing.verifiedOn || "")}</script>
@@ -492,7 +503,8 @@ ${p.siblingUrl ? `<p class="sibling-link"><a href="${p.siblingUrl}">↔ Обра
 function renderHub(p) {
   const t = T[p.lang];
   const ing = INGREDIENTS.find(i => i.id === p.ingId);
-  return `${head({ lang: p.lang, title: p.title, meta: p.meta, canonical: p.url })}
+  const ogImage = `${SITE.domain}/assets/og/${p.ingId}-${p.ogSlug}.svg`;
+  return `${head({ lang: p.lang, title: p.title, meta: p.meta, canonical: p.url, ogImage })}
 <script type="application/ld+json">${breadcrumbLd(p.breadcrumbs)}</script>
 <script type="application/ld+json">${itemListLd(p.questionPages)}</script>
 ${p.faq.length > 0 ? `<script type="application/ld+json">${faqLd(p.faq)}</script>` : ""}
@@ -648,12 +660,14 @@ function build() {
     // 4. Hub + question pages per ingredient
     for (const ing of INGREDIENTS) {
       const hub = computeHubPage(ing, lang);
+      write(join(SITE.outDir, "assets", "og", `${ing.id}-hub.svg`), ogImageSvg(cap(ing.names[lang]), hub.ogAnswer));
       write(hubPath(lang, ing.id), renderHub(hub));
       sitemap.push({ loc: hub.url, alternates: [{ lang, href: hub.url }] });
       count++;
 
       for (const pair of getUnitPairs(ing)) {
         const page = computeQuestionPage(ing, pair, lang);
+        write(join(SITE.outDir, "assets", "og", `${ing.id}-${page.slug}.svg`), ogImageSvg(cap(ing.names[lang]), page.ogAnswer));
         write(pagePath(lang, ing.id, page.slug), renderQuestion(page));
         sitemap.push({ loc: page.url, alternates: [{ lang, href: page.url }] });
         count++;
