@@ -18,6 +18,7 @@
 
 import { writeFileSync, mkdirSync, cpSync, existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { Resvg } from "@resvg/resvg-js";
 
 /* ===========================================================================
    CONFIG + DATA LAYER — loaded from data/ JSON files
@@ -427,6 +428,11 @@ function webpageLd(url, title, dateModified) {
   return JSON.stringify(node);
 }
 
+function ogImagePng(ingName, answerLine) {
+  const svg = ogImageSvg(ingName, answerLine);
+  return new Resvg(svg, { fitTo: { mode: "width", value: 1200 } }).render().asPng();
+}
+
 function ogImageSvg(ingName, answerLine) {
   const x = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   return `<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630"><rect width="1200" height="630" fill="#2A2420"/><text x="60" y="220" font-family="Georgia,serif" font-size="80" font-weight="700" fill="#FBF6EC">${x(ingName)}</text><text x="60" y="360" font-family="Georgia,serif" font-size="64" font-weight="600" fill="#E0A12E">${x(answerLine)}</text><text x="1140" y="600" font-family="Georgia,serif" font-size="36" fill="#9a8878" text-anchor="end">Мерки</text></svg>`;
@@ -478,7 +484,7 @@ const calcMarkup = (t, prefill) => `
 function renderQuestion(p) {
   const t = T[p.lang];
   const ing = INGREDIENTS.find(i => i.id === p.ingId);
-  const ogImage = `${SITE.domain}/assets/og/${p.ingId}-${p.ogSlug}.svg`;
+  const ogImage = `${SITE.domain}/assets/og/${p.ingId}-${p.ogSlug}.png`;
   return `${head({ lang: p.lang, title: p.title, meta: p.meta, canonical: p.url, ogImage })}
 <script type="application/ld+json">${breadcrumbLd(p.breadcrumbs)}</script>
 <script type="application/ld+json">${faqLd(p.faq)}</script>
@@ -508,7 +514,7 @@ ${p.siblingUrl ? `<p class="sibling-link"><a href="${p.siblingUrl}">↔ Обра
 function renderHub(p) {
   const t = T[p.lang];
   const ing = INGREDIENTS.find(i => i.id === p.ingId);
-  const ogImage = `${SITE.domain}/assets/og/${p.ingId}-${p.ogSlug}.svg`;
+  const ogImage = `${SITE.domain}/assets/og/${p.ingId}-${p.ogSlug}.png`;
   return `${head({ lang: p.lang, title: p.title, meta: p.meta, canonical: p.url, ogImage })}
 <script type="application/ld+json">${breadcrumbLd(p.breadcrumbs)}</script>
 <script type="application/ld+json">${itemListLd(p.questionPages)}</script>
@@ -667,14 +673,14 @@ function build() {
     // 4. Hub + question pages per ingredient
     for (const ing of INGREDIENTS) {
       const hub = computeHubPage(ing, lang);
-      write(join(SITE.outDir, "assets", "og", `${ing.id}-hub.svg`), ogImageSvg(cap(ing.names[lang]), hub.ogAnswer));
+      writeFileSync(join(SITE.outDir, "assets", "og", `${ing.id}-hub.png`), ogImagePng(cap(ing.names[lang]), hub.ogAnswer));
       write(hubPath(lang, ing.id), renderHub(hub));
       sitemap.push({ loc: hub.url, alternates: [{ lang, href: hub.url }] });
       count++;
 
       for (const pair of getUnitPairs(ing)) {
         const page = computeQuestionPage(ing, pair, lang);
-        write(join(SITE.outDir, "assets", "og", `${ing.id}-${page.slug}.svg`), ogImageSvg(cap(ing.names[lang]), page.ogAnswer));
+        writeFileSync(join(SITE.outDir, "assets", "og", `${ing.id}-${page.slug}.png`), ogImagePng(cap(ing.names[lang]), page.ogAnswer));
         write(pagePath(lang, ing.id, page.slug), renderQuestion(page));
         sitemap.push({ loc: page.url, alternates: [{ lang, href: page.url }] });
         count++;

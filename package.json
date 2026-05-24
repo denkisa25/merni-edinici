@@ -12,6 +12,7 @@
     "preview:local": "node build.mjs && vite preview --port 5173"
   },
   "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
     "vite": "^5.4.0"
   }
 }
