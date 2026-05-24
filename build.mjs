@@ -438,6 +438,8 @@ function ogImageSvg(ingName, answerLine) {
 const head = ({ lang, title, meta, canonical, pageScript = "calc.js", ogImage = "" }) => `<!DOCTYPE html>
 <html lang="${lang}">
 <head>
+${GA4_ID ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${GA4_ID}"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA4_ID}');</script>` : ""}
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${title}</title>
 <meta name="description" content="${meta}">
@@ -450,9 +452,7 @@ ${LANGS.map((l) => `<link rel="alternate" hreflang="${l}" href="${canonical}">`)
 <link rel="stylesheet" href="/assets/site.css?v=${BUILD_V}">
 ${NOINDEX ? '<meta name="robots" content="noindex">' : ""}
 <script src="/assets/data.${lang}.js"></script>
-<script src="/assets/${pageScript}" defer></script>
-${GA4_ID ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${GA4_ID}"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA4_ID}');</script>` : ""}`;
+<script src="/assets/${pageScript}" defer></script>`;
 
 const crumbsHtml = (crumbs) => crumbs.map((c, i) =>
   (c.url ? `<a href="${c.url}">${c.name}</a>` : `<span class="here">${c.name}</span>`) +
