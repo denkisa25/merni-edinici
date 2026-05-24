@@ -1,0 +1,9 @@
+[
+  {"id": "brasna",    "slug": "brasna",    "names": {"bg": "Брашна и нишестета"}},
+  {"id": "technosti", "slug": "technosti", "names": {"bg": "Течности"}},
+  {"id": "zahari",    "slug": "zahari",    "names": {"bg": "Подсладители"}},
+  {"id": "yadki",     "slug": "yadki",     "names": {"bg": "Ядки и сухи плодове"}},
+  {"id": "mlechni",   "slug": "mlechni",   "names": {"bg": "Млечни продукти"}},
+  {"id": "podpravki", "slug": "podpravki", "names": {"bg": "Подправки и набухватели"}},
+  {"id": "zrna",      "slug": "zrna",      "names": {"bg": "Зърнени и бобови"}}
+]

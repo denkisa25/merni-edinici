@@ -36,6 +36,7 @@ const NOINDEX = ENVIRONMENT === "experiment";
 
 const INGREDIENTS = JSON.parse(readFileSync("data/ingredients.json", "utf8"));
 const UNITS       = JSON.parse(readFileSync("data/units.json", "utf8"));
+const CATEGORIES  = JSON.parse(readFileSync("data/categories.json", "utf8"));
 
 const T = Object.fromEntries(
   LANGS.map(l => [l, JSON.parse(readFileSync(`data/translations.${l}.json`, "utf8"))])
@@ -238,6 +239,8 @@ function computeHubPage(ing, lang) {
     breadcrumbs: [
       { name: t.home, url: baseUrl(lang) },
       { name: t.section, url: baseUrl(lang, "merki") },
+      ...(ing.category ? [{ name: CATEGORIES.find(c => c.id === ing.category)?.names[lang] || ing.category,
+                             url: baseUrl(lang, "merki", "kategoria", ing.category) }] : []),
       { name: cap(name), url: "" },
     ],
     prefill: { ing: ing.id, from: "chasha", to: ing.liquid ? "ml" : "g", amt: 1 },
@@ -257,6 +260,11 @@ function computePillarPage(lang) {
     url: baseUrl(lang, "merki", ing.id),
     value: `≈ ${round(gramsFromVolume(UNITS.chasha.ml, ing.density))} г/чаша`,
   }));
+  const categories = CATEGORIES.map(cat => ({
+    name: cat.names[lang],
+    url: baseUrl(lang, "merki", "kategoria", cat.slug),
+    count: INGREDIENTS.filter(i => i.category === cat.id).length,
+  }));
   return {
     lang, url: baseUrl(lang, "merki"),
     title: `${t.pillar_h1} | ${t.brand}`,
@@ -268,6 +276,33 @@ function computePillarPage(lang) {
       { name: t.section, url: "" },
     ],
     hubs,
+    categories,
+  };
+}
+
+function computeCategoryPage(cat, lang) {
+  const t = T[lang];
+  const catName = cat.names[lang];
+  const ings = INGREDIENTS.filter(i => i.category === cat.id);
+  const url = baseUrl(lang, "merki", "kategoria", cat.slug);
+  const items = ings.map(ing => ({
+    name: cap(ing.names[lang]),
+    url: baseUrl(lang, "merki", ing.id),
+    value: ing.liquid
+      ? `= ${UNITS.chasha.ml} мл/чаша`
+      : `≈ ${num(round(gramsFromVolume(UNITS.chasha.ml, ing.density)))} г/чаша`,
+  }));
+  return {
+    lang, catId: cat.id, url,
+    title: `${catName} | ${t.brand}`,
+    meta: `Калкулатор и таблици за ${catName.toLowerCase()} — чаши, лъжици в грамове.`,
+    h1: catName,
+    breadcrumbs: [
+      { name: t.home, url: baseUrl(lang) },
+      { name: t.section, url: baseUrl(lang, "merki") },
+      { name: catName, url: "" },
+    ],
+    items,
   };
 }
 
@@ -493,7 +528,24 @@ function renderPillar(p) {
 <header><a class="brand" href="/${p.lang}/"><span class="dot"></span>${t.brand}</a>
 <nav class="crumbs" aria-label="breadcrumb">${crumbsHtml(p.breadcrumbs)}</nav></header>
 <div class="hero"><h1>${p.h1}</h1><p class="intro">${p.intro}</p></div>
+<section><div class="qa-grid">${p.categories.map(c=>`<a class="qa-card" href="${c.url}"><b>${c.name}</b><span class="v">${c.count} съставки</span></a>`).join("")}</div></section>
 <section><div class="qa-grid">${p.hubs.map(h=>`<a class="qa-card" href="${h.url}"><b>${h.name}</b><span class="v">${h.value}</span></a>`).join("")}</div></section>
+<section><a class="cta" href="${t.cta_url}">${t.cta}<small>${t.cta_sub}</small></a></section>
+<footer><p>${t.footer}</p></footer>
+</div></body></html>`;
+}
+
+function renderCategory(p) {
+  const t = T[p.lang];
+  return `${head({ lang: p.lang, title: p.title, meta: p.meta, canonical: p.url })}
+<script type="application/ld+json">${breadcrumbLd(p.breadcrumbs)}</script>
+<script type="application/ld+json">${itemListLd(p.items)}</script>
+<script type="application/ld+json">${webpageLd(p.url, p.title, "")}</script>
+</head><body><div class="wrap">
+<header><a class="brand" href="/${p.lang}/"><span class="dot"></span>${t.brand}</a>
+<nav class="crumbs" aria-label="breadcrumb">${crumbsHtml(p.breadcrumbs)}</nav></header>
+<div class="hero"><h1>${p.h1}</h1></div>
+<section><div class="qa-grid">${p.items.map(i=>`<a class="qa-card" href="${i.url}"><b>${i.name}</b><span class="v">${i.value}</span></a>`).join("")}</div></section>
 <section><a class="cta" href="${t.cta_url}">${t.cta}<small>${t.cta_sub}</small></a></section>
 <footer><p>${t.footer}</p></footer>
 </div></body></html>`;
@@ -585,7 +637,15 @@ function build() {
     sitemap.push({ loc: scalerUrl, alternates: [{ lang, href: scalerUrl }] });
     count++;
 
-    // 3. Hub + question pages per ingredient
+    // 3. Category pages
+    for (const cat of CATEGORIES) {
+      const catPage = computeCategoryPage(cat, lang);
+      write(join(SITE.outDir, lang, "merki", "kategoria", cat.slug, "index.html"), renderCategory(catPage));
+      sitemap.push({ loc: catPage.url, alternates: [{ lang, href: catPage.url }] });
+      count++;
+    }
+
+    // 4. Hub + question pages per ingredient
     for (const ing of INGREDIENTS) {
       const hub = computeHubPage(ing, lang);
       write(hubPath(lang, ing.id), renderHub(hub));

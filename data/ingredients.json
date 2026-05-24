@@ -27,7 +27,8 @@
       }
     ],
     "source": "",
-    "verifiedOn": ""
+    "verifiedOn": "",
+    "category": "brasna"
   },
   {
     "id": "zahar",
@@ -44,7 +45,8 @@
     "liquid": false,
     "faqs": [],
     "source": "",
-    "verifiedOn": ""
+    "verifiedOn": "",
+    "category": "zahari"
   },
   {
     "id": "pudra-zahar",
@@ -61,7 +63,8 @@
     "liquid": false,
     "faqs": [],
     "source": "",
-    "verifiedOn": ""
+    "verifiedOn": "",
+    "category": "zahari"
   },
   {
     "id": "kafyava-zahar",
@@ -78,7 +81,8 @@
     "liquid": false,
     "faqs": [],
     "source": "",
-    "verifiedOn": ""
+    "verifiedOn": "",
+    "category": "zahari"
   },
   {
     "id": "oriz",
@@ -95,7 +99,8 @@
     "liquid": false,
     "faqs": [],
     "source": "",
-    "verifiedOn": ""
+    "verifiedOn": "",
+    "category": "zrna"
   },
   {
     "id": "bulgur",
@@ -112,7 +117,8 @@
     "liquid": false,
     "faqs": [],
     "source": "",
-    "verifiedOn": ""
+    "verifiedOn": "",
+    "category": "zrna"
   },
   {
     "id": "gris",
@@ -129,7 +135,8 @@
     "liquid": false,
     "faqs": [],
     "source": "",
-    "verifiedOn": ""
+    "verifiedOn": "",
+    "category": "zrna"
   },
   {
     "id": "kakao",
@@ -146,7 +153,8 @@
     "liquid": false,
     "faqs": [],
     "source": "",
-    "verifiedOn": ""
+    "verifiedOn": "",
+    "category": "podpravki"
   },
   {
     "id": "oves",
@@ -163,7 +171,8 @@
     "liquid": false,
     "faqs": [],
     "source": "",
-    "verifiedOn": ""
+    "verifiedOn": "",
+    "category": "zrna"
   },
   {
     "id": "nisheste",
@@ -180,7 +189,8 @@
     "liquid": false,
     "faqs": [],
     "source": "",
-    "verifiedOn": ""
+    "verifiedOn": "",
+    "category": "brasna"
   },
   {
     "id": "palnozarnesto-brashno",
@@ -197,7 +207,8 @@
     "liquid": false,
     "faqs": [],
     "source": "",
-    "verifiedOn": ""
+    "verifiedOn": "",
+    "category": "brasna"
   },
   {
     "id": "carevichno-brashno",
@@ -214,7 +225,8 @@
     "liquid": false,
     "faqs": [],
     "source": "",
-    "verifiedOn": ""
+    "verifiedOn": "",
+    "category": "brasna"
   },
   {
     "id": "mlyako",
@@ -231,7 +243,8 @@
     "liquid": true,
     "faqs": [],
     "source": "",
-    "verifiedOn": ""
+    "verifiedOn": "",
+    "category": "technosti"
   },
   {
     "id": "kiselo-mlyako",
@@ -248,7 +261,8 @@
     "liquid": true,
     "faqs": [],
     "source": "",
-    "verifiedOn": ""
+    "verifiedOn": "",
+    "category": "mlechni"
   },
   {
     "id": "zakvasena-smetana",
@@ -265,7 +279,8 @@
     "liquid": true,
     "faqs": [],
     "source": "",
-    "verifiedOn": ""
+    "verifiedOn": "",
+    "category": "mlechni"
   },
   {
     "id": "olio",
@@ -282,7 +297,8 @@
     "liquid": true,
     "faqs": [],
     "source": "",
-    "verifiedOn": ""
+    "verifiedOn": "",
+    "category": "technosti"
   },
   {
     "id": "maslo",
@@ -299,7 +315,8 @@
     "liquid": true,
     "faqs": [],
     "source": "",
-    "verifiedOn": ""
+    "verifiedOn": "",
+    "category": "technosti"
   },
   {
     "id": "med",
@@ -316,7 +333,8 @@
     "liquid": true,
     "faqs": [],
     "source": "",
-    "verifiedOn": ""
+    "verifiedOn": "",
+    "category": "zahari"
   },
   {
     "id": "klenov-sirop",
@@ -333,7 +351,8 @@
     "liquid": true,
     "faqs": [],
     "source": "",
-    "verifiedOn": ""
+    "verifiedOn": "",
+    "category": "zahari"
   },
   {
     "id": "sol",
@@ -350,7 +369,8 @@
     "liquid": false,
     "faqs": [],
     "source": "",
-    "verifiedOn": ""
+    "verifiedOn": "",
+    "category": "podpravki"
   },
   {
     "id": "soda",
@@ -367,7 +387,8 @@
     "liquid": false,
     "faqs": [],
     "source": "",
-    "verifiedOn": ""
+    "verifiedOn": "",
+    "category": "podpravki"
   },
   {
     "id": "bakpulver",
@@ -384,7 +405,8 @@
     "liquid": false,
     "faqs": [],
     "source": "",
-    "verifiedOn": ""
+    "verifiedOn": "",
+    "category": "podpravki"
   },
   {
     "id": "lesha",
@@ -401,7 +423,8 @@
     "liquid": false,
     "faqs": [],
     "source": "",
-    "verifiedOn": ""
+    "verifiedOn": "",
+    "category": "yadki"
   },
   {
     "id": "orehi",
@@ -418,7 +441,8 @@
     "liquid": false,
     "faqs": [],
     "source": "",
-    "verifiedOn": ""
+    "verifiedOn": "",
+    "category": "yadki"
   },
   {
     "id": "stafidi",
@@ -435,7 +459,8 @@
     "liquid": false,
     "faqs": [],
     "source": "",
-    "verifiedOn": ""
+    "verifiedOn": "",
+    "category": "yadki"
   },
   {
     "id": "kokos",
@@ -452,7 +477,8 @@
     "liquid": false,
     "faqs": [],
     "source": "",
-    "verifiedOn": ""
+    "verifiedOn": "",
+    "category": "yadki"
   },
   {
     "id": "ocet",
@@ -469,7 +495,8 @@
     "liquid": true,
     "faqs": [],
     "source": "",
-    "verifiedOn": ""
+    "verifiedOn": "",
+    "category": "technosti"
   },
   {
     "id": "voda",
@@ -486,6 +513,7 @@
     "liquid": true,
     "faqs": [],
     "source": "",
-    "verifiedOn": ""
+    "verifiedOn": "",
+    "category": "technosti"
   }
 ]

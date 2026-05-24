@@ -339,7 +339,20 @@ function renderIngDrawer() {
         <input type="text" value="${esc(ing.id)}" disabled>
       </div>
     </div>
-    <div class="row row-2">
+    <div class="row row-3">
+      <div class="field">
+        <label>Category</label>
+        <select data-field="category">
+          <option value="" ${!ing.category ? 'selected' : ''}>(none)</option>
+          <option value="brasna"    ${ing.category === 'brasna'    ? 'selected' : ''}>Брашна и нишестета</option>
+          <option value="technosti" ${ing.category === 'technosti' ? 'selected' : ''}>Течности</option>
+          <option value="zahari"    ${ing.category === 'zahari'    ? 'selected' : ''}>Подсладители</option>
+          <option value="yadki"     ${ing.category === 'yadki'     ? 'selected' : ''}>Ядки и сухи плодове</option>
+          <option value="mlechni"   ${ing.category === 'mlechni'   ? 'selected' : ''}>Млечни продукти</option>
+          <option value="podpravki" ${ing.category === 'podpravki' ? 'selected' : ''}>Подправки и набухватели</option>
+          <option value="zrna"      ${ing.category === 'zrna'      ? 'selected' : ''}>Зърнени и бобови</option>
+        </select>
+      </div>
       <div class="field">
         <label>Source <span style="color:var(--muted);font-size:10px;text-transform:none;letter-spacing:0">(URL or name of measurement source)</span></label>
         <input type="text" data-field="source" value="${esc(ing.source || '')}" placeholder="e.g. USDA, личен тест">
