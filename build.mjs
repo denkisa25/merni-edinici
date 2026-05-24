@@ -33,6 +33,7 @@ const UNIT_PAIRS_LIQUID = cfg.unitPairsLiquid;
 
 const BUILD_V = Date.now().toString(36);
 const NOINDEX = ENVIRONMENT === "experiment";
+const GA4_ID  = cfg.ga4 || "";
 
 const INGREDIENTS = JSON.parse(readFileSync("data/ingredients.json", "utf8"));
 const UNITS       = JSON.parse(readFileSync("data/units.json", "utf8"));
@@ -449,7 +450,9 @@ ${LANGS.map((l) => `<link rel="alternate" hreflang="${l}" href="${canonical}">`)
 <link rel="stylesheet" href="/assets/site.css?v=${BUILD_V}">
 ${NOINDEX ? '<meta name="robots" content="noindex">' : ""}
 <script src="/assets/data.${lang}.js"></script>
-<script src="/assets/${pageScript}" defer></script>`;
+<script src="/assets/${pageScript}" defer></script>
+${GA4_ID ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${GA4_ID}"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA4_ID}');</script>` : ""}`;
 
 const crumbsHtml = (crumbs) => crumbs.map((c, i) =>
   (c.url ? `<a href="${c.url}">${c.name}</a>` : `<span class="here">${c.name}</span>`) +

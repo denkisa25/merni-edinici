@@ -1,6 +1,7 @@
 {
   "langs": ["bg"],
   "environment": "experiment",
+  "ga4": "",
   "site": {
     "domain": "https://merilo.pro",
     "outDir": "dist"
