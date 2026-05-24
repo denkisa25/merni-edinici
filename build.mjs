@@ -145,14 +145,7 @@ function computeQuestionPage(ing, pair, lang) {
   const card = pairCard(ing, pair, lang);
   const { slug, url } = card;
 
-  const slGrams = round(gramsFromVolume(UNITS.sl.ml, ing.density));
-  const cupsIn500 = round((500 / ing.density) / UNITS.chasha.ml);
-  const customFaqs = (ing.faqs || []).map(f => ({ q: f.q?.[lang] || '', a: f.a?.[lang] || '' })).filter(f => f.q && f.a);
-  const faq = [
-    { q: tmpl(t.faq1_q, { ing: name }), a: tmpl(t.faq1_a, { ing: name, n: num(slGrams) }) },
-    { q: tmpl(t.faq2_q, { ing: name }), a: tmpl(t.faq2_a, { ing: name, n: num(cupsIn500), cups: cupsIn500 === 1 ? t.cup_sg : t.cup_pl }) },
-    ...customFaqs,
-  ];
+  const faq = computeFaqs(ing, lang);
 
   let title, meta, h1, answer, crumbLeaf, prefill;
   if (card.dir === "v2v") {
@@ -212,14 +205,7 @@ function computeHubPage(ing, lang) {
     ing.liquid ? (t.table_title_liquid || t.table_title) : t.table_title,
     { ing: name }
   );
-  const slGrams = round(gramsFromVolume(UNITS.sl.ml, ing.density));
-  const cupsIn500 = round((500 / ing.density) / UNITS.chasha.ml);
-  const customFaqs = (ing.faqs || []).map(f => ({ q: f.q?.[lang] || '', a: f.a?.[lang] || '' })).filter(f => f.q && f.a);
-  const faq = [
-    { q: tmpl(t.faq1_q, { ing: name }), a: tmpl(t.faq1_a, { ing: name, n: num(slGrams) }) },
-    { q: tmpl(t.faq2_q, { ing: name }), a: tmpl(t.faq2_a, { ing: name, n: num(cupsIn500), cups: cupsIn500 === 1 ? t.cup_sg : t.cup_pl }) },
-    ...customFaqs,
-  ];
+  const faq = computeFaqs(ing, lang);
   return {
     lang, ingId: ing.id, url: baseUrl(lang, "merki", ing.id),
     title: `${h1} | ${t.brand}`,
@@ -282,6 +268,31 @@ function buildExplainer(ing, lang) {
   paragraphs.push(tmpl(t.explainer_generic, { ing: ing.names[lang] }));
   paragraphs.push(t.explainer_cup);
   return { title: t.explainer_title, paragraphs };
+}
+
+function computeFaqs(ing, lang) {
+  const t = T[lang];
+  const name = ing.names[lang];
+  const halfCupMl = UNITS.chasha.ml / 2;
+  const items = [];
+  if (ing.liquid) {
+    items.push({ q: tmpl(t.faq_half_cup_q, { ing: name }),
+                 a: tmpl(t.faq_half_cup_a_liquid, { ing: name, n: num(halfCupMl) }) });
+    items.push({ q: tmpl(t.faq_100ml_q, { ing: name }),
+                 a: tmpl(t.faq_100ml_a, { ing: name, n: num(round(100 * ing.density)) }) });
+  } else {
+    items.push({ q: tmpl(t.faq_half_cup_q, { ing: name }),
+                 a: tmpl(t.faq_half_cup_a, { ing: name, n: num(round(halfCupMl * ing.density)) }) });
+    items.push({ q: tmpl(t.faq_100g_q, { ing: name }),
+                 a: tmpl(t.faq_100g_a, { ing: name, n: num(round((100 / ing.density) / UNITS.sl.ml)) }) });
+  }
+  items.push({ q: t.faq_cups_q, a: t.faq_cups_a });
+  const seen = new Set(items.map(f => f.q));
+  (ing.faqs || [])
+    .map(f => ({ q: f.q?.[lang] || '', a: f.a?.[lang] || '' }))
+    .filter(f => f.q && f.a && !seen.has(f.q))
+    .forEach(f => items.push(f));
+  return items;
 }
 
 const US = { cup: 240, tbsp: 14.7868, tsp: 4.9289 }; // ml
@@ -426,7 +437,7 @@ function renderHub(p) {
   return `${head({ lang: p.lang, title: p.title, meta: p.meta, canonical: p.url })}
 <script type="application/ld+json">${breadcrumbLd(p.breadcrumbs)}</script>
 <script type="application/ld+json">${itemListLd(p.questionPages)}</script>
-${p.faq.length > 2 ? `<script type="application/ld+json">${faqLd(p.faq)}</script>` : ""}
+${p.faq.length > 0 ? `<script type="application/ld+json">${faqLd(p.faq)}</script>` : ""}
 <script type="application/ld+json">${webpageLd(p.url, p.title, ing.verifiedOn || "")}</script>
 </head><body><div class="wrap">
 <header><a class="brand" href="/${p.lang}/"><span class="dot"></span>${t.brand}</a>
@@ -442,7 +453,7 @@ ${calcMarkup(t, p.prefill)}
 <p class="us-equiv">${usEquivLine(ing)}</p></section>
 <div class="affil"><span>${t.affil}</span><a href="#" rel="sponsored nofollow">${t.affil_link}</a></div>
 <section class="explainer"><h2>${p.explainer.title}</h2>${p.explainer.paragraphs.map(x=>`<p>${x}</p>`).join("")}${trustLine(INGREDIENTS.find(i=>i.id===p.ingId), p.lang)}</section>
-${p.faq.length > 2 ? `<section><h2>${t.faq_title}</h2>${p.faq.map(f=>`<details><summary>${f.q}</summary><p>${f.a}</p></details>`).join("")}</section>` : ""}
+${p.faq.length > 0 ? `<section><h2>${t.faq_title}</h2>${p.faq.map(f=>`<details><summary>${f.q}</summary><p>${f.a}</p></details>`).join("")}</section>` : ""}
 <section><a class="cta" href="${t.cta_url}">${t.cta}<small>${t.cta_sub}</small></a></section>
 <section><h2>${t.related}</h2><div class="related">${p.related.map(r=>`<a href="${r.url}">${r.name}</a>`).join("")}</div></section>
 <footer><p>${t.footer}</p></footer>
