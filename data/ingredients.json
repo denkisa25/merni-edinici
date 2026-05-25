@@ -184,12 +184,16 @@
       "bg": "Нишестето е леко и пухкаво и лесно се сбива — разрохквайте го преди мерене."
     },
     "blocks": [],
-    "title": {},
-    "desc": {},
+    "title": {
+      "bg": ""
+    },
+    "desc": {
+      "bg": ""
+    },
     "liquid": false,
     "faqs": [],
-    "source": "",
-    "verifiedOn": "",
+    "source": "FAO (Food and Agriculture Organization of the United Nations)",
+    "verifiedOn": "2026-05-13",
     "category": "brasna"
   },
   {
