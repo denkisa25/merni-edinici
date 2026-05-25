@@ -545,7 +545,7 @@ ${p.faq.length > 0 ? `<script type="application/ld+json">${faqLd(p.faq)}</script
 </head><body><div class="wrap">
 <header>${brandHtml(p.lang)}
 <nav class="crumbs" aria-label="breadcrumb">${crumbsHtml(p.breadcrumbs)}</nav></header>
-<div class="hero"><h1>${p.h1}</h1>${p.desc ? `<p class="answer">${p.desc}</p>` : `<p class="intro">${p.intro}</p>`}${ing.verifiedOn ? `<p class="updated"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>обновено: ${ing.verifiedOn}</p>` : ""}</div>
+<div class="hero"><h1>${p.h1}</h1><p class="answer">${p.desc || p.intro}</p>${ing.verifiedOn ? `<p class="updated"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>обновено: ${ing.verifiedOn}</p>` : ""}</div>
 ${calcMarkup(t, p.prefill)}
 <section><h2>${tmpl(t.quick, { ing: INGREDIENTS.find(i=>i.id===p.ingId).names[p.lang] })}</h2>
 <div class="qa-grid">${p.questionPages.map(q=>`<a class="qa-card" href="${q.url}"><b>${q.name}</b><span class="v">${q.value}</span></a>`).join("")}</div></section>
