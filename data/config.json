@@ -6,7 +6,7 @@
     "domain": "https://merilo.pro",
     "outDir": "dist"
   },
-  "clientUnitOrder": ["chasha", "sl", "chl", "ml", "l", "cup_us", "floz", "g", "kg", "oz", "lb"],
+  "clientUnitOrder": ["chasha", "coffee_cup", "sl", "chl", "ml", "l", "cup_us", "floz", "g", "kg", "oz", "lb"],
   "revAnchor": 100,
   "unitPairs": [
     { "from": "chasha", "to": "g" },

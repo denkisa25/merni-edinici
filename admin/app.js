@@ -362,6 +362,30 @@ function renderIngDrawer() {
         <input type="text" data-field="verifiedOn" value="${esc(ing.verifiedOn || '')}" placeholder="2026-05-24">
       </div>
     </div>
+    <div style="margin-bottom:16px">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin-bottom:8px">
+        Exact Unit Overrides (grams)
+        <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;font-size:10px"> — leave blank to compute from density. Overrides win over density × ml.</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+        <div class="field">
+          <label>ч.л. (g)</label>
+          <input type="number" data-measure="chl" step="0.5" min="0" placeholder="density" value="${ing.measures?.chl ?? ''}">
+        </div>
+        <div class="field">
+          <label>с.л. (g)</label>
+          <input type="number" data-measure="sl" step="0.5" min="0" placeholder="density" value="${ing.measures?.sl ?? ''}">
+        </div>
+        <div class="field">
+          <label>чаша (g)</label>
+          <input type="number" data-measure="chasha" step="1" min="0" placeholder="density" value="${ing.measures?.chasha ?? ''}">
+        </div>
+        <div class="field">
+          <label>к.ч. (g)</label>
+          <input type="number" data-measure="coffee_cup" step="0.5" min="0" placeholder="density" value="${ing.measures?.coffee_cup ?? ''}">
+        </div>
+      </div>
+    </div>
     <hr>
     ${langSections}
     <hr>
@@ -430,6 +454,17 @@ function renderIngDrawer() {
       }
     });
     ing.faqs = faqCtrl.collect();
+    // collect measures — blank inputs are omitted (fall back to density)
+    const measures = {};
+    drawer.querySelectorAll('[data-measure]').forEach(el => {
+      const v = parseFloat(el.value);
+      if (!isNaN(v) && v > 0) measures[el.dataset.measure] = v;
+    });
+    if (Object.keys(measures).length > 0) {
+      ing.measures = measures;
+    } else {
+      delete ing.measures;
+    }
     try {
       await save('data/ingredients.json', state.ingredients);
       state.dirty['ingredients'] = false;

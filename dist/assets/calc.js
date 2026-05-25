@@ -25,35 +25,40 @@
   "use strict";
 
   /* ----------------------------- data layer ----------------------------- */
+  // Each ingredient carries `density` (g/ml) and optionally `measures`: exact gram weights
+  // per Bulgarian unit from source data. measures win over density × ml.
   var DEFAULT_DATA = {
     ingredients: {
-      brashno:       { name: "Брашно",            density: 0.50 },
-      zahar:         { name: "Захар",             density: 0.85 },
-      "pudra-zahar": { name: "Пудра захар",       density: 0.50 },
-      oriz:          { name: "Ориз (суров)",      density: 0.78 },
-      kakao:         { name: "Какао",             density: 0.36 },
-      oves:          { name: "Овесени ядки",      density: 0.38 },
-      mlyako:        { name: "Мляко",             density: 1.03 },
-      olio:          { name: "Олио",              density: 0.92 },
-      maslo:         { name: "Масло (разтопено)", density: 0.96 },
-      med:           { name: "Мед",               density: 1.42 },
-      sol:           { name: "Сол",               density: 1.20 },
-      voda:          { name: "Вода",              density: 1.00 }
+      brashno:       { name: "Брашно",        density: 0.70, measures: { chl: 3,  sl: 10, chasha: 140, coffee_cup: 50  } },
+      zahar:         { name: "Захар",         density: 1.10, measures: { chl: 10, sl: 20, chasha: 220, coffee_cup: 80  } },
+      "pudra-zahar": { name: "Пудра захар",   density: 0.75, measures: { chl: 5,  sl: 18, chasha: 150, coffee_cup: 55  } },
+      oriz:          { name: "Ориз (суров)",  density: 1.10, measures: { chl: 10, sl: 30, chasha: 220, coffee_cup: 85  } },
+      mlyako:        { name: "Мляко",         density: 1.10, liquid: true, measures: { chl: 6, sl: 15, chasha: 220, coffee_cup: 85 } },
+      "kiselo-mlyako": { name: "Кисело мляко", density: 1.00, measures: { chl: 8, sl: 20, chasha: 200, coffee_cup: 80 } },
+      olio:          { name: "Олио",          density: 0.90, liquid: true, measures: { chl: 5, sl: 20, chasha: 180, coffee_cup: 65 } },
+      maslo:         { name: "Масло",         density: 1.05, measures: { chl: 7,  sl: 40, chasha: 210, coffee_cup: 80  } },
+      med:           { name: "Мед",           density: 1.50, liquid: true, measures: { sl: 50, chasha: 300, coffee_cup: 150 } },
+      sol:           { name: "Сол",           density: 1.10, measures: { chl: 8,  sl: 15, chasha: 220 } },
+      voda:          { name: "Вода",          density: 1.00, liquid: true, measures: { chl: 5, sl: 20, chasha: 200, coffee_cup: 75 } },
+      kakao:         { name: "Какао",         density: 0.36 },
+      oves:          { name: "Овесени ядки",  density: 0.38 }
     },
     // volume units carry ml; mass units carry g
     units: {
-      chasha: { ml: 250,    label: "чаша" },
-      sl:     { ml: 15,     label: "с.л." },
-      chl:    { ml: 5,      label: "ч.л." },
-      ml:     { ml: 1,      label: "мл" },
-      cup_us: { ml: 240,    label: "cup (US)" },
-      floz:   { ml: 29.5735, label: "fl oz" },
-      g:      { g: 1,       label: "г" },
-      kg:     { g: 1000,    label: "кг" },
-      oz:     { g: 28.3495, label: "oz" },
-      lb:     { g: 453.592, label: "lb" }
+      chasha:     { ml: 200,     label: "чаена чаша" },
+      coffee_cup: { ml: 75,      label: "кафена чаша" },
+      sl:         { ml: 15,      label: "с.л." },
+      chl:        { ml: 5,       label: "ч.л." },
+      ml:         { ml: 1,       label: "мл" },
+      l:          { ml: 1000,    label: "л" },
+      cup_us:     { ml: 240,     label: "cup (US)" },
+      floz:       { ml: 29.5735, label: "fl oz" },
+      g:          { g: 1,        label: "г" },
+      kg:         { g: 1000,     label: "кг" },
+      oz:         { g: 28.3495,  label: "oz" },
+      lb:         { g: 453.592,  label: "lb" }
     },
-    order: ["chasha", "sl", "chl", "ml", "cup_us", "floz", "g", "kg", "oz", "lb"]
+    order: ["chasha", "coffee_cup", "sl", "chl", "ml", "l", "cup_us", "floz", "g", "kg", "oz", "lb"]
   };
 
   var DATA = (typeof window !== "undefined" && window.__KITCHEN_DATA__) || DEFAULT_DATA;
@@ -65,13 +70,15 @@
   /* ------------------------------ helpers ------------------------------- */
   function isVol(u) { return UNITS[u] && typeof UNITS[u].ml === "number"; }
 
-  // any source quantity → grams (volume goes through density)
-  function toGrams(amount, unit, density) {
-    return isVol(unit) ? amount * UNITS[unit].ml * density : amount * UNITS[unit].g;
+  // any source quantity → grams. Priority: exact source measure → volume×density → mass unit.
+  function toGrams(amount, unit, ing) {
+    if (ing.measures && ing.measures[unit] != null) return amount * ing.measures[unit];
+    return isVol(unit) ? amount * UNITS[unit].ml * ing.density : amount * UNITS[unit].g;
   }
-  // grams → any target unit
-  function fromGrams(grams, unit, density) {
-    return isVol(unit) ? (grams / density) / UNITS[unit].ml : grams / UNITS[unit].g;
+  // grams → any target unit (same priority, inverted)
+  function fromGrams(grams, unit, ing) {
+    if (ing.measures && ing.measures[unit] != null) return grams / ing.measures[unit];
+    return isVol(unit) ? (grams / ing.density) / UNITS[unit].ml : grams / UNITS[unit].g;
   }
 
   function parseAmount(raw) {
@@ -155,14 +162,15 @@
         if (el.why) el.why.textContent = "";
         return;
       }
-      var grams = toGrams(amount, el.from.value, ing.density);
-      var result = fromGrams(grams, el.to.value, ing.density);
+      var grams = toGrams(amount, el.from.value, ing);
+      var result = fromGrams(grams, el.to.value, ing);
       el.out.innerHTML = pretty(result) + ' <span>' + UNITS[el.to.value].label + "</span>";
       if (el.why) {
+        var usedExact = (ing.measures && (ing.measures[el.from.value] != null || ing.measures[el.to.value] != null));
         el.why.textContent =
           pretty(amount) + " " + UNITS[el.from.value].label + " " + ing.name.toLowerCase() +
           " ≈ " + pretty(result) + " " + UNITS[el.to.value].label +
-          " · плътност " + ing.density.toFixed(2) + " г/мл";
+          (usedExact ? " · по таблица" : " · плътност " + ing.density.toFixed(2) + " г/мл");
       }
       if (SYNC_URL) {
         var q = new URLSearchParams({ ing: el.ing.value, from: el.from.value, to: el.to.value, amt: el.amt.value });

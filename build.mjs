@@ -81,6 +81,15 @@ function round(n) {
 const num = (n) => String(n).replace(".", ","); // Bulgarian decimal comma for display
 const gramsFromVolume = (ml, density) => ml * density;
 
+// Exact-first weight for a whole Bulgarian unit: use the source-measured value when
+// present, otherwise derive from density. `frac` supports ½ чаша etc.
+function unitWeight(ing, unitKey, frac = 1) {
+  if (ing.measures && ing.measures[unitKey] != null) return ing.measures[unitKey] * frac;
+  const u = UNITS[unitKey];
+  if (u && typeof u.ml === "number") return gramsFromVolume(u.ml * frac, ing.density);
+  return null;
+}
+
 const baseUrl = (lang, ...parts) => `${SITE.domain}/${lang}/${parts.join("/")}/`.replace(/\/+/g, "/").replace(":/", "://");
 const hubPath  = (lang, id)         => join(SITE.outDir, lang, "merki", id, "index.html");
 const pagePath = (lang, id, slug)   => join(SITE.outDir, lang, "merki", id, slug, "index.html");
@@ -95,8 +104,10 @@ function unitPhrase(unitKey, lang) {
    =========================================================================== */
 function renderClientData(lang) {
   const ingredients = {};
-  for (const ing of INGREDIENTS)
+  for (const ing of INGREDIENTS) {
     ingredients[ing.id] = { name: ing.names[lang], density: ing.density, liquid: !!ing.liquid };
+    if (ing.measures) ingredients[ing.id].measures = ing.measures;
+  }
   const units = {};
   for (const [k, u] of Object.entries(UNITS)) {
     const label = (u.c && u.c[lang]) || (u.abbr && u.abbr[lang]) || u.label[lang];
@@ -108,7 +119,7 @@ function renderClientData(lang) {
 /* ===========================================================================
    PER-PAGE COMPUTATION
    =========================================================================== */
-function computeReferenceRows(density, liquid) {
+function computeReferenceRows(ing, liquid) {
   const c = UNITS.chasha.ml, sl = UNITS.sl.ml, chl = UNITS.chl.ml;
   if (liquid) {
     const ml = (v) => `= ${num(round(v))} мл`;
@@ -122,15 +133,16 @@ function computeReferenceRows(density, liquid) {
       { label: "1 чаена лъжичка (ч.л.)",  value: ml(chl)      },
     ];
   }
-  const g = (ml) => `≈ ${num(round(gramsFromVolume(ml, density)))} г`;
+  const gCup = (frac) => `≈ ${num(round(unitWeight(ing, "chasha", frac)))} г`;
+  const gUnit = (key)  => `≈ ${num(round(unitWeight(ing, key)))} г`;
   return [
-    { label: "¼ чаша",                  value: g(c * 0.25) },
-    { label: "⅓ чаша",                  value: g(c / 3)    },
-    { label: "½ чаша",                  value: g(c * 0.5)  },
-    { label: "1 чаша",                  value: g(c)        },
-    { label: "2 чаши",                  value: g(c * 2)    },
-    { label: "1 супена лъжица (с.л.)",  value: g(sl)       },
-    { label: "1 чаена лъжичка (ч.л.)",  value: g(chl)      },
+    { label: "¼ чаша",                  value: gCup(0.25)  },
+    { label: "⅓ чаша",                  value: gCup(1 / 3) },
+    { label: "½ чаша",                  value: gCup(0.5)   },
+    { label: "1 чаша",                  value: gCup(1)     },
+    { label: "2 чаши",                  value: gCup(2)     },
+    { label: "1 супена лъжица (с.л.)",  value: gUnit("sl") },
+    { label: "1 чаена лъжичка (ч.л.)",  value: gUnit("chl")},
   ];
 }
 
@@ -147,7 +159,7 @@ function pairCard(ing, pair, lang) {
   }
   // v2m: volume → mass (dry ingredients)
   if (typeof fromU.ml === "number" && typeof toU.g === "number") {
-    const grams = round(gramsFromVolume(fromU.ml, ing.density));
+    const grams = round(unitWeight(ing, pair.from));
     const slug = `${fromU.slug}-v-${toU.slug}`;
     return { dir: "v2m", slug, name: `${cap(unitPhrase(pair.from, lang))} → грамове`,
              value: `≈ ${num(grams)} г`, url: baseUrl(lang, "merki", ing.id, slug) };
@@ -228,7 +240,7 @@ function computeQuestionPage(ing, pair, lang) {
       { name: crumbLeaf, url: "" },
     ],
     prefill,
-    referenceRows: computeReferenceRows(ing.density, ing.liquid),
+    referenceRows: computeReferenceRows(ing, ing.liquid),
     faq,
     ogSlug: slug, ogAnswer: answer,
     siblingUrl: siblingUrl(ing, pair, lang),
@@ -253,7 +265,7 @@ function computeHubPage(ing, lang) {
   const faq = computeFaqs(ing, lang);
   const ogAnswer = ing.liquid
     ? `1 чаша = ${UNITS.chasha.ml} мл`
-    : `1 чаша ≈ ${num(round(gramsFromVolume(UNITS.chasha.ml, ing.density)))} г`;
+    : `1 чаша ≈ ${num(round(unitWeight(ing, "chasha")))} г`;
   return {
     lang, ingId: ing.id, url: baseUrl(lang, "merki", ing.id),
     title: `${h1} | ${t.brand}`,
@@ -273,7 +285,7 @@ function computeHubPage(ing, lang) {
     questionPages,
     tableTitle,
     faq,
-    referenceRows: computeReferenceRows(ing.density, ing.liquid),
+    referenceRows: computeReferenceRows(ing, ing.liquid),
     related: relatedFor(ing, lang, null),
     explainer: buildExplainer(ing, lang),
   };
@@ -284,7 +296,7 @@ function computePillarPage(lang) {
   const hubs = INGREDIENTS.map((ing) => ({
     name: cap(ing.names[lang]),
     url: baseUrl(lang, "merki", ing.id),
-    value: `≈ ${round(gramsFromVolume(UNITS.chasha.ml, ing.density))} г/чаша`,
+    value: `≈ ${round(unitWeight(ing, "chasha"))} г/чаша`,
   }));
   const categories = CATEGORIES.map(cat => ({
     name: cat.names[lang],
@@ -316,7 +328,7 @@ function computeCategoryPage(cat, lang) {
     url: baseUrl(lang, "merki", ing.id),
     value: ing.liquid
       ? `= ${UNITS.chasha.ml} мл/чаша`
-      : `≈ ${num(round(gramsFromVolume(UNITS.chasha.ml, ing.density)))} г/чаша`,
+      : `≈ ${num(round(unitWeight(ing, "chasha")))} г/чаша`,
   }));
   return {
     lang, catId: cat.id, url,
@@ -365,7 +377,7 @@ function computeFaqs(ing, lang) {
                  a: tmpl(t.faq_100ml_a, { ing: name, n: num(round(100 * ing.density)) }) });
   } else {
     items.push({ q: tmpl(t.faq_half_cup_q, { ing: name }),
-                 a: tmpl(t.faq_half_cup_a, { ing: name, n: num(round(halfCupMl * ing.density)) }) });
+                 a: tmpl(t.faq_half_cup_a, { ing: name, n: num(round(unitWeight(ing, "chasha", 0.5))) }) });
     items.push({ q: tmpl(t.faq_100g_q, { ing: name }),
                  a: tmpl(t.faq_100g_a, { ing: name, n: num(round((100 / ing.density) / UNITS.sl.ml)) }) });
   }
@@ -575,7 +587,7 @@ function renderPillar(p) {
   const accordionHtml = CATEGORIES.map(cat => {
     const items = INGREDIENTS.filter(i => i.category === cat.id);
     const itemsHtml = items.map((ing, idx) => {
-      const val = ing.liquid ? `≈ 250 мл/чаша` : `≈ ${round(ing.density * 250)} г/чаша`;
+      const val = ing.liquid ? `≈ ${num(UNITS.chasha.ml)} мл/чаша` : `≈ ${round(unitWeight(ing, "chasha"))} г/чаша`;
       return `<a class="home-ing" href="${baseUrl(lang,"merki",ing.id)}" style="animation-delay:${idx*40}ms">` +
         `<span class="nm">${cap(ing.names[lang])}</span><span class="vl">${val}</span></a>`;
     }).join("");
@@ -593,7 +605,7 @@ function renderPillar(p) {
   const homeIngs = JSON.stringify(INGREDIENTS.map(ing => ({
     slug: ing.id,
     name: cap(ing.names[lang]),
-    val:  ing.liquid ? "≈ 250 мл/чаша" : `≈ ${round(ing.density * 250)} г/чаша`,
+    val:  ing.liquid ? `≈ ${num(UNITS.chasha.ml)} мл/чаша` : `≈ ${round(unitWeight(ing, "chasha"))} г/чаша`,
     url:  baseUrl(lang, "merki", ing.id),
   })));
 
