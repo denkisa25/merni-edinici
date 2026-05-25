@@ -393,7 +393,7 @@ function trustLine(ing, lang) {
   let s = ing.liquid ? t.trust_liquid : t.trust_dry;
   if (ing.source)     s += " " + tmpl(t.trust_source,   { source: ing.source });
   if (ing.verifiedOn) s += " " + tmpl(t.trust_verified, { verifiedOn: ing.verifiedOn });
-  return `<p class="trust">${s}</p>`;
+  return `<p class="trust"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/></svg>${s}</p>`;
 }
 
 /* ===========================================================================
@@ -492,7 +492,7 @@ const tableHtml = (rows) =>
 
 // calc.js is loaded via head() — only inject __PREFILL__ here
 const calcMarkup = (t, prefill) => `
-<div class="calc"><div class="calc__head">Калкулатор за мерки</div><div class="calc__body">
+<div class="calc"><div class="calc__head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2.5"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="11" x2="10" y2="11"/><line x1="14" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="10" y2="15"/><line x1="14" y1="15" x2="16" y2="15"/><line x1="8" y1="19" x2="10" y2="19"/></svg>Калкулатор за мерки</div><div class="calc__body">
 <div class="chips" id="chips"><button class="chip" data-amt="0.5">½ чаша</button><button class="chip" data-amt="1">1 чаша</button><button class="chip" data-amt="2">2 чаши</button></div>
 <div class="row"><div class="field"><label for="amt">Количество</label><input id="amt" type="number" inputmode="decimal" min="0" step="any" value="${prefill.amt}"></div>
 <div class="field"><label for="ing">Съставка</label><select id="ing"></select></div></div>
@@ -514,7 +514,7 @@ function renderQuestion(p) {
 </head><body><div class="wrap">
 <header>${brandHtml(p.lang)}
 <nav class="crumbs" aria-label="breadcrumb">${crumbsHtml(p.breadcrumbs)}</nav></header>
-<div class="hero"><h1>${p.h1}</h1><p class="answer">${p.answer}</p>${ing.verifiedOn ? `<p class="updated">обновено: ${ing.verifiedOn}</p>` : ""}</div>
+<div class="hero"><h1>${p.h1}</h1><p class="answer">${p.answer}</p>${ing.verifiedOn ? `<p class="updated"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>обновено: ${ing.verifiedOn}</p>` : ""}</div>
 ${calcMarkup(t, p.prefill)}
 <div class="ad" role="complementary">РЕКЛАМА</div>
 ${p.siblingUrl ? `<p class="sibling-link"><a href="${p.siblingUrl}">↔ Обратно изчисление</a></p>` : ""}
@@ -545,7 +545,7 @@ ${p.faq.length > 0 ? `<script type="application/ld+json">${faqLd(p.faq)}</script
 </head><body><div class="wrap">
 <header>${brandHtml(p.lang)}
 <nav class="crumbs" aria-label="breadcrumb">${crumbsHtml(p.breadcrumbs)}</nav></header>
-<div class="hero"><h1>${p.h1}</h1>${p.desc ? `<p class="answer">${p.desc}</p>` : `<p class="intro">${p.intro}</p>`}${ing.verifiedOn ? `<p class="updated">обновено: ${ing.verifiedOn}</p>` : ""}</div>
+<div class="hero"><h1>${p.h1}</h1>${p.desc ? `<p class="answer">${p.desc}</p>` : `<p class="intro">${p.intro}</p>`}${ing.verifiedOn ? `<p class="updated"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>обновено: ${ing.verifiedOn}</p>` : ""}</div>
 ${calcMarkup(t, p.prefill)}
 <section><h2>${tmpl(t.quick, { ing: INGREDIENTS.find(i=>i.id===p.ingId).names[p.lang] })}</h2>
 <div class="qa-grid">${p.questionPages.map(q=>`<a class="qa-card" href="${q.url}"><b>${q.name}</b><span class="v">${q.value}</span></a>`).join("")}</div></section>
@@ -604,7 +604,7 @@ function renderPillar(p) {
 </head><body><div class="wrap">
 <header>${brandHtml(lang)}
 <nav class="crumbs" aria-label="breadcrumb">${crumbsHtml(p.breadcrumbs)}</nav></header>
-<div class="hero"><h1>${p.h1}</h1><p class="lead">${p.intro}</p></div>
+<div class="hero"><h1>Мерни единици в <em>кухнята</em></h1><p class="lead">${p.intro}</p></div>
 <div class="search">
 <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
 <input id="q" type="text" placeholder="Търсете съставка — напр. брашно, захар, мляко…" autocomplete="off">

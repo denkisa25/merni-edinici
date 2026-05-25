@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Брашно: чаши, лъжици и грамове | Мерило (refined)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500;1,600&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF6EC; --paper-2:#F4ECDC; --ink:#2A2420; --ink-soft:#6B5F54; --line:#E4D8C4;
+    --paprika:#C2522C; --paprika-dk:#9E3F1F; --honey:#E0A12E; --card:#FFFDF8;
+    --shadow:0 1px 2px rgba(42,36,32,.04),0 8px 28px -12px rgba(42,36,32,.18);
+    --radius:16px; --maxw:720px;
+    --serif:"Spectral",Georgia,serif; --sans:"Onest",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--sans);color:var(--ink);background:var(--paper);
+    background-image:radial-gradient(rgba(160,130,90,.05) 1px,transparent 1px);background-size:4px 4px;
+    line-height:1.6;font-size:17px;-webkit-font-smoothing:antialiased;padding-bottom:10px}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px}
+  a{color:inherit}
+
+  /* ---------- NEW LOGO (measure-mark) ---------- */
+  header{padding:22px 0 6px}
+  .brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none}
+  .brand .mark{width:28px;height:28px;flex:0 0 auto}
+  .brand .name{font-family:var(--serif);font-weight:800;font-size:21px;letter-spacing:-.01em;color:var(--ink)}
+  .brand .name b{color:var(--paprika);font-weight:800}
+
+  nav.crumbs{font-size:13.5px;color:var(--ink-soft);margin-top:16px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  nav.crumbs a{color:var(--ink-soft);text-decoration:none}
+  nav.crumbs a:hover{color:var(--paprika)}
+  nav.crumbs .sep{opacity:.45}
+  nav.crumbs .here{color:var(--ink)}
+
+  .hero{padding:26px 0 8px}
+  h1{font-family:var(--serif);font-weight:800;font-size:clamp(28px,6.5vw,42px);line-height:1.08;letter-spacing:-.015em;max-width:16ch}
+  .answer{margin-top:18px;font-size:clamp(18px,4.4vw,21px);color:var(--ink);padding:16px 18px;
+    background:linear-gradient(180deg,var(--card),var(--paper-2));border:1px solid var(--line);
+    border-left:4px solid var(--paprika);border-radius:0 12px 12px 0}
+  .updated{font-size:11.5px;color:var(--ink-soft);margin-top:8px;display:flex;align-items:center;gap:6px}
+  .updated svg{width:13px;height:13px;color:var(--paprika)}
+
+  /* ---------- calculator (kept, lightly refined) ---------- */
+  .calc{margin:26px 0;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .calc__head{padding:16px 20px;border-bottom:1px solid var(--line);font-family:var(--serif);font-weight:600;font-size:18px;display:flex;align-items:center;gap:9px}
+  .calc__head svg{width:19px;height:19px;color:var(--paprika)}
+  .calc__body{padding:20px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+  .chip{font:inherit;font-size:14px;font-weight:600;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer;transition:.15s}
+  .chip:hover{border-color:var(--paprika);color:var(--paprika)}
+  .chip.on{background:var(--paprika);border-color:var(--paprika);color:#fff}
+  .row{display:grid;grid-template-columns:1fr 1.4fr;gap:12px;margin-bottom:14px}
+  .field label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+  .field input,.field select{width:100%;font:inherit;font-size:17px;padding:13px 14px;border:1px solid var(--line);border-radius:11px;background:var(--paper);color:var(--ink);appearance:none;-webkit-appearance:none}
+  .field input:focus,.field select:focus{outline:none;border-color:var(--paprika);box-shadow:0 0 0 3px rgba(194,82,44,.15)}
+  .field.sel{position:relative}
+  .field.sel::after{content:"";position:absolute;right:15px;top:43px;width:8px;height:8px;border-right:2px solid var(--ink-soft);border-bottom:2px solid var(--ink-soft);transform:rotate(45deg);pointer-events:none}
+  .field.sel select{padding-right:36px}
+  .swap{display:flex;justify-content:center;margin:-2px 0 10px}
+  .swap button{font:inherit;font-size:13px;font-weight:600;color:var(--ink-soft);background:none;border:none;cursor:pointer;padding:5px 12px;border-radius:8px;display:inline-flex;align-items:center;gap:6px}
+  .swap button svg{width:14px;height:14px}
+  .swap button:hover{color:var(--paprika);background:var(--paper-2)}
+  .result{margin-top:6px;padding:22px 20px;border-radius:12px;background:linear-gradient(135deg,#2A2420,#3A332C);color:#FBF6EC;position:relative}
+  .result__num{font-family:var(--serif);font-weight:800;font-size:clamp(30px,8vw,40px);line-height:1}
+  .result__num span{color:var(--honey)}
+  .result__sub{margin-top:8px;font-size:14px;color:#D9CDBC}
+  .result__copy{position:absolute;top:16px;right:16px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;background:rgba(255,255,255,.1);color:#FBF6EC;border:1px solid rgba(255,255,255,.18);border-radius:8px;padding:7px 12px;display:inline-flex;align-items:center;gap:6px}
+  .result__copy svg{width:14px;height:14px}
+  .result__copy:hover{background:rgba(255,255,255,.2)}
+
+  section{margin:34px 0}
+  h2{font-family:var(--serif);font-weight:600;font-size:24px;letter-spacing:-.01em;margin-bottom:14px}
+
+  /* ---------- quick-answer cards — FIXED typography ---------- */
+  .qa-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+  .qa-card{display:block;text-decoration:none;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:16px 18px;transition:.15s}
+  .qa-card:hover{border-color:var(--paprika);transform:translateY(-2px);box-shadow:var(--shadow)}
+  .qa-card b{display:block;font-family:var(--serif);font-weight:600;font-size:16.5px;line-height:1.3;color:var(--ink);
+    overflow-wrap:normal;word-break:keep-all;hyphens:none}
+  .qa-card .v{display:block;margin-top:8px;font-family:var(--sans);font-weight:700;font-size:22px;color:var(--paprika);
+    font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+
+  .ad{min-height:100px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:12px;
+    background:repeating-linear-gradient(45deg,var(--paper-2),var(--paper-2) 10px,var(--paper) 10px,var(--paper) 20px);
+    color:var(--ink-soft);font-size:12px;letter-spacing:.05em;margin:30px 0}
+
+  /* ---------- table ---------- */
+  .table-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  table{width:100%;border-collapse:collapse;font-size:16px}
+  table th,table td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--line)}
+  table th{font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);font-weight:600}
+  table tbody tr{transition:background .12s}
+  table tbody tr:hover{background:var(--paper-2)}
+  table tr:last-child td{border-bottom:none}
+  table td:last-child{text-align:right;font-weight:700;font-variant-numeric:tabular-nums;color:var(--paprika-dk)}
+  .us-equiv{font-size:15px;color:var(--ink-soft);margin-top:16px;padding:12px 16px;background:var(--card);border:1px solid var(--line);border-radius:12px}
+
+  .page-actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+  .btn-print,.btn-pin{font:inherit;font-size:13px;font-weight:600;padding:9px 15px;border-radius:10px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:7px;background:var(--paper-2);border:1px solid var(--line)}
+  .btn-print{color:var(--ink)} .btn-pin{color:var(--paprika-dk)}
+  .btn-print svg,.btn-pin svg{width:15px;height:15px}
+  .btn-print:hover,.btn-pin:hover{border-color:var(--paprika)}
+
+  .affil{display:flex;gap:14px;align-items:center;justify-content:space-between;background:var(--paper-2);border:1px dashed var(--line);border-radius:12px;padding:14px 16px;font-size:14.5px;margin-top:24px}
+  .affil a{color:var(--paprika-dk);font-weight:700;text-decoration:none;white-space:nowrap}
+  .affil a:hover{text-decoration:underline}
+
+  .explainer p{margin-bottom:12px}
+  .trust{font-size:12.5px;color:var(--ink-soft);margin-top:10px;display:flex;align-items:flex-start;gap:7px}
+  .trust svg{width:15px;height:15px;color:var(--paprika);flex:0 0 auto;margin-top:2px}
+
+  /* ---------- FAQ ---------- */
+  details{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:2px 18px;margin-bottom:10px;transition:border-color .15s}
+  details[open]{border-color:var(--line);box-shadow:var(--shadow)}
+  details summary{font-family:var(--serif);font-weight:600;font-size:17px;padding:15px 0;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:12px;align-items:center}
+  details summary::-webkit-details-marker{display:none}
+  details summary::after{content:"+";color:var(--paprika);font-size:24px;line-height:1;flex:0 0 auto;transition:transform .2s}
+  details[open] summary::after{content:"–"}
+  details p{padding:0 0 16px;color:var(--ink-soft)}
+
+  .cta{display:block;text-align:center;text-decoration:none;background:var(--paprika);color:#fff;font-weight:700;font-size:17px;padding:18px 22px;border-radius:13px;transition:.15s}
+  .cta:hover{background:var(--paprika-dk)}
+  .cta small{display:block;font-weight:500;font-size:13.5px;opacity:.9;margin-top:3px}
+
+  .related{display:flex;flex-wrap:wrap;gap:9px}
+  .related a{font-size:15px;font-weight:600;text-decoration:none;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:9px 16px;transition:.15s}
+  .related a:hover{border-color:var(--paprika);color:var(--paprika)}
+
+  .feedback{display:flex;align-items:center;gap:10px;margin:24px 0;font-size:14px;color:var(--ink-soft)}
+  .feedback button{font-size:18px;background:none;border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer;transition:.15s}
+  .feedback button:hover{border-color:var(--paprika)}
+
+  footer{border-top:1px solid var(--line);margin-top:40px;padding:26px 0 40px;font-size:13.5px;color:var(--ink-soft)}
+
+  @media(max-width:480px){.row{grid-template-columns:1fr}.affil{flex-direction:column;align-items:flex-start;gap:8px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <a class="brand" href="#">
+      <span class="mark" aria-hidden="true">
+        <svg width="28" height="28" viewBox="0 0 30 30" fill="none">
+          <rect x="1.2" y="1.2" width="27.6" height="27.6" rx="8" stroke="#C2522C" stroke-width="2.4"/>
+          <line x1="8"  y1="9" x2="8"  y2="21" stroke="#C2522C" stroke-width="2.4" stroke-linecap="round"/>
+          <line x1="15" y1="6" x2="15" y2="24" stroke="#E0A12E" stroke-width="2.4" stroke-linecap="round"/>
+          <line x1="22" y1="9" x2="22" y2="21" stroke="#C2522C" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="name">Мерило<b>.</b></span>
+    </a>
+  </header>
+
+  <nav class="crumbs" aria-label="breadcrumb">
+    <a href="#">Начало</a><span class="sep">›</span>
+    <a href="#">Мерни единици</a><span class="sep">›</span>
+    <a href="#">Брашна и нишестета</a><span class="sep">›</span>
+    <span class="here">Брашно</span>
+  </nav>
+
+  <div class="hero">
+    <h1>Брашно: чаши, лъжици и грамове</h1>
+    <p class="answer">Колко грама е една чаша брашно и колко тежи една лъжица — изчислете наведнъж или вижте таблицата по-долу.</p>
+    <p class="updated">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>
+      обновено: 24 май 2026
+    </p>
+  </div>
+
+  <div class="calc">
+    <div class="calc__head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2.5"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="11" x2="10" y2="11"/><line x1="14" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="10" y2="15"/><line x1="14" y1="15" x2="16" y2="15"/><line x1="8" y1="19" x2="10" y2="19"/></svg>
+      Калкулатор за мерки
+    </div>
+    <div class="calc__body">
+      <div class="chips" id="chips">
+        <button class="chip" data-amt="0.5">½ чаша</button>
+        <button class="chip on" data-amt="1">1 чаша</button>
+        <button class="chip" data-amt="2">2 чаши</button>
+      </div>
+      <div class="row">
+        <div class="field"><label for="amt">Количество</label><input id="amt" type="number" value="1" min="0" step="any"></div>
+        <div class="field sel"><label for="ing">Съставка</label>
+          <select id="ing"><option>брашно</option><option>захар</option><option>пълнозърнесто брашно</option><option>нишесте</option></select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="field sel"><label for="from">От</label>
+          <select id="from"><option>чаша</option><option>с.л.</option><option>ч.л.</option></select>
+        </div>
+        <div class="field sel"><label for="to">Към</label>
+          <select id="to"><option>грамове</option><option>милилитри</option></select>
+        </div>
+      </div>
+      <div class="swap"><button id="swap" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10l-3 3 3 3"/><path d="M4 13h11"/><path d="M17 14l3-3-3-3"/><path d="M20 11H9"/></svg>
+        размени мерките</button></div>
+      <div class="result" aria-live="polite">
+        <button class="result__copy" id="copy" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+          Копирай</button>
+        <div class="result__num" id="out">125 <span>г</span></div>
+        <div class="result__sub" id="why">1 чаша брашно ≈ 125 г · плътност 0,50 г/мл</div>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <h2>Бързи отговори за брашно</h2>
+    <div class="qa-grid">
+      <a class="qa-card" href="#"><b>Чаша → грамове</b><span class="v">≈ 125 г</span></a>
+      <a class="qa-card" href="#"><b>Супена лъжица → грамове</b><span class="v">≈ 7,5 г</span></a>
+      <a class="qa-card" href="#"><b>Чаена лъжичка → грамове</b><span class="v">≈ 2,5 г</span></a>
+      <a class="qa-card" href="#"><b>100 г → чаши</b><span class="v">≈ 0,8 чаши</span></a>
+    </div>
+  </section>
+
+  <div class="ad" role="complementary">РЕКЛАМА</div>
+
+  <section>
+    <h2>Таблица: брашно в грамове</h2>
+    <div class="table-card">
+      <table>
+        <thead><tr><th>Мярка</th><th>Тегло</th></tr></thead>
+        <tbody>
+          <tr><td>¼ чаша</td><td>≈ 31,3 г</td></tr>
+          <tr><td>⅓ чаша</td><td>≈ 41,7 г</td></tr>
+          <tr><td>½ чаша</td><td>≈ 62,5 г</td></tr>
+          <tr><td>1 чаша</td><td>≈ 125 г</td></tr>
+          <tr><td>2 чаши</td><td>≈ 250 г</td></tr>
+          <tr><td>1 супена лъжица (с.л.)</td><td>≈ 7,5 г</td></tr>
+          <tr><td>1 чаена лъжичка (ч.л.)</td><td>≈ 2,5 г</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="us-equiv">В американски рецепти: 1 cup ≈ 120 г · 1 tbsp ≈ 7,39 г · 1 tsp ≈ 2,46 г</p>
+    <div class="page-actions">
+      <button class="btn-print" onclick="window.print()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Принтирай таблицата</button>
+      <a class="btn-pin" href="#" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l-2 4"/><path d="M12 2a8 8 0 0 0-3 15.4c0-1 .2-2.3.5-3.3l1.2-5"/><path d="M9.5 9c0-1.4 1-2.5 2.8-2.5 1.7 0 2.9 1 2.9 2.7 0 1.9-1 3.4-2.5 3.4-.8 0-1.4-.7-1.2-1.5"/></svg>
+        Запази в Pinterest</a>
+    </div>
+  </section>
+
+  <div class="affil">
+    <span>За точни мерки при печене най-сигурна е кухненската везна.</span>
+    <a href="#" rel="sponsored nofollow">Виж везни →</a>
+  </div>
+
+  <section class="explainer">
+    <h2>Защо теглото варира</h2>
+    <p>Брашното е „пухкаво" и задържа въздух, затова една чаша пресято брашно тежи по-малко от натъпкано.</p>
+    <p>Когато мерите брашно по обем, точното тегло зависи от това колко плътно е натъпкана съставката — затова за прецизност при печене грамовете са по-надеждни от чашите.</p>
+    <p>Имайте предвид и коя „чаша" ползвате: българската водна чаша е около 250 мл, а американската мерителна чаша (cup) — 240 мл. Този калкулатор смята спрямо 250 мл.</p>
+    <p class="trust">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/></svg>
+      Стойностите са изчислени по плътност (г/мл) · източник: FAO · проверено на 24 май 2026
+    </p>
+  </section>
+
+  <section>
+    <h2>Често задавани въпроси</h2>
+    <details><summary>Колко е половин чаша брашно?</summary><p>Половин чаша брашно тежи около 62,5 грама.</p></details>
+    <details><summary>Колко лъжици са 100 грама брашно?</summary><p>100 грама брашно са приблизително 13,3 супени лъжици.</p></details>
+    <details><summary>Колко супени лъжици има в една чаша?</summary><p>Една чаша (250 мл) се равнява на около 17 супени лъжици или 50 чаени лъжички.</p></details>
+    <details><summary>Кои са основните видове брашна в България?</summary><p>Бяло брашно тип 500 и пълнозърнесто брашно тип 1100.</p></details>
+  </section>
+
+  <section>
+    <a class="cta" href="#">Преобразувай цяла рецепта наведнъж<small>Всички мерки в грамове + смяна на порциите</small></a>
+  </section>
+
+  <section>
+    <h2>Други съставки</h2>
+    <div class="related">
+      <a href="#">Захар</a><a href="#">Пудра захар</a><a href="#">Кафява захар</a><a href="#">Ориз</a><a href="#">Булгур</a>
+    </div>
+  </section>
+
+  <div class="feedback" id="feedback">
+    <span>Беше ли полезно?</span>
+    <button data-vote="up" aria-label="Да">👍</button>
+    <button data-vote="down" aria-label="Не">👎</button>
+  </div>
+
+  <footer><p>Мерило · Кухненски калкулатор за грамове и милилитри. Стойностите са приблизителни.</p></footer>
+
+</div>
+
+<script>
+  document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>{
+    document.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));
+    c.classList.add('on');
+    document.getElementById('amt').value=c.dataset.amt;
+  }));
+  document.getElementById('copy').addEventListener('click',function(){
+    const t=this; const o=t.innerHTML; t.innerHTML='Копирано ✓';
+    setTimeout(()=>t.innerHTML=o,1400);
+  });
+</script>
+</body>
+</html>

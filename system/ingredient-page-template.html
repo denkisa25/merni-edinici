@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="bg">
+<!--
+=====================================================================================
+  PROGRAMMATIC SEO PAGE TEMPLATE  —  Ingredient conversion page
+=====================================================================================
+  This file is a WORKING EXAMPLE (брашно, чаша → грамове) so you can preview the
+  design and the live calculator. Every value that should be generated per-page from
+  your data layer is annotated inline with a comment:  <!-- {{field_name}} -->
+  Hand this file to Claude Code with the data contract below and ask it to replace the
+  annotated values with template variables for your static-site generator.
+
+  ---------------------------------------------------------------------------------
+  DATA CONTRACT  (one record generates one page)
+  ---------------------------------------------------------------------------------
+  page = {
+    lang:                "bg",                         // ISO language code
+    canonical_url:       "https://DOMAIN/bg/merki/brashno/chasha-v-gramove/",
+    hreflang: [                                        // one entry per localized version
+      { lang: "bg", url: "https://DOMAIN/bg/merki/brashno/chasha-v-gramove/" },
+      { lang: "x-default", url: "https://DOMAIN/bg/merki/brashno/chasha-v-gramove/" }
+    ],
+    title:               "Колко грама е една чаша брашно? | <BRAND>",
+    meta_description:    "Една чаша брашно тежи около 125 г. Бърз калкулатор + таблица за чаши, лъжици и грамове.",
+    h1_question:         "Колко грама е една чаша брашно?",
+    direct_answer:       "Една чаша (250 мл) бяло брашно тежи около <b>125 грама</b>.",
+    breadcrumbs: [
+      { name: "Начало",          url: "https://DOMAIN/bg/" },
+      { name: "Мерни единици",   url: "https://DOMAIN/bg/merki/" },
+      { name: "Брашно",          url: "https://DOMAIN/bg/merki/brashno/" },
+      { name: "Чаша в грамове",  url: "" }              // current page, no link
+    ],
+    // ---- calculator pre-fill (deep-link state) ----
+    ingredient_id:       "brashno",
+    from_unit:           "chasha",
+    to_unit:             "g",
+    amount:              1,
+    // ---- reference table rows (computed at build time from density) ----
+    reference_rows: [
+      { label: "¼ чаша", value: "≈ 31 г" },
+      { label: "⅓ чаша", value: "≈ 42 г" },
+      { label: "½ чаша", value: "≈ 63 г" },
+      { label: "1 чаша", value: "≈ 125 г" },
+      { label: "2 чаши", value: "≈ 250 г" },
+      { label: "1 супена лъжица (с.л.)", value: "≈ 8 г" },
+      { label: "1 чаена лъжичка (ч.л.)", value: "≈ 3 г" }
+    ],
+    explainer_html:      "...",                         // 2–3 sentences, may contain <p>
+    faq: [                                              // drives FAQPage JSON-LD + visible block
+      { q: "...", a: "..." }
+    ],
+    related: [                                          // internal links (hub & spoke)
+      { name: "Захар",         url: "https://DOMAIN/bg/merki/zahar/chasha-v-gramove/" },
+      { name: "Пудра захар",   url: "https://DOMAIN/bg/merki/pudra-zahar/chasha-v-gramove/" },
+      { name: "Ориз",          url: "https://DOMAIN/bg/merki/oriz/chasha-v-gramove/" },
+      { name: "Какао",         url: "https://DOMAIN/bg/merki/kakao/chasha-v-gramove/" },
+      { name: "Овесени ядки",  url: "https://DOMAIN/bg/merki/oveseni-yadki/chasha-v-gramove/" }
+    ]
+  }
+
+  NOTE ON STRUCTURED DATA (current as of May 2026):
+    • FAQPage rich results were deprecated by Google on 2026-05-07. The markup below is
+      kept ONLY because (a) Google still uses it to understand the page and (b) AI search
+      crawlers (ChatGPT, Perplexity, Claude, Gemini) read it. Do NOT expect a SERP dropdown.
+    • BreadcrumbList rich results ARE still active — keep it.
+    • Put Organization + WebSite JSON-LD ONCE sitewide (e.g. on the homepage), not per page.
+=====================================================================================
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- {{title}} -->
+  <title>Колко грама е една чаша брашно? | Мерки</title>
+  <!-- {{meta_description}} -->
+  <meta name="description" content="Една чаша брашно тежи около 125 г. Бърз калкулатор + таблица за чаши, лъжици и грамове.">
+  <!-- {{canonical_url}} -->
+  <link rel="canonical" href="https://example.com/bg/merki/brashno/chasha-v-gramove/">
+
+  <!-- {{hreflang}} — loop one <link> per localized version; add x-default -->
+  <link rel="alternate" hreflang="bg" href="https://example.com/bg/merki/brashno/chasha-v-gramove/">
+  <link rel="alternate" hreflang="x-default" href="https://example.com/bg/merki/brashno/chasha-v-gramove/">
+
+  <!-- Open Graph / Twitter (map from title + meta_description + a per-page or default OG image) -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Колко грама е една чаша брашно?">
+  <meta property="og:description" content="Една чаша брашно тежи около 125 г. Бърз калкулатор + таблица.">
+  <meta property="og:url" content="https://example.com/bg/merki/brashno/chasha-v-gramove/">
+  <meta property="og:image" content="https://example.com/og/brashno.png">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;0,800;1,400&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- ===================== STRUCTURED DATA ===================== -->
+
+  <!-- BreadcrumbList — STILL produces rich results. Build from page.breadcrumbs. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Начало", "item": "https://example.com/bg/" },
+      { "@type": "ListItem", "position": 2, "name": "Мерни единици", "item": "https://example.com/bg/merki/" },
+      { "@type": "ListItem", "position": 3, "name": "Брашно", "item": "https://example.com/bg/merki/brashno/" },
+      { "@type": "ListItem", "position": 4, "name": "Чаша в грамове" }
+    ]
+  }
+  </script>
+
+  <!-- FAQPage — no longer a rich result (deprecated 2026-05-07); kept for page
+       understanding + AI-search crawlers. Build from page.faq. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Колко грама е една чаша брашно?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Една чаша (250 мл) бяло брашно тежи около 125 грама. Точното тегло зависи от това дали брашното е пресято и натъпкано."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Колко грама брашно има в една супена лъжица?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Една супена лъжица (15 мл) брашно тежи около 8 грама."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <style>
+    :root {
+      /* Warm editorial kitchen palette — paper, ink, paprika. No purple gradients. */
+      --paper:      #FBF6EC;
+      --paper-2:    #F4ECDC;
+      --ink:        #2A2420;
+      --ink-soft:   #6B5F54;
+      --line:       #E4D8C4;
+      --paprika:    #C2522C;
+      --paprika-dk: #9E3F1F;
+      --honey:      #E0A12E;
+      --card:       #FFFDF8;
+      --shadow:     0 1px 2px rgba(42,36,32,.04), 0 8px 28px -12px rgba(42,36,32,.18);
+      --radius:     16px;
+      --maxw:       720px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      font-family: "Onest", system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      /* subtle paper grain */
+      background-image:
+        radial-gradient(rgba(160,130,90,.05) 1px, transparent 1px);
+      background-size: 4px 4px;
+      line-height: 1.6;
+      font-size: 17px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 20px; }
+
+    /* ---------- header / breadcrumb ---------- */
+    header { padding: 22px 0 6px; }
+    .brand {
+      font-family: "Spectral", serif;
+      font-weight: 800;
+      font-size: 20px;
+      letter-spacing: -.01em;
+      color: var(--ink);
+      text-decoration: none;
+      display: inline-flex; align-items: center; gap: 9px;
+    }
+    .brand .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--paprika); display: inline-block; }
+
+    nav.crumbs {
+      font-size: 13.5px; color: var(--ink-soft);
+      margin-top: 16px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+    }
+    nav.crumbs a { color: var(--ink-soft); text-decoration: none; }
+    nav.crumbs a:hover { color: var(--paprika); }
+    nav.crumbs span.sep { opacity: .45; }
+    nav.crumbs span.here { color: var(--ink); }
+
+    /* ---------- hero question + answer ---------- */
+    .hero { padding: 26px 0 8px; }
+    h1 {
+      font-family: "Spectral", serif;
+      font-weight: 800;
+      font-size: clamp(28px, 6.5vw, 42px);
+      line-height: 1.08;
+      letter-spacing: -.015em;
+      max-width: 14ch;
+    }
+    .answer {
+      margin-top: 18px;
+      font-size: clamp(18px, 4.4vw, 21px);
+      color: var(--ink);
+      padding: 16px 18px;
+      background: linear-gradient(180deg, var(--card), var(--paper-2));
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--paprika);
+      border-radius: 12px;
+    }
+    .answer b { color: var(--paprika-dk); }
+
+    /* ---------- calculator card ---------- */
+    .calc {
+      margin: 26px 0;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .calc__head {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--line);
+      font-family: "Spectral", serif; font-weight: 600; font-size: 18px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .calc__body { padding: 20px; }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+    .chip {
+      font: inherit; font-size: 14px; font-weight: 600;
+      padding: 8px 14px; border-radius: 999px;
+      border: 1px solid var(--line); background: var(--paper);
+      color: var(--ink); cursor: pointer; transition: .15s;
+    }
+    .chip:hover { border-color: var(--paprika); color: var(--paprika); }
+    .chip:active { transform: translateY(1px); }
+
+    .row { display: grid; grid-template-columns: 1fr 1.4fr; gap: 12px; margin-bottom: 14px; }
+    .field label {
+      display: block; font-size: 12.5px; font-weight: 600;
+      color: var(--ink-soft); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 6px;
+    }
+    .field input, .field select {
+      width: 100%; font: inherit; font-size: 17px;
+      padding: 13px 14px; border: 1px solid var(--line); border-radius: 11px;
+      background: var(--paper); color: var(--ink); -webkit-appearance: none; appearance: none;
+    }
+    .field input:focus, .field select:focus {
+      outline: none; border-color: var(--paprika);
+      box-shadow: 0 0 0 3px rgba(194,82,44,.15);
+    }
+    .field select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236B5F54' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 13px center; padding-right: 38px;
+    }
+
+    .swap { display: flex; justify-content: center; margin: -4px 0 10px; }
+    .swap button {
+      font: inherit; font-size: 13px; font-weight: 600; color: var(--ink-soft);
+      background: none; border: none; cursor: pointer; padding: 4px 10px; border-radius: 8px;
+    }
+    .swap button:hover { color: var(--paprika); background: var(--paper-2); }
+
+    .result {
+      margin-top: 6px; padding: 22px 20px; border-radius: 12px;
+      background: linear-gradient(135deg, #2A2420, #3A332C);
+      color: #FBF6EC; position: relative;
+    }
+    .result__num { font-family: "Spectral", serif; font-weight: 800; font-size: clamp(30px, 8vw, 40px); line-height: 1; }
+    .result__num span { color: var(--honey); }
+    .result__sub { margin-top: 8px; font-size: 14px; color: #D9CDBC; }
+    .result__copy {
+      position: absolute; top: 16px; right: 16px;
+      font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+      background: rgba(255,255,255,.1); color: #FBF6EC;
+      border: 1px solid rgba(255,255,255,.18); border-radius: 8px; padding: 7px 12px;
+    }
+    .result__copy:hover { background: rgba(255,255,255,.2); }
+
+    /* ---------- reusable section ---------- */
+    section { margin: 34px 0; }
+    h2 {
+      font-family: "Spectral", serif; font-weight: 600; font-size: 24px;
+      letter-spacing: -.01em; margin-bottom: 14px;
+    }
+
+    table { width: 100%; border-collapse: collapse; font-size: 16px; }
+    table th, table td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+    table th { font-size: 12.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-soft); }
+    table tr:last-child td { border-bottom: none; }
+    table td:last-child { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .table-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+
+    .explainer p { margin-bottom: 12px; color: var(--ink); }
+    .explainer p:last-child { margin-bottom: 0; }
+
+    /* ---------- FAQ visible block (matches FAQPage JSON-LD) ---------- */
+    details {
+      border: 1px solid var(--line); border-radius: 12px; background: var(--card);
+      padding: 4px 18px; margin-bottom: 10px;
+    }
+    details summary {
+      font-family: "Spectral", serif; font-weight: 600; font-size: 17px;
+      padding: 14px 0; cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 12px;
+    }
+    details summary::-webkit-details-marker { display: none; }
+    details summary::after { content: "+"; color: var(--paprika); font-size: 22px; line-height: 1; }
+    details[open] summary::after { content: "–"; }
+    details p { padding: 0 0 16px; color: var(--ink-soft); }
+
+    /* ---------- CTA + affiliate + related ---------- */
+    .cta {
+      display: block; text-align: center; text-decoration: none;
+      background: var(--paprika); color: #fff; font-weight: 700; font-size: 17px;
+      padding: 17px 22px; border-radius: 13px; transition: .15s;
+    }
+    .cta:hover { background: var(--paprika-dk); }
+    .cta small { display: block; font-weight: 500; font-size: 13.5px; opacity: .9; margin-top: 3px; }
+
+    .affil {
+      display: flex; gap: 14px; align-items: center;
+      background: var(--paper-2); border: 1px dashed var(--line); border-radius: 12px; padding: 14px 16px;
+      font-size: 14.5px;
+    }
+    .affil a { color: var(--paprika-dk); font-weight: 700; text-decoration: none; white-space: nowrap; }
+    .affil a:hover { text-decoration: underline; }
+
+    .related { display: flex; flex-wrap: wrap; gap: 9px; }
+    .related a {
+      font-size: 15px; font-weight: 600; text-decoration: none; color: var(--ink);
+      background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 9px 16px; transition: .15s;
+    }
+    .related a:hover { border-color: var(--paprika); color: var(--paprika); }
+
+    /* ---------- ad slots: fixed height = NO layout shift. Never above the result. ---------- */
+    .ad {
+      min-height: 100px; display: flex; align-items: center; justify-content: center;
+      background: repeating-linear-gradient(45deg, var(--paper-2), var(--paper-2) 10px, var(--paper) 10px, var(--paper) 20px);
+      border: 1px solid var(--line); border-radius: 12px; color: var(--ink-soft); font-size: 12px; letter-spacing: .05em;
+      margin: 30px 0;
+    }
+    @media (min-width: 600px) { .ad { min-height: 90px; } }
+
+    footer { border-top: 1px solid var(--line); margin-top: 40px; padding: 26px 0 40px; font-size: 13.5px; color: var(--ink-soft); }
+    footer a { color: var(--ink-soft); }
+
+    /* staggered entrance */
+    .reveal { opacity: 0; transform: translateY(10px); animation: rise .55s cubic-bezier(.2,.7,.2,1) forwards; }
+    @keyframes rise { to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { .reveal { animation: none; opacity: 1; transform: none; } }
+
+    .row { } /* keep two columns even on small screens — they're narrow controls */
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <header>
+      <a class="brand" href="/bg/"><span class="dot"></span>Мерки</a><!-- {{brand}} -->
+      <nav class="crumbs" aria-label="breadcrumb">
+        <!-- {{breadcrumbs}} loop -->
+        <a href="/bg/">Начало</a><span class="sep">›</span>
+        <a href="/bg/merki/">Мерни единици</a><span class="sep">›</span>
+        <a href="/bg/merki/brashno/">Брашно</a><span class="sep">›</span>
+        <span class="here">Чаша в грамове</span>
+      </nav>
+    </header>
+
+    <div class="hero">
+      <!-- {{h1_question}} -->
+      <h1 class="reveal" style="animation-delay:.02s">Колко грама е една чаша брашно?</h1>
+      <!-- {{direct_answer}} — keep the answer in sentence ONE; this is what AI Overviews pull. -->
+      <p class="answer reveal" style="animation-delay:.08s">Една чаша (250 мл) бяло брашно тежи около <b>125 грама</b>. Точното тегло леко варира според това дали брашното е пресято.</p>
+    </div>
+
+    <!-- ============ LIVE CALCULATOR (pre-filled from page data / URL params) ============ -->
+    <div class="calc reveal" style="animation-delay:.14s">
+      <div class="calc__head">Калкулатор за мерки</div>
+      <div class="calc__body">
+        <div class="chips" id="chips" aria-label="Бързи мерки">
+          <button class="chip" data-amt="0.25">¼ чаша</button>
+          <button class="chip" data-amt="0.5">½ чаша</button>
+          <button class="chip" data-amt="1">1 чаша</button>
+          <button class="chip" data-amt="2">2 чаши</button>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="amt">Количество</label>
+            <input id="amt" type="number" inputmode="decimal" min="0" step="any" value="1">
+          </div>
+          <div class="field">
+            <label for="ing">Съставка</label>
+            <select id="ing"></select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="from">От</label>
+            <select id="from"></select>
+          </div>
+          <div class="field">
+            <label for="to">Към</label>
+            <select id="to"></select>
+          </div>
+        </div>
+
+        <div class="swap"><button id="swap" type="button">↕ размени мерките</button></div>
+
+        <div class="result" aria-live="polite">
+          <button class="result__copy" id="copy" type="button">Копирай</button>
+          <div class="result__num" id="out">125 <span>г</span></div>
+          <div class="result__sub" id="why">1 чаша брашно ≈ 125 г · базирано на плътност 0.50 г/мл</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ad slot #1 — placed AFTER the result, never between user and answer. -->
+    <div class="ad" role="complementary">РЕКЛАМА</div><!-- {{ad_slot_inline}} -->
+
+    <!-- ============ REFERENCE TABLE ============ -->
+    <section>
+      <h2>Брашно: чаши и лъжици в грамове</h2>
+      <div class="table-card">
+        <table>
+          <thead><tr><th>Мярка</th><th>Тегло</th></tr></thead>
+          <tbody>
+            <!-- {{reference_rows}} loop -->
+            <tr><td>¼ чаша</td><td>≈ 31 г</td></tr>
+            <tr><td>⅓ чаша</td><td>≈ 42 г</td></tr>
+            <tr><td>½ чаша</td><td>≈ 63 г</td></tr>
+            <tr><td>1 чаша</td><td>≈ 125 г</td></tr>
+            <tr><td>2 чаши</td><td>≈ 250 г</td></tr>
+            <tr><td>1 супена лъжица (с.л.)</td><td>≈ 8 г</td></tr>
+            <tr><td>1 чаена лъжичка (ч.л.)</td><td>≈ 3 г</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Affiliate slot — natural intent moment. -->
+    <div class="affil"><!-- {{affiliate_slot}} -->
+      <span>Нямате кухненска везна? С нея мерките са точни всеки път.</span>
+      <a href="#" rel="sponsored nofollow">Виж везни →</a>
+    </div>
+
+    <!-- ============ EXPLAINER ============ -->
+    <section class="explainer">
+      <h2>Защо теглото варира</h2>
+      <!-- {{explainer_html}} -->
+      <p>Брашното е „пухкаво“ — между прашинките има въздух, затова една чаша пресято брашно тежи по-малко от една чаша натъпкано. Заради това грамовете са по-надеждни от чашите при печене.</p>
+      <p>Имайте предвид и коя „чаша“ ползвате: българската водна чаша е около 250 мл, а американската мерителна чаша (cup) — 240 мл. Този калкулатор смята спрямо 250 мл.</p>
+    </section>
+
+    <!-- ============ FAQ (visible block; mirrors FAQPage JSON-LD) ============ -->
+    <section>
+      <h2>Често задавани въпроси</h2>
+      <!-- {{faq}} loop -->
+      <details>
+        <summary>Колко грама брашно има в една супена лъжица?</summary>
+        <p>Една супена лъжица (15 мл) брашно тежи около 8 грама.</p>
+      </details>
+      <details>
+        <summary>Колко чаши брашно са 500 грама?</summary>
+        <p>500 грама брашно са приблизително 4 чаши (по 250 мл).</p>
+      </details>
+    </section>
+
+    <!-- ============ CTA to the recipe scaler (the differentiator) ============ -->
+    <section>
+      <a class="cta" href="/bg/preobrazuvane-na-recepta/">
+        Преобразувай цяла рецепта наведнъж
+        <small>Въведи рецептата — всички мерки в грамове + смяна на порциите</small>
+      </a>
+    </section>
+
+    <!-- ============ RELATED (hub & spoke internal links) ============ -->
+    <section>
+      <h2>Други съставки</h2>
+      <div class="related"><!-- {{related}} loop -->
+        <a href="/bg/merki/zahar/chasha-v-gramove/">Захар</a>
+        <a href="/bg/merki/pudra-zahar/chasha-v-gramove/">Пудра захар</a>
+        <a href="/bg/merki/oriz/chasha-v-gramove/">Ориз</a>
+        <a href="/bg/merki/kakao/chasha-v-gramove/">Какао</a>
+        <a href="/bg/merki/oveseni-yadki/chasha-v-gramove/">Овесени ядки</a>
+      </div>
+    </section>
+
+    <footer>
+      <p>Мерки · Кухненски калкулатор за грамове и милилитри. Стойностите са приблизителни.</p>
+    </footer>
+
+  </div>
+
+  <script>
+  /* =====================================================================
+     Calculator engine (progressive enhancement — SEO content above is static).
+     Move INGREDIENTS to your shared, language-independent data layer.
+     density = grams per millilitre.
+     ===================================================================== */
+  const INGREDIENTS = {
+    brashno:        { name: "Брашно",          density: 0.50 },
+    zahar:          { name: "Захар",           density: 0.85 },
+    pudra_zahar:    { name: "Пудра захар",     density: 0.50 },
+    oriz:           { name: "Ориз (суров)",    density: 0.78 },
+    kakao:          { name: "Какао",           density: 0.36 },
+    oves:           { name: "Овесени ядки",    density: 0.38 },
+    mlyako:         { name: "Мляко",           density: 1.03 },
+    olio:           { name: "Олио",            density: 0.92 },
+    maslo:          { name: "Масло (разтопено)", density: 0.96 },
+    med:            { name: "Мед",             density: 1.42 },
+    sol:            { name: "Сол",             density: 1.20 },
+    voda:           { name: "Вода",            density: 1.00 }
+  };
+
+  // unit -> millilitres (volume) ; mass units flagged separately
+  const VOL = { chasha: 250, sl: 15, chl: 5, ml: 1, cup_us: 240, floz: 29.5735 };
+  const MASS = { g: 1, kg: 1000, oz: 28.3495, lb: 453.592 }; // grams per unit
+  const LABELS = {
+    chasha: "чаша", sl: "с.л.", chl: "ч.л.", ml: "мл", cup_us: "cup (US)",
+    floz: "fl oz", g: "г", kg: "кг", oz: "oz", lb: "lb"
+  };
+  const UNIT_ORDER = ["chasha","sl","chl","ml","cup_us","floz","g","kg","oz","lb"];
+
+  const $ = id => document.getElementById(id);
+  const ingSel = $("ing"), fromSel = $("from"), toSel = $("to"), amtIn = $("amt");
+
+  // populate selects
+  for (const [id, o] of Object.entries(INGREDIENTS)) {
+    ingSel.add(new Option(o.name, id));
+  }
+  for (const u of UNIT_ORDER) {
+    fromSel.add(new Option(LABELS[u], u));
+    toSel.add(new Option(LABELS[u], u));
+  }
+
+  // ---- defaults from page data, overridable by URL params (?ing=&from=&to=&amt=) ----
+  const params = new URLSearchParams(location.search);
+  ingSel.value  = params.get("ing")  || "brashno";   // {{ingredient_id}}
+  fromSel.value = params.get("from") || "chasha";     // {{from_unit}}
+  toSel.value   = params.get("to")   || "g";          // {{to_unit}}
+  amtIn.value   = params.get("amt")  || "1";          // {{amount}}
+
+  function isVol(u){ return u in VOL; }
+
+  function toGrams(amount, unit, density){
+    return isVol(unit) ? amount * VOL[unit] * density : amount * MASS[unit];
+  }
+  function fromGrams(grams, unit, density){
+    return isVol(unit) ? (grams / density) / VOL[unit] : grams / MASS[unit];
+  }
+  function pretty(n){
+    if (!isFinite(n)) return "—";
+    if (n >= 100) return Math.round(n).toString();
+    if (n >= 10)  return (Math.round(n*10)/10).toString();
+    return (Math.round(n*100)/100).toString();
+  }
+
+  function compute(){
+    const ing = INGREDIENTS[ingSel.value];
+    const amount = parseFloat(amtIn.value);
+    if (!ing || isNaN(amount)) { $("out").innerHTML = "—"; $("why").textContent = ""; return; }
+    const grams = toGrams(amount, fromSel.value, ing.density);
+    const result = fromGrams(grams, toSel.value, ing.density);
+    $("out").innerHTML = pretty(result) + ' <span>' + LABELS[toSel.value] + '</span>';
+    $("why").textContent =
+      `${pretty(amount)} ${LABELS[fromSel.value]} ${ing.name.toLowerCase()} ≈ ${pretty(result)} ${LABELS[toSel.value]}`
+      + ` · плътност ${ing.density.toFixed(2)} г/мл`;
+  }
+
+  [ingSel, fromSel, toSel, amtIn].forEach(el => el.addEventListener("input", compute));
+
+  document.getElementById("chips").addEventListener("click", e => {
+    const b = e.target.closest(".chip"); if (!b) return;
+    amtIn.value = b.dataset.amt; fromSel.value = "chasha"; compute();
+  });
+
+  document.getElementById("swap").addEventListener("click", () => {
+    [fromSel.value, toSel.value] = [toSel.value, fromSel.value]; compute();
+  });
+
+  document.getElementById("copy").addEventListener("click", async () => {
+    const txt = document.getElementById("out").textContent.trim();
+    try { await navigator.clipboard.writeText(txt); const b = document.getElementById("copy");
+      b.textContent = "Копирано ✓"; setTimeout(()=>b.textContent="Копирай", 1400);
+    } catch(_) {}
+  });
+
+  compute();
+  </script>
+</body>
+</html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="bg">
+<!--
+=====================================================================================
+  INGREDIENT HUB PAGE TEMPLATE  —  the /{lang}/merki/{ingredient}/ tier
+=====================================================================================
+  This is the "spoke collector" for one ingredient: it links out to every question
+  page (chasha-v-gramove, supena-lazhica-v-gramove, ...) and acts as the topical
+  authority node. Rendered here as a working example (брашно).
+
+  Dynamic values are annotated inline with  <!-- {{field}} -->.
+  Data record adds, on top of the question-page contract:
+    hub = {
+      h1:          "Брашно: чаши, лъжици и грамове",
+      intro_html:  "...",
+      question_pages: [                       // the spokes → ItemList JSON-LD + grid
+        { name: "Чаша в грамове",          url: "/bg/merki/brashno/chasha-v-gramove/" },
+        { name: "Супена лъжица в грамове", url: "/bg/merki/brashno/supena-lazhica-v-gramove/" },
+        { name: "Чаена лъжичка в грамове", url: "/bg/merki/brashno/chaena-lazhichka-v-gramove/" }
+      ]
+    }
+  PRODUCTION NOTE: extract the <style> and the calculator <script> below into shared
+  cached files (/assets/site.css, /assets/calc.js) — do NOT ship 200 lines of identical
+  CSS on every one of hundreds of pages. They're inlined here only so this previews.
+=====================================================================================
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Брашно: чаши, лъжици и грамове | Мерки</title><!-- {{title}} -->
+  <meta name="description" content="Колко тежи брашното? Калкулатор и таблица за чаши, супени и чаени лъжици в грамове."><!-- {{meta_description}} -->
+  <link rel="canonical" href="https://example.com/bg/merki/brashno/"><!-- {{canonical_url}} -->
+  <link rel="alternate" hreflang="bg" href="https://example.com/bg/merki/brashno/">
+  <link rel="alternate" hreflang="x-default" href="https://example.com/bg/merki/brashno/">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;0,800;1,400&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- BreadcrumbList — active rich result -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Начало", "item": "https://example.com/bg/" },
+      { "@type": "ListItem", "position": 2, "name": "Мерни единици", "item": "https://example.com/bg/merki/" },
+      { "@type": "ListItem", "position": 3, "name": "Брашно" }
+    ]
+  }
+  </script>
+
+  <!-- ItemList of the spoke pages — helps Google/AI crawlers map the cluster -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Чаша в грамове",          "url": "https://example.com/bg/merki/brashno/chasha-v-gramove/" },
+      { "@type": "ListItem", "position": 2, "name": "Супена лъжица в грамове", "url": "https://example.com/bg/merki/brashno/supena-lazhica-v-gramove/" },
+      { "@type": "ListItem", "position": 3, "name": "Чаена лъжичка в грамове", "url": "https://example.com/bg/merki/brashno/chaena-lazhichka-v-gramove/" }
+    ]
+  }
+  </script>
+
+  <style>
+    :root{
+      --paper:#FBF6EC; --paper-2:#F4ECDC; --ink:#2A2420; --ink-soft:#6B5F54; --line:#E4D8C4;
+      --paprika:#C2522C; --paprika-dk:#9E3F1F; --honey:#E0A12E; --card:#FFFDF8;
+      --shadow:0 1px 2px rgba(42,36,32,.04),0 8px 28px -12px rgba(42,36,32,.18);
+      --radius:16px; --maxw:720px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:"Onest",system-ui,sans-serif;color:var(--ink);background:var(--paper);
+      background-image:radial-gradient(rgba(160,130,90,.05) 1px,transparent 1px);background-size:4px 4px;
+      line-height:1.6;font-size:17px;-webkit-font-smoothing:antialiased}
+    .wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px}
+    header{padding:22px 0 6px}
+    .brand{font-family:"Spectral",serif;font-weight:800;font-size:20px;letter-spacing:-.01em;color:var(--ink);
+      text-decoration:none;display:inline-flex;align-items:center;gap:9px}
+    .brand .dot{width:11px;height:11px;border-radius:50%;background:var(--paprika)}
+    nav.crumbs{font-size:13.5px;color:var(--ink-soft);margin-top:16px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+    nav.crumbs a{color:var(--ink-soft);text-decoration:none}
+    nav.crumbs a:hover{color:var(--paprika)}
+    nav.crumbs span.sep{opacity:.45}
+    nav.crumbs span.here{color:var(--ink)}
+    .hero{padding:26px 0 8px}
+    h1{font-family:"Spectral",serif;font-weight:800;font-size:clamp(28px,6.5vw,42px);line-height:1.08;letter-spacing:-.015em;max-width:16ch}
+    .intro{margin-top:16px;font-size:clamp(17px,4vw,19px);color:var(--ink)}
+    .calc{margin:26px 0;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+    .calc__head{padding:16px 20px;border-bottom:1px solid var(--line);font-family:"Spectral",serif;font-weight:600;font-size:18px}
+    .calc__body{padding:20px}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+    .chip{font:inherit;font-size:14px;font-weight:600;padding:8px 14px;border-radius:999px;border:1px solid var(--line);
+      background:var(--paper);color:var(--ink);cursor:pointer;transition:.15s}
+    .chip:hover{border-color:var(--paprika);color:var(--paprika)}
+    .row{display:grid;grid-template-columns:1fr 1.4fr;gap:12px;margin-bottom:14px}
+    .field label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+    .field input,.field select{width:100%;font:inherit;font-size:17px;padding:13px 14px;border:1px solid var(--line);
+      border-radius:11px;background:var(--paper);color:var(--ink);appearance:none;-webkit-appearance:none}
+    .field input:focus,.field select:focus{outline:none;border-color:var(--paprika);box-shadow:0 0 0 3px rgba(194,82,44,.15)}
+    .field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236B5F54' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;background-position:right 13px center;padding-right:38px}
+    .swap{display:flex;justify-content:center;margin:-4px 0 10px}
+    .swap button{font:inherit;font-size:13px;font-weight:600;color:var(--ink-soft);background:none;border:none;cursor:pointer;padding:4px 10px;border-radius:8px}
+    .swap button:hover{color:var(--paprika);background:var(--paper-2)}
+    .result{margin-top:6px;padding:22px 20px;border-radius:12px;background:linear-gradient(135deg,#2A2420,#3A332C);color:#FBF6EC;position:relative}
+    .result__num{font-family:"Spectral",serif;font-weight:800;font-size:clamp(30px,8vw,40px);line-height:1}
+    .result__num span{color:var(--honey)}
+    .result__sub{margin-top:8px;font-size:14px;color:#D9CDBC}
+    .result__copy{position:absolute;top:16px;right:16px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;
+      background:rgba(255,255,255,.1);color:#FBF6EC;border:1px solid rgba(255,255,255,.18);border-radius:8px;padding:7px 12px}
+    .result__copy:hover{background:rgba(255,255,255,.2)}
+    section{margin:34px 0}
+    h2{font-family:"Spectral",serif;font-weight:600;font-size:24px;letter-spacing:-.01em;margin-bottom:14px}
+    /* quick-answers grid = the spoke links */
+    .qa-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+    .qa-card{display:flex;justify-content:space-between;align-items:center;gap:10px;text-decoration:none;
+      background:var(--card);border:1px solid var(--line);border-radius:13px;padding:16px 18px;transition:.15s}
+    .qa-card:hover{border-color:var(--paprika);transform:translateY(-2px);box-shadow:var(--shadow)}
+    .qa-card b{font-family:"Spectral",serif;font-weight:600;font-size:16px;color:var(--ink)}
+    .qa-card .v{font-weight:700;color:var(--paprika);font-variant-numeric:tabular-nums;white-space:nowrap}
+    table{width:100%;border-collapse:collapse;font-size:16px}
+    table th,table td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line)}
+    table th{font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft)}
+    table tr:last-child td{border-bottom:none}
+    table td:last-child{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+    .table-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+    .explainer p{margin-bottom:12px}
+    .cta{display:block;text-align:center;text-decoration:none;background:var(--paprika);color:#fff;font-weight:700;font-size:17px;padding:17px 22px;border-radius:13px;transition:.15s}
+    .cta:hover{background:var(--paprika-dk)}
+    .cta small{display:block;font-weight:500;font-size:13.5px;opacity:.9;margin-top:3px}
+    .affil{display:flex;gap:14px;align-items:center;background:var(--paper-2);border:1px dashed var(--line);border-radius:12px;padding:14px 16px;font-size:14.5px}
+    .affil a{color:var(--paprika-dk);font-weight:700;text-decoration:none;white-space:nowrap}
+    .related{display:flex;flex-wrap:wrap;gap:9px}
+    .related a{font-size:15px;font-weight:600;text-decoration:none;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:9px 16px;transition:.15s}
+    .related a:hover{border-color:var(--paprika);color:var(--paprika)}
+    .ad{min-height:100px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:12px;
+      background:repeating-linear-gradient(45deg,var(--paper-2),var(--paper-2) 10px,var(--paper) 10px,var(--paper) 20px);
+      color:var(--ink-soft);font-size:12px;letter-spacing:.05em;margin:30px 0}
+    footer{border-top:1px solid var(--line);margin-top:40px;padding:26px 0 40px;font-size:13.5px;color:var(--ink-soft)}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <header>
+      <a class="brand" href="/bg/"><span class="dot"></span>Мерки</a>
+      <nav class="crumbs" aria-label="breadcrumb"><!-- {{breadcrumbs}} -->
+        <a href="/bg/">Начало</a><span class="sep">›</span>
+        <a href="/bg/merki/">Мерни единици</a><span class="sep">›</span>
+        <span class="here">Брашно</span>
+      </nav>
+    </header>
+
+    <div class="hero">
+      <h1>Брашно: чаши, лъжици и грамове</h1><!-- {{h1}} -->
+      <p class="intro"><!-- {{intro_html}} -->Колко грама е една чаша брашно, колко тежи една лъжица — изчисли наведнъж или виж готовата таблица по-долу.</p>
+    </div>
+
+    <!-- master calculator, defaulting to this ingredient -->
+    <div class="calc">
+      <div class="calc__head">Калкулатор за мерки</div>
+      <div class="calc__body">
+        <div class="chips" id="chips">
+          <button class="chip" data-amt="0.5">½ чаша</button>
+          <button class="chip" data-amt="1">1 чаша</button>
+          <button class="chip" data-amt="2">2 чаши</button>
+        </div>
+        <div class="row">
+          <div class="field"><label for="amt">Количество</label><input id="amt" type="number" inputmode="decimal" min="0" step="any" value="1"></div>
+          <div class="field"><label for="ing">Съставка</label><select id="ing"></select></div>
+        </div>
+        <div class="row">
+          <div class="field"><label for="from">От</label><select id="from"></select></div>
+          <div class="field"><label for="to">Към</label><select id="to"></select></div>
+        </div>
+        <div class="swap"><button id="swap" type="button">↕ размени мерките</button></div>
+        <div class="result" aria-live="polite">
+          <button class="result__copy" id="copy" type="button">Копирай</button>
+          <div class="result__num" id="out">125 <span>г</span></div>
+          <div class="result__sub" id="why"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ SPOKE LINKS (the whole point of the hub) ============ -->
+    <section>
+      <h2>Бързи отговори за брашно</h2>
+      <div class="qa-grid"><!-- {{question_pages}} loop -->
+        <a class="qa-card" href="/bg/merki/brashno/chasha-v-gramove/"><b>Чаша → грамове</b><span class="v">≈ 125 г</span></a>
+        <a class="qa-card" href="/bg/merki/brashno/supena-lazhica-v-gramove/"><b>Супена лъжица → грамове</b><span class="v">≈ 8 г</span></a>
+        <a class="qa-card" href="/bg/merki/brashno/chaena-lazhichka-v-gramove/"><b>Чаена лъжичка → грамове</b><span class="v">≈ 3 г</span></a>
+      </div>
+    </section>
+
+    <div class="ad" role="complementary">РЕКЛАМА</div>
+
+    <!-- ============ FULL REFERENCE TABLE ============ -->
+    <section>
+      <h2>Таблица: брашно в грамове</h2>
+      <div class="table-card">
+        <table>
+          <thead><tr><th>Мярка</th><th>Тегло</th></tr></thead>
+          <tbody><!-- {{reference_rows}} -->
+            <tr><td>¼ чаша</td><td>≈ 31 г</td></tr>
+            <tr><td>⅓ чаша</td><td>≈ 42 г</td></tr>
+            <tr><td>½ чаша</td><td>≈ 63 г</td></tr>
+            <tr><td>1 чаша</td><td>≈ 125 г</td></tr>
+            <tr><td>2 чаши</td><td>≈ 250 г</td></tr>
+            <tr><td>1 супена лъжица (с.л.)</td><td>≈ 8 г</td></tr>
+            <tr><td>1 чаена лъжичка (ч.л.)</td><td>≈ 3 г</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="affil">
+      <span>За точни мерки при печене най-сигурна е кухненската везна.</span>
+      <a href="#" rel="sponsored nofollow">Виж везни →</a>
+    </div>
+
+    <section class="explainer">
+      <h2>Как да мерим брашно правилно</h2>
+      <p><!-- {{intro/explainer}} -->Не натъпквайте брашното в чашата — загребете леко и подравнете отгоре, иначе ще сложите повече, отколкото иска рецептата. За точност при печене мерете в грамове.</p>
+    </section>
+
+    <section>
+      <a class="cta" href="/bg/preobrazuvane-na-recepta/">Преобразувай цяла рецепта наведнъж<small>Всички мерки в грамове + смяна на порциите</small></a>
+    </section>
+
+    <section>
+      <h2>Други съставки</h2>
+      <div class="related"><!-- {{related}} -->
+        <a href="/bg/merki/zahar/">Захар</a>
+        <a href="/bg/merki/oriz/">Ориз</a>
+        <a href="/bg/merki/kakao/">Какао</a>
+        <a href="/bg/merki/med/">Мед</a>
+        <a href="/bg/merki/maslo/">Масло</a>
+      </div>
+    </section>
+
+    <footer><p>Мерки · Кухненски калкулатор за грамове и милилитри. Стойностите са приблизителни.</p></footer>
+  </div>
+
+  <!-- In production: <script src="/assets/calc.js" defer></script> (shared, cached) -->
+  <script>
+  const INGREDIENTS={brashno:{name:"Брашно",density:.5},zahar:{name:"Захар",density:.85},pudra_zahar:{name:"Пудра захар",density:.5},
+    oriz:{name:"Ориз (суров)",density:.78},kakao:{name:"Какао",density:.36},oves:{name:"Овесени ядки",density:.38},
+    mlyako:{name:"Мляко",density:1.03},olio:{name:"Олио",density:.92},maslo:{name:"Масло (разтопено)",density:.96},
+    med:{name:"Мед",density:1.42},sol:{name:"Сол",density:1.2},voda:{name:"Вода",density:1}};
+  const VOL={chasha:250,sl:15,chl:5,ml:1,cup_us:240,floz:29.5735},MASS={g:1,kg:1000,oz:28.3495,lb:453.592};
+  const LABELS={chasha:"чаша",sl:"с.л.",chl:"ч.л.",ml:"мл",cup_us:"cup (US)",floz:"fl oz",g:"г",kg:"кг",oz:"oz",lb:"lb"};
+  const ORDER=["chasha","sl","chl","ml","cup_us","floz","g","kg","oz","lb"];
+  const $=id=>document.getElementById(id),ing=$("ing"),from=$("from"),to=$("to"),amt=$("amt");
+  for(const[id,o]of Object.entries(INGREDIENTS))ing.add(new Option(o.name,id));
+  for(const u of ORDER){from.add(new Option(LABELS[u],u));to.add(new Option(LABELS[u],u));}
+  ing.value="brashno";from.value="chasha";to.value="g";   // {{ingredient_id}},{{from_unit}},{{to_unit}}
+  const isVol=u=>u in VOL;
+  const toG=(a,u,d)=>isVol(u)?a*VOL[u]*d:a*MASS[u];
+  const fromG=(g,u,d)=>isVol(u)?(g/d)/VOL[u]:g/MASS[u];
+  const pretty=n=>!isFinite(n)?"—":n>=100?Math.round(n)+"":n>=10?(Math.round(n*10)/10)+"":(Math.round(n*100)/100)+"";
+  function compute(){const o=INGREDIENTS[ing.value],a=parseFloat(amt.value);
+    if(!o||isNaN(a)){$("out").innerHTML="—";$("why").textContent="";return;}
+    const g=toG(a,from.value,o.density),r=fromG(g,to.value,o.density);
+    $("out").innerHTML=pretty(r)+' <span>'+LABELS[to.value]+'</span>';
+    $("why").textContent=`${pretty(a)} ${LABELS[from.value]} ${o.name.toLowerCase()} ≈ ${pretty(r)} ${LABELS[to.value]} · плътност ${o.density.toFixed(2)} г/мл`;}
+  [ing,from,to,amt].forEach(e=>e.addEventListener("input",compute));
+  $("chips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;amt.value=b.dataset.amt;from.value="chasha";compute();});
+  $("swap").addEventListener("click",()=>{[from.value,to.value]=[to.value,from.value];compute();});
+  $("copy").addEventListener("click",async()=>{try{await navigator.clipboard.writeText($("out").textContent.trim());
+    const b=$("copy");b.textContent="Копирано ✓";setTimeout(()=>b.textContent="Копирай",1400);}catch(_){}});
+  compute();
+  </script>
+</body>
+</html>

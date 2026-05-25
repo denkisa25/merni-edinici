@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="bg">
+<!--
+=====================================================================================
+  RECIPE SCALER PAGE  —  /{lang}/preobrazuvane-na-recepta/
+=====================================================================================
+  The differentiator: convert a whole recipe at once + rescale servings.
+  Standalone working prototype. In production: link /assets/site.css and move the
+  <script> to /assets/scaler.js; load /assets/data.${lang}.js for window.__KITCHEN_DATA__
+  (same shared dataset calc.js uses). The fallback dataset below mirrors build.mjs.
+  SEO head fields are annotated  <!-- {{field}} -->  for the generator.
+=====================================================================================
+-->
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Преобразувай цяла рецепта — мерки в грамове | Мерки</title><!-- {{title}} -->
+<meta name="description" content="Постави рецепта или въведи съставките и я преобразувай в грамове наведнъж. Смяна на порциите и готов списък за пазаруване."><!-- {{meta_description}} -->
+<link rel="canonical" href="https://example.com/bg/preobrazuvane-na-recepta/"><!-- {{canonical_url}} -->
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;0,800;1,400&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF6EC;--paper-2:#F4ECDC;--ink:#2A2420;--ink-soft:#6B5F54;--line:#E4D8C4;
+    --paprika:#C2522C;--paprika-dk:#9E3F1F;--honey:#E0A12E;--card:#FFFDF8;
+    --warn:#B5791B;--shadow:0 1px 2px rgba(42,36,32,.04),0 8px 28px -12px rgba(42,36,32,.18);
+    --radius:16px;--maxw:720px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Onest",system-ui,sans-serif;color:var(--ink);background:var(--paper);
+    background-image:radial-gradient(rgba(160,130,90,.05) 1px,transparent 1px);background-size:4px 4px;
+    line-height:1.6;font-size:17px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px}
+  header{padding:22px 0 6px}
+  .brand{font-family:"Spectral",serif;font-weight:800;font-size:20px;color:var(--ink);text-decoration:none;display:inline-flex;align-items:center;gap:9px}
+  .brand .dot{width:11px;height:11px;border-radius:50%;background:var(--paprika)}
+  nav.crumbs{font-size:13.5px;color:var(--ink-soft);margin-top:16px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  nav.crumbs a{color:var(--ink-soft);text-decoration:none}
+  nav.crumbs a:hover{color:var(--paprika)}
+  nav.crumbs .sep{opacity:.45}
+  .hero{padding:26px 0 10px}
+  h1{font-family:"Spectral",serif;font-weight:800;font-size:clamp(28px,6.5vw,42px);line-height:1.08;letter-spacing:-.015em;max-width:16ch}
+  .lead{margin-top:14px;font-size:clamp(17px,4vw,19px);color:var(--ink-soft)}
+  .panel{margin:22px 0;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .panel__head{padding:14px 20px;border-bottom:1px solid var(--line);font-family:"Spectral",serif;font-weight:600;font-size:18px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .panel__body{padding:20px}
+  /* tabs */
+  .tabs{display:flex;gap:6px;background:var(--paper-2);padding:5px;border-radius:12px;margin-bottom:18px}
+  .tab{flex:1;font:inherit;font-size:15px;font-weight:600;padding:10px;border:none;border-radius:9px;background:none;color:var(--ink-soft);cursor:pointer}
+  .tab[aria-selected="true"]{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+  /* paste */
+  textarea{width:100%;min-height:140px;font:inherit;font-size:16px;padding:14px;border:1px solid var(--line);border-radius:11px;background:var(--paper);color:var(--ink);resize:vertical}
+  textarea:focus{outline:none;border-color:var(--paprika);box-shadow:0 0 0 3px rgba(194,82,44,.15)}
+  .hint{font-size:13px;color:var(--ink-soft);margin-top:8px}
+  /* rows */
+  .rows{display:flex;flex-direction:column;gap:10px}
+  .ing-row{display:grid;grid-template-columns:1fr 84px 1.1fr 36px;gap:8px;align-items:center}
+  .ing-row input,.ing-row select{width:100%;font:inherit;font-size:16px;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);appearance:none;-webkit-appearance:none}
+  .ing-row input:focus,.ing-row select:focus{outline:none;border-color:var(--paprika);box-shadow:0 0 0 3px rgba(194,82,44,.15)}
+  .ing-row select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B5F54' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:30px}
+  .ing-row.warn input:first-child{border-color:var(--warn);background:#FBF3E2}
+  .rm{font:inherit;font-size:18px;line-height:1;color:var(--ink-soft);background:none;border:1px solid var(--line);border-radius:10px;height:42px;cursor:pointer}
+  .rm:hover{color:var(--paprika);border-color:var(--paprika)}
+  .add{margin-top:12px;font:inherit;font-size:15px;font-weight:600;color:var(--paprika);background:none;border:1px dashed var(--line);border-radius:10px;padding:11px;width:100%;cursor:pointer}
+  .add:hover{border-color:var(--paprika)}
+  /* servings + options */
+  .controls{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end}
+  .ctrl label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+  .stepper{display:flex;align-items:center;gap:0;border:1px solid var(--line);border-radius:11px;overflow:hidden;background:var(--paper)}
+  .stepper button{font:inherit;font-size:20px;width:42px;height:46px;border:none;background:none;color:var(--ink);cursor:pointer}
+  .stepper button:hover{background:var(--paper-2);color:var(--paprika)}
+  .stepper input{width:54px;height:46px;text-align:center;font:inherit;font-size:17px;font-weight:700;border:none;background:none;color:var(--ink)}
+  .stepper input:focus{outline:none}
+  .toggle{display:inline-flex;align-items:center;gap:9px;font-size:15px;font-weight:600;cursor:pointer;user-select:none}
+  .toggle input{width:18px;height:18px;accent-color:var(--paprika)}
+  /* output */
+  .out{background:linear-gradient(135deg,#2A2420,#3A332C);color:#FBF6EC;border-radius:var(--radius);padding:22px 20px;margin-top:8px}
+  .out h3{font-family:"Spectral",serif;font-weight:600;font-size:15px;letter-spacing:.04em;text-transform:uppercase;color:var(--honey);margin-bottom:12px}
+  .out + .out{margin-top:14px}
+  .out-list{list-style:none;display:flex;flex-direction:column;gap:9px}
+  .out-list li{display:flex;justify-content:space-between;gap:14px;padding-bottom:9px;border-bottom:1px solid rgba(255,255,255,.1)}
+  .out-list li:last-child{border-bottom:none;padding-bottom:0}
+  .out-list .nm{color:#EFE6D8}
+  .out-list .amt{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .out-list .flag{color:var(--honey);font-size:12px;font-weight:600}
+  .temp{margin-top:14px;font-size:14px;color:#D9CDBC}
+  .temp b{color:var(--honey)}
+  .out-actions{display:flex;gap:10px;margin-top:18px}
+  .out-actions button{flex:1;font:inherit;font-size:15px;font-weight:700;padding:13px;border-radius:11px;cursor:pointer;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#FBF6EC}
+  .out-actions button:hover{background:rgba(255,255,255,.2)}
+  .out-actions button.primary{background:var(--paprika);border-color:var(--paprika)}
+  .out-actions button.primary:hover{background:var(--paprika-dk)}
+  .empty{color:#D9CDBC;font-size:15px}
+  .factor{font-size:14px;color:var(--ink-soft);margin-top:6px}
+  footer{border-top:1px solid var(--line);margin-top:40px;padding:26px 0 40px;font-size:13.5px;color:var(--ink-soft)}
+  @media (max-width:480px){.ing-row{grid-template-columns:1fr 70px 1fr 34px;gap:6px}}
+  @media print{header,nav,.panel__body .tabs,#paste-panel,.rows,.add,.controls,.out-actions,footer,.hero .lead{display:none!important}
+    .out{background:#fff!important;color:#000!important;border:1px solid #ccc}.out h3{color:#000!important}.out-list .amt{color:#000!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <a class="brand" href="/bg/"><span class="dot"></span>Мерки</a>
+    <nav class="crumbs" aria-label="breadcrumb"><!-- {{breadcrumbs}} -->
+      <a href="/bg/">Начало</a><span class="sep">›</span>
+      <span>Преобразуване на рецепта</span>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <h1>Преобразувай цяла рецепта</h1>
+    <p class="lead">Постави рецепта или въведи съставките — и ги получаваш в грамове наведнъж, със смяна на порциите и готов списък за пазаруване.</p>
+  </div>
+
+  <!-- INPUT -->
+  <div class="panel">
+    <div class="panel__body">
+      <div class="tabs" role="tablist">
+        <button class="tab" id="tab-manual" role="tab" aria-selected="true">Въведи ръчно</button>
+        <button class="tab" id="tab-paste" role="tab" aria-selected="false">Постави рецепта</button>
+      </div>
+
+      <div id="paste-panel" hidden>
+        <textarea id="paste" placeholder="Постави съставките, по една на ред. Напр.:&#10;2 чаши брашно&#10;1 с.л. захар&#10;1/2 ч.л. сол&#10;250 г масло&#10;1 чаша мляко"></textarea>
+        <button class="add" id="parse-btn" style="margin-top:12px;border-style:solid">Анализирай и добави съставките</button>
+        <p class="hint">Разпознава дроби (1/2, 1½), диапазони (2–3) и мерки като чаша, с.л., ч.л., г, мл, cup, oz. Прегледай резултата по-долу.</p>
+      </div>
+
+      <div id="manual-panel">
+        <div class="rows" id="rows"></div>
+        <button class="add" id="add-row">+ добави съставка</button>
+        <datalist id="ing-names"></datalist>
+      </div>
+    </div>
+  </div>
+
+  <!-- SERVINGS + OPTIONS -->
+  <div class="panel">
+    <div class="panel__head">Порции и мерки</div>
+    <div class="panel__body">
+      <div class="controls">
+        <div class="ctrl">
+          <label for="src">Рецептата е за</label>
+          <div class="stepper"><button type="button" data-step="src" data-d="-1">−</button><input id="src" type="number" min="1" value="4"><button type="button" data-step="src" data-d="1">+</button></div>
+        </div>
+        <div class="ctrl">
+          <label for="tgt">Искам порции</label>
+          <div class="stepper"><button type="button" data-step="tgt" data-d="-1">−</button><input id="tgt" type="number" min="1" value="6"><button type="button" data-step="tgt" data-d="1">+</button></div>
+        </div>
+        <div class="ctrl">
+          <label>Изход</label>
+          <label class="toggle"><input type="checkbox" id="to-grams" checked> Покажи в грамове</label>
+        </div>
+      </div>
+      <p class="factor" id="factor"></p>
+    </div>
+  </div>
+
+  <!-- OUTPUT -->
+  <div id="output"></div>
+
+  <footer><p>Мерки · Преобразуването е приблизително. Проверявайте критични мерки при печене.</p></footer>
+</div>
+
+<!-- In production: <script src="/assets/data.bg.js"></script><script src="/assets/scaler.js" defer></script> -->
+<script>
+(function(){
+  "use strict";
+
+  /* ---- shared data layer (mirrors calc.js / build.mjs) ---- */
+  var DEFAULT_DATA = {
+    ingredients:{
+      brashno:{name:"брашно",density:.50}, zahar:{name:"захар",density:.85},
+      "pudra-zahar":{name:"пудра захар",density:.50}, oriz:{name:"ориз",density:.78},
+      kakao:{name:"какао",density:.36}, oves:{name:"овесени ядки",density:.38},
+      mlyako:{name:"мляко",density:1.03}, olio:{name:"олио",density:.92},
+      maslo:{name:"масло",density:.96}, med:{name:"мед",density:1.42},
+      sol:{name:"сол",density:1.20}, voda:{name:"вода",density:1.00}
+    },
+    units:{
+      chasha:{ml:250,label:"чаша"}, sl:{ml:15,label:"с.л."}, chl:{ml:5,label:"ч.л."},
+      ml:{ml:1,label:"мл"}, l:{ml:1000,label:"л"}, cup_us:{ml:240,label:"cup"},
+      floz:{ml:29.5735,label:"fl oz"}, g:{g:1,label:"г"}, kg:{g:1000,label:"кг"},
+      oz:{g:28.3495,label:"oz"}, lb:{g:453.592,label:"lb"}
+    },
+    order:["chasha","sl","chl","ml","l","cup_us","floz","g","kg","oz","lb"]
+  };
+  var DATA = window.__KITCHEN_DATA__ || DEFAULT_DATA;
+  // ensure litre exists even if injected data omits it
+  if(!DATA.units.l) DATA.units.l={ml:1000,label:"л"};
+  if(!DATA.units["бр"]) DATA.units["бр"]={label:"бр"};   // pass-through count unit (eggs, pieces…)
+  var ING=DATA.ingredients, UNITS=DATA.units;
+  var SELECT_ORDER=DATA.order.slice(); if(SELECT_ORDER.indexOf("бр")<0) SELECT_ORDER.push("бр");
+
+  /* ---- unit aliases for parsing (normalized, dot-free; matched by token) ---- */
+  var UALIAS={
+    "супена лъжица":"sl","супени лъжици":"sl","сл":"sl","tbsp":"sl","tablespoon":"sl","tablespoons":"sl",
+    "чаена лъжичка":"chl","чаени лъжички":"chl","чл":"chl","tsp":"chl","teaspoon":"chl","teaspoons":"chl",
+    "чаша":"chasha","чаши":"chasha",
+    "мл":"ml","ml":"ml","милилитър":"ml","милилитра":"ml",
+    "л":"l","l":"l","литър":"l","литра":"l","литри":"l",
+    "г":"g","гр":"g","грам":"g","грама":"g","g":"g",
+    "кг":"kg","kg":"kg","килограм":"kg","килограма":"kg",
+    "cup":"cup_us","cups":"cup_us",
+    "fl oz":"floz","floz":"floz",
+    "oz":"oz","ounce":"oz","ounces":"oz",
+    "lb":"lb","lbs":"lb","pound":"lb","pounds":"lb"
+  };
+  var FRAC={"½":.5,"⅓":1/3,"⅔":2/3,"¼":.25,"¾":.75,"⅛":.125,"⅜":.375,"⅝":.625,"⅞":.875};
+
+  /* ---- helpers ---- */
+  function isVol(u){return UNITS[u]&&typeof UNITS[u].ml==="number";}
+  function norm(s){return s.toLowerCase().replace(/\./g,"").replace(/[,;:()]/g," ").replace(/\s+/g," ").trim();}
+
+  function resolveIng(name){
+    var n=norm(name); if(!n) return null;
+    var best=null,bestLen=0;
+    for(var id in ING){
+      var k=norm(ING[id].name);
+      if(n===k) return {id:id,density:ING[id].density,name:ING[id].name};
+      if((n.indexOf(k)>=0||k.indexOf(n)>=0)&&k.length>bestLen){best={id:id,density:ING[id].density,name:ING[id].name};bestLen=k.length;}
+    }
+    return best;
+  }
+
+  function parseQty(s){
+    s=s.trim();
+    var m=s.match(/^(\d+)\s+(\d+)\/(\d+)/); if(m) return {q:+m[1]+(+m[2]/+m[3]),rest:s.slice(m[0].length)};
+    m=s.match(/^(\d+)\/(\d+)/); if(m) return {q:(+m[1])/(+m[2]),rest:s.slice(m[0].length)};
+    m=s.match(/^(\d+(?:[.,]\d+)?)\s*[-–—]\s*(\d+(?:[.,]\d+)?)/);
+    if(m) return {q:(parseFloat(m[1].replace(",","."))+parseFloat(m[2].replace(",",".")))/2,rest:s.slice(m[0].length),range:true};
+    m=s.match(/^(\d*)\s*([½⅓⅔¼¾⅛⅜⅝⅞])/);
+    if(m) return {q:(m[1]?+m[1]:0)+FRAC[m[2]],rest:s.slice(m[0].length)};
+    m=s.match(/^(\d+(?:[.,]\d+)?)/); if(m) return {q:parseFloat(m[1].replace(",",".")),rest:s.slice(m[0].length)};
+    return {q:null,rest:s};
+  }
+
+  function parseLine(line){
+    var raw=line.trim(); if(!raw) return null;
+    var pq=parseQty(raw);
+    var toks=norm(pq.rest).split(" ").filter(Boolean);
+    var unit=null, used=0;
+    if(toks.length>=2 && UALIAS[toks[0]+" "+toks[1]]){ unit=UALIAS[toks[0]+" "+toks[1]]; used=2; }
+    else if(toks.length>=1 && UALIAS[toks[0]]){ unit=UALIAS[toks[0]]; used=1; }
+    var name=toks.slice(used).join(" ").replace(/^(от|на)\s+/,"").trim();
+    var ing=resolveIng(name);
+    return {
+      name: ing?ing.name:(name||raw),
+      amt: pq.q!=null?pq.q:1,
+      unit: unit||"бр",            // no unit detected → treat as count (pass-through)
+      known: !!ing,
+      hadQty: pq.q!=null
+    };
+  }
+
+  function findTemps(text){
+    var out=[],seen={},m,re=/(\d{2,3})\s*°?\s*([cfсф])\b/gi;
+    while((m=re.exec(text))){
+      var val=+m[1], f=/[fф]/i.test(m[2]);
+      var key=val+(f?"F":"C"); if(seen[key])continue; seen[key]=1;
+      if(f) out.push({f:val,c:Math.round((val-32)*5/9/5)*5});
+    }
+    return out;
+  }
+
+  /* ---- state ---- */
+  var rows=[{name:"брашно",amt:2,unit:"chasha"},{name:"захар",amt:1,unit:"chasha"},{name:"масло",amt:125,unit:"g"}];
+  var temps=[];
+
+  /* ---- rounding / format ---- */
+  function fmt(n,unit){
+    if(!isFinite(n)) return "—";
+    var r;
+    if(unit==="g"||unit==="ml"){ r = n>=100?Math.round(n/5)*5 : n>=10?Math.round(n) : Math.round(n*10)/10; }
+    else { r = n>=10?Math.round(n) : Math.round(n*4)/4; }
+    return String(r).replace(".",",");
+  }
+
+  /* ---- editor ---- */
+  var rowsEl=document.getElementById("rows");
+  function unitOptions(sel){
+    return SELECT_ORDER.map(function(u){return '<option value="'+u+'"'+(u===sel?" selected":"")+'>'+UNITS[u].label+"</option>";}).join("");
+  }
+  function buildEditor(){
+    rowsEl.innerHTML="";
+    rows.forEach(function(r,i){
+      var resolved=resolveIng(r.name);
+      var div=document.createElement("div");
+      div.className="ing-row"+(resolved?"":" warn");
+      div.innerHTML=
+        '<input list="ing-names" value="'+(r.name||"").replace(/"/g,"&quot;")+'" placeholder="съставка" aria-label="съставка">'+
+        '<input type="text" inputmode="decimal" value="'+r.amt+'" aria-label="количество">'+
+        '<select aria-label="мерна единица">'+unitOptions(r.unit)+'</select>'+
+        '<button class="rm" title="премахни">✕</button>';
+      var ins=div.querySelectorAll("input"), sel=div.querySelector("select");
+      ins[0].addEventListener("input",function(){rows[i].name=this.value; div.className="ing-row"+(resolveIng(this.value)?"":" warn"); renderOutput();});
+      ins[1].addEventListener("input",function(){var v=parseFloat(this.value.replace(",",".")); rows[i].amt=isNaN(v)?0:v; renderOutput();});
+      sel.addEventListener("change",function(){rows[i].unit=this.value; renderOutput();});
+      div.querySelector(".rm").addEventListener("click",function(){rows.splice(i,1); buildEditor(); renderOutput();});
+      rowsEl.appendChild(div);
+    });
+  }
+
+  /* ---- compute + output ---- */
+  function scaleRow(r,factor,toGrams){
+    var amt=r.amt*factor, ing=resolveIng(r.name), u=r.unit, ud=UNITS[u];
+    if(toGrams && ud){
+      if(typeof ud.ml==="number"){
+        if(ing) return {name:r.name,amt:amt*ud.ml*ing.density,unit:"g",flag:null};
+        return {name:r.name,amt:amt,unit:u,flag:"не е в грамове"}; // unknown ingredient → can't convert volume
+      }
+      if(typeof ud.g==="number") return {name:r.name,amt:amt*ud.g,unit:"g",flag:null};
+    }
+    return {name:r.name,amt:amt,unit:u,flag:null}; // keep original (incl. count/unknown units)
+  }
+
+  function renderOutput(){
+    var src=Math.max(1,+document.getElementById("src").value||1);
+    var tgt=Math.max(1,+document.getElementById("tgt").value||1);
+    var toGrams=document.getElementById("to-grams").checked;
+    var factor=tgt/src;
+    document.getElementById("factor").textContent=
+      factor===1?"Без промяна на порциите.":"Мащаб ×"+(Math.round(factor*100)/100)+" ("+src+" → "+tgt+" порции).";
+
+    var live=rows.filter(function(r){return r.name&&r.amt>0;});
+    var out=document.getElementById("output");
+    if(!live.length){ out.innerHTML='<div class="out"><h3>Резултат</h3><p class="empty">Добави съставки, за да видиш преобразуваната рецепта.</p></div>'; return; }
+
+    var scaled=live.map(function(r){return scaleRow(r,factor,toGrams);});
+
+    // consolidate shopping list by name+unit
+    var map={},orderKeys=[];
+    scaled.forEach(function(s){
+      var k=s.name+"|"+s.unit;
+      if(!map[k]){map[k]={name:s.name,unit:s.unit,amt:0,flag:s.flag};orderKeys.push(k);}
+      map[k].amt+=s.amt;
+    });
+
+    function li(s){
+      return '<li><span class="nm">'+esc(s.name)+(s.flag?' <span class="flag">('+s.flag+')</span>':"")+
+        '</span><span class="amt">'+fmt(s.amt,s.unit)+" "+(UNITS[s.unit]?UNITS[s.unit].label:s.unit)+"</span></li>";
+    }
+
+    var recipeHtml=scaled.map(li).join("");
+    var shopHtml=orderKeys.map(function(k){return li(map[k]);}).join("");
+    var tempHtml=temps.length?'<p class="temp">Температура: '+temps.map(function(t){return t.f+"°F → <b>"+t.c+"°C</b>";}).join(", ")+"</p>":"";
+
+    out.innerHTML=
+      '<div class="out"><h3>Преобразувана рецепта</h3><ul class="out-list">'+recipeHtml+"</ul>"+tempHtml+
+        '<div class="out-actions"><button class="primary" id="copy">Копирай</button><button id="print">Принтирай</button></div></div>'+
+      '<div class="out"><h3>Списък за пазаруване</h3><ul class="out-list">'+shopHtml+"</ul></div>";
+
+    document.getElementById("copy").addEventListener("click",function(){
+      var txt=orderKeys.map(function(k){var s=map[k];return s.name+" — "+fmt(s.amt,s.unit)+" "+(UNITS[s.unit]?UNITS[s.unit].label:s.unit);}).join("\n");
+      if(navigator.clipboard) navigator.clipboard.writeText(txt).then(function(){var b=document.getElementById("copy");b.textContent="Копирано ✓";setTimeout(function(){b.textContent="Копирай";},1400);}).catch(function(){});
+    });
+    document.getElementById("print").addEventListener("click",function(){window.print();});
+  }
+  function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+  /* ---- wiring ---- */
+  document.getElementById("ing-names").innerHTML=Object.keys(ING).map(function(id){return '<option value="'+ING[id].name+'">';}).join("");
+
+  document.getElementById("add-row").addEventListener("click",function(){rows.push({name:"",amt:1,unit:"chasha"}); buildEditor();});
+  ["src","tgt","to-grams"].forEach(function(id){document.getElementById(id).addEventListener("input",renderOutput);});
+  document.querySelectorAll(".stepper button").forEach(function(b){
+    b.addEventListener("click",function(){var inp=document.getElementById(this.dataset.step);inp.value=Math.max(1,(+inp.value||1)+(+this.dataset.d));renderOutput();});
+  });
+
+  // tabs
+  function selectTab(paste){
+    document.getElementById("tab-paste").setAttribute("aria-selected",paste);
+    document.getElementById("tab-manual").setAttribute("aria-selected",!paste);
+    document.getElementById("paste-panel").hidden=!paste;
+  }
+  document.getElementById("tab-paste").addEventListener("click",function(){selectTab(true);});
+  document.getElementById("tab-manual").addEventListener("click",function(){selectTab(false);});
+
+  document.getElementById("parse-btn").addEventListener("click",function(){
+    var text=document.getElementById("paste").value;
+    var parsed=text.split(/\n+/).map(parseLine).filter(function(r){return r&&r.hadQty;});
+    if(parsed.length){ rows=parsed.map(function(p){return {name:p.name,amt:p.amt,unit:p.unit};}); }
+    temps=findTemps(text);
+    buildEditor(); renderOutput(); selectTab(false);
+    window.scrollTo({top:document.getElementById("manual-panel").getBoundingClientRect().top+window.scrollY-20,behavior:"smooth"});
+  });
+
+  buildEditor(); renderOutput();
+})();
+</script>
+</body>
+</html>
