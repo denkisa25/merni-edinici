@@ -9,15 +9,17 @@
   "clientUnitOrder": ["chasha", "coffee_cup", "sl", "chl", "ml", "l", "cup_us", "floz", "g", "kg", "oz", "lb"],
   "revAnchor": 100,
   "unitPairs": [
-    { "from": "chasha", "to": "g" },
-    { "from": "sl",     "to": "g" },
-    { "from": "chl",    "to": "g" },
-    { "from": "g",      "to": "chasha" }
+    { "from": "chasha",     "to": "g" },
+    { "from": "coffee_cup", "to": "g" },
+    { "from": "sl",         "to": "g" },
+    { "from": "chl",        "to": "g" },
+    { "from": "g",          "to": "chasha" }
   ],
   "unitPairsLiquid": [
-    { "from": "chasha", "to": "ml" },
-    { "from": "sl",     "to": "ml" },
-    { "from": "chl",    "to": "ml" },
-    { "from": "g",      "to": "chasha" }
+    { "from": "chasha",     "to": "ml" },
+    { "from": "coffee_cup", "to": "ml" },
+    { "from": "sl",         "to": "ml" },
+    { "from": "chl",        "to": "ml" },
+    { "from": "g",          "to": "chasha" }
   ]
 }
