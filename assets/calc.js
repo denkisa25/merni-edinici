@@ -187,6 +187,8 @@
       el.chips.addEventListener("click", function (e) {
         var chip = e.target.closest(".chip");
         if (!chip) return;
+        el.chips.querySelectorAll(".chip").forEach(function (c) { c.classList.remove("on"); });
+        chip.classList.add("on");
         if (chip.dataset.amt != null) el.amt.value = chip.dataset.amt;
         el.from.value = chip.dataset.from || "chasha"; // chips default to volume input
         compute();

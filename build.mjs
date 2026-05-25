@@ -493,7 +493,7 @@ const tableHtml = (rows) =>
 // calc.js is loaded via head() — only inject __PREFILL__ here
 const calcMarkup = (t, prefill) => `
 <div class="calc"><div class="calc__head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2.5"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="11" x2="10" y2="11"/><line x1="14" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="10" y2="15"/><line x1="14" y1="15" x2="16" y2="15"/><line x1="8" y1="19" x2="10" y2="19"/></svg>Калкулатор за мерки</div><div class="calc__body">
-<div class="chips" id="chips"><button class="chip" data-amt="0.5">½ чаша</button><button class="chip" data-amt="1">1 чаша</button><button class="chip" data-amt="2">2 чаши</button></div>
+<div class="chips" id="chips"><button class="chip" data-amt="0.5">½ чаша</button><button class="chip" data-amt="1">1 чаша</button><button class="chip" data-amt="2">2 чаши</button><button class="chip" data-amt="1" data-from="sl">1 с.л.</button><button class="chip" data-amt="1" data-from="chl">1 ч.л.</button></div>
 <div class="row"><div class="field"><label for="amt">Количество</label><input id="amt" type="number" inputmode="decimal" min="0" step="any" value="${prefill.amt}"></div>
 <div class="field"><label for="ing">Съставка</label><select id="ing"></select></div></div>
 <div class="row"><div class="field"><label for="from">От</label><select id="from"></select></div>
