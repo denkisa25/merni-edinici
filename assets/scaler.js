@@ -213,7 +213,10 @@
 
   document.getElementById("parse-btn").addEventListener("click",function(){
     var text=document.getElementById("paste").value;
-    var parsed=text.split(/\n+/).map(parseLine).filter(function(r){return r&&r.hadQty;});
+    // split on newlines OR commas/semicolons so "2 чаши брашно, 1 чаша захар" also works
+    var lines=text.split(/[\n;]+|,(?=\s*\d|\s*[½⅓⅔¼¾⅛])/);
+    var withQty=lines.map(parseLine).filter(function(r){return r&&r.hadQty;});
+    var parsed=withQty.length ? withQty : lines.map(parseLine).filter(Boolean); // fallback: include all non-empty
     if(parsed.length){ rows=parsed.map(function(p){return {name:p.name,amt:p.amt,unit:p.unit};}); }
     temps=findTemps(text);
     buildEditor(); renderOutput(); selectTab("manual");

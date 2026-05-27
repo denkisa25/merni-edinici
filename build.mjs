@@ -676,9 +676,9 @@ ${breadcrumbLd(crumbs) ? `<script type="application/ld+json">${breadcrumbLd(crum
 <p class="hint" id="fetch-status">Поддържа сайтове с рецепти с JSON-LD (schema.org) като повечето модерни кулинарни сайтове. Съставките се добавят автоматично.</p>
 </div>
 <div id="paste-panel" hidden>
-<textarea id="paste" placeholder="Постави съставките, по една на ред. Напр.:&#10;2 чаши брашно&#10;1 с.л. захар&#10;1/2 ч.л. сол&#10;250 г масло&#10;1 чаша мляко"></textarea>
+<textarea id="paste" placeholder="Постави съставките — по една на ред или разделени със запетая. Напр.:&#10;2 чаши брашно&#10;1 с.л. захар, 1/2 ч.л. сол&#10;250 г масло&#10;1 чаша мляко"></textarea>
 <button class="add" id="parse-btn" style="margin-top:12px;border-style:solid">Анализирай и добави съставките</button>
-<p class="hint">Разпознава дроби (1/2, 1½), диапазони (2–3) и мерки като чаша, с.л., ч.л., г, мл, cup, oz. Прегледай резултата по-долу.</p>
+<p class="hint">Разпознава дроби (1/2, 1½), диапазони (2–3), запетаи и мерки като чаша, с.л., ч.л., г, мл, cup, oz. Работи и с неформатиран текст.</p>
 </div>
 <div id="manual-panel">
 <div class="rows" id="rows"></div>
