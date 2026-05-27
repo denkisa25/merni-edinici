@@ -666,6 +666,14 @@ ${breadcrumbLd(crumbs) ? `<script type="application/ld+json">${breadcrumbLd(crum
 <div class="tabs" role="tablist">
 <button class="tab" id="tab-manual" role="tab" aria-selected="true">Въведи ръчно</button>
 <button class="tab" id="tab-paste" role="tab" aria-selected="false">Постави рецепта</button>
+<button class="tab" id="tab-url" role="tab" aria-selected="false">От URL</button>
+</div>
+<div id="url-panel" hidden>
+<div class="url-fetch-row">
+<input type="url" id="recipe-url" placeholder="https://example.com/recepta-za-banichka/" autocomplete="url" spellcheck="false">
+<button class="add" id="fetch-btn" style="border-style:solid;white-space:nowrap">Вземи рецептата</button>
+</div>
+<p class="hint" id="fetch-status">Поддържа сайтове с рецепти с JSON-LD (schema.org) като повечето модерни кулинарни сайтове. Съставките се добавят автоматично.</p>
 </div>
 <div id="paste-panel" hidden>
 <textarea id="paste" placeholder="Постави съставките, по една на ред. Напр.:&#10;2 чаши брашно&#10;1 с.л. захар&#10;1/2 ч.л. сол&#10;250 г масло&#10;1 чаша мляко"></textarea>

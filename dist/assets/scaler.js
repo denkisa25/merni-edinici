@@ -199,21 +199,127 @@
     b.addEventListener("click",function(){var inp=document.getElementById(this.dataset.step);inp.value=Math.max(1,(+inp.value||1)+(+this.dataset.d));renderOutput();});
   });
 
-  function selectTab(paste){
-    document.getElementById("tab-paste").setAttribute("aria-selected",paste);
-    document.getElementById("tab-manual").setAttribute("aria-selected",!paste);
-    document.getElementById("paste-panel").hidden=!paste;
+  /* ---- tab system (3 tabs: manual | paste | url) ---- */
+  function selectTab(tab){
+    ["manual","paste","url"].forEach(function(t){
+      document.getElementById("tab-"+t).setAttribute("aria-selected", t===tab);
+    });
+    document.getElementById("paste-panel").hidden = tab!=="paste";
+    document.getElementById("url-panel").hidden   = tab!=="url";
   }
-  document.getElementById("tab-paste").addEventListener("click",function(){selectTab(true);});
-  document.getElementById("tab-manual").addEventListener("click",function(){selectTab(false);});
+  document.getElementById("tab-paste").addEventListener("click",function(){selectTab("paste");});
+  document.getElementById("tab-manual").addEventListener("click",function(){selectTab("manual");});
+  document.getElementById("tab-url").addEventListener("click",function(){selectTab("url");});
 
   document.getElementById("parse-btn").addEventListener("click",function(){
     var text=document.getElementById("paste").value;
     var parsed=text.split(/\n+/).map(parseLine).filter(function(r){return r&&r.hadQty;});
     if(parsed.length){ rows=parsed.map(function(p){return {name:p.name,amt:p.amt,unit:p.unit};}); }
     temps=findTemps(text);
-    buildEditor(); renderOutput(); selectTab(false);
+    buildEditor(); renderOutput(); selectTab("manual");
     window.scrollTo({top:document.getElementById("manual-panel").getBoundingClientRect().top+window.scrollY-20,behavior:"smooth"});
+  });
+
+  /* ---- URL fetch ---- */
+  var CORS_PROXY = "https://api.allorigins.win/raw?url=";
+
+  function extractIngredients(html){
+    // 1. JSON-LD Recipe schema (most modern recipe sites)
+    var jld = [], re = /<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi, m;
+    while((m=re.exec(html))!==null){
+      try{
+        var data=JSON.parse(m[1]);
+        var nodes=Array.isArray(data)?data:(data["@graph"]||[data]);
+        nodes.forEach(function(node){
+          if(node["@type"]==="Recipe"&&Array.isArray(node.recipeIngredient)){
+            jld=jld.concat(node.recipeIngredient);
+          }
+        });
+      }catch(e){}
+    }
+    if(jld.length) return jld;
+
+    // 2. Microdata itemprop="recipeIngredient"
+    var micro=[], re2=/itemprop=["']recipeIngredient["'][^>]*>([^<]+)/gi;
+    while((m=re2.exec(html))!==null){
+      var txt=m[1].replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">")
+                  .replace(/&#\d+;/g,"").trim();
+      if(txt) micro.push(txt);
+    }
+    if(micro.length) return micro;
+
+    // 3. HTML selector heuristics (DOMParser available in all modern browsers)
+    if(typeof DOMParser==="undefined") return [];
+    var doc=(new DOMParser()).parseFromString(html,"text/html");
+    var selectors=[
+      '[class*="ingredient"] li','[id*="ingredient"] li',
+      '[class*="Ingredient"] li','[id*="Ingredient"] li',
+      '.recipe-ingredients li','.ingredients li',
+      '.wprm-recipe-ingredient','.tasty-recipe-ingredient',
+      '[itemprop="recipeIngredient"]'
+    ];
+    for(var i=0;i<selectors.length;i++){
+      var found=doc.querySelectorAll(selectors[i]);
+      if(found.length>=2){
+        var arr=[];
+        found.forEach(function(el){var t=el.textContent.trim();if(t) arr.push(t);});
+        if(arr.length) return arr;
+      }
+    }
+    return [];
+  }
+
+  function fetchRecipe(){
+    var urlEl=document.getElementById("recipe-url");
+    var statusEl=document.getElementById("fetch-status");
+    var url=urlEl.value.trim();
+    if(!url||!/^https?:\/\//i.test(url)){
+      statusEl.textContent="Въведи валиден URL (напр. https://...)";
+      statusEl.style.color="var(--paprika)";
+      return;
+    }
+    statusEl.textContent="Зарежда се…";
+    statusEl.style.color="";
+    var btn=document.getElementById("fetch-btn");
+    btn.disabled=true;
+
+    var controller=new AbortController();
+    var timer=setTimeout(function(){controller.abort();},15000);
+
+    fetch(CORS_PROXY+encodeURIComponent(url),{signal:controller.signal})
+      .then(function(res){
+        clearTimeout(timer);
+        if(!res.ok) throw new Error("HTTP "+res.status);
+        return res.text();
+      })
+      .then(function(html){
+        var lines=extractIngredients(html);
+        if(!lines.length) throw new Error("Не са открити съставки на тази страница");
+        var parsed=lines.map(parseLine).filter(function(r){return r&&r.hadQty;});
+        // if nothing has a quantity (e.g. "сол на вкус"), still import all as raw entries
+        if(!parsed.length) parsed=lines.map(parseLine).filter(Boolean);
+        if(!parsed.length) throw new Error("Не са открити съставки с количества");
+        rows=parsed.map(function(p){return{name:p.name,amt:p.amt,unit:p.unit};});
+        temps=findTemps(html);
+        buildEditor(); renderOutput(); selectTab("manual");
+        statusEl.textContent="";
+        statusEl.style.color="";
+        btn.disabled=false;
+        window.scrollTo({top:document.getElementById("manual-panel").getBoundingClientRect().top+window.scrollY-20,behavior:"smooth"});
+      })
+      .catch(function(err){
+        clearTimeout(timer);
+        var msg=err&&err.name==="AbortError"?"Изтече времето за изчакване (15 с)":
+                (err&&err.message||"Неуспешно зареждане на страницата");
+        statusEl.textContent="⚠ "+msg;
+        statusEl.style.color="var(--paprika)";
+        btn.disabled=false;
+      });
+  }
+
+  document.getElementById("fetch-btn").addEventListener("click",fetchRecipe);
+  document.getElementById("recipe-url").addEventListener("keydown",function(e){
+    if(e.key==="Enter") fetchRecipe();
   });
 
   buildEditor(); renderOutput();
