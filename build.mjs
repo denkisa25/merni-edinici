@@ -52,7 +52,7 @@ const CATEGORY_ICONS = {
 
 const brandHtml = (lang) =>
   `<a class="brand" href="/${lang}/" aria-label="Мерило — начало">` +
-  `<span class="brand__mark" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 30 30" fill="none">` +
+  `<span class="brand__mark" aria-hidden="true"><svg width="38" height="38" viewBox="0 0 30 30" fill="none">` +
   `<rect x="1.2" y="1.2" width="27.6" height="27.6" rx="8" stroke="#C2522C" stroke-width="2.4"/>` +
   `<line x1="8" y1="9" x2="8" y2="21" stroke="#C2522C" stroke-width="2.4" stroke-linecap="round"/>` +
   `<line x1="15" y1="6" x2="15" y2="24" stroke="#E0A12E" stroke-width="2.4" stroke-linecap="round"/>` +
