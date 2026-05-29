@@ -493,6 +493,7 @@ ${LANGS.map((l) => `<link rel="alternate" hreflang="${l}" href="${canonical}">`)
 <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;0,800;1,400&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/site.css?v=${BUILD_V}">
 ${NOINDEX ? '<meta name="robots" content="noindex">' : ""}
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6774843990559946" crossorigin="anonymous"></script>
 <script src="/assets/data.${lang}.js"></script>
 <script src="/assets/${pageScript}" defer></script>`;
 
