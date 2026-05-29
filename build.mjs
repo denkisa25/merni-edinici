@@ -35,6 +35,14 @@ const UNIT_PAIRS_LIQUID = cfg.unitPairsLiquid;
 const BUILD_V = Date.now().toString(36);
 const NOINDEX = ENVIRONMENT === "experiment";
 const GA4_ID  = cfg.ga4 || "";
+const ADSENSE_PUB  = "ca-pub-6774843990559946";
+const ADSENSE_SLOT = "9011659196";
+const adBanner = () =>
+  `<div class="ad" role="complementary">` +
+  `<ins class="adsbygoogle" style="display:block" ` +
+  `data-ad-client="${ADSENSE_PUB}" data-ad-slot="${ADSENSE_SLOT}" ` +
+  `data-ad-format="auto" data-full-width-responsive="true"></ins>` +
+  `<script>(adsbygoogle=window.adsbygoogle||[]).push({});<\/script></div>`;
 
 const INGREDIENTS = JSON.parse(readFileSync("data/ingredients.json", "utf8"));
 const UNITS       = JSON.parse(readFileSync("data/units.json", "utf8"));
@@ -531,7 +539,7 @@ function renderQuestion(p) {
 <nav class="crumbs" aria-label="breadcrumb">${crumbsHtml(p.breadcrumbs)}</nav></header>
 <div class="hero"><h1>${p.h1}</h1><p class="answer">${p.answer}</p>${ing.verifiedOn ? `<p class="updated"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>обновено: ${ing.verifiedOn}</p>` : ""}</div>
 ${calcMarkup(t, p.prefill)}
-<div class="ad" role="complementary">РЕКЛАМА</div>
+${adBanner()}
 ${p.siblingUrl ? `<p class="sibling-link"><a href="${p.siblingUrl}">↔ Обратно изчисление</a></p>` : ""}
 <section><h2>${p.tableTitle}</h2>
 <div class="table-card"><table><thead><tr><th>${t.tbl_measure}</th><th>${t.tbl_weight}</th></tr></thead>
@@ -564,7 +572,7 @@ ${p.faq.length > 0 ? `<script type="application/ld+json">${faqLd(p.faq)}</script
 ${calcMarkup(t, p.prefill)}
 <section><h2>${tmpl(t.quick, { ing: INGREDIENTS.find(i=>i.id===p.ingId).names[p.lang] })}</h2>
 <div class="qa-grid">${p.questionPages.map(q=>`<a class="qa-card" href="${q.url}"><b>${q.name}</b><span class="v">${q.value}</span></a>`).join("")}</div></section>
-<div class="ad" role="complementary">РЕКЛАМА</div>
+${adBanner()}
 <section><h2>${p.tableTitle}</h2>
 <div class="table-card"><table><thead><tr><th>${t.tbl_measure}</th><th>${t.tbl_weight}</th></tr></thead>
 <tbody>${tableHtml(p.referenceRows)}</tbody></table></div>
