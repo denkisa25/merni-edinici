@@ -20,6 +20,13 @@ import { writeFileSync, mkdirSync, cpSync, existsSync, readFileSync } from "node
 import { join } from "node:path";
 import { Resvg } from "@resvg/resvg-js";
 
+// system/faqs.bg.js uses an IIFE that sets globalThis.__KITCHEN_FAQS__.
+// With "type":"module" in package.json, createRequire can't load it as CJS,
+// so we execute it via new Function with a synthetic globalThis to capture the export.
+const _faqsCtx = {};
+(new Function("globalThis", readFileSync("./system/faqs.bg.js", "utf8")))(_faqsCtx);
+const CUSTOM_FAQS = (_faqsCtx.__KITCHEN_FAQS__ || {}).FAQS || {}; // keyed by ingredient id
+
 /* ===========================================================================
    CONFIG + DATA LAYER — loaded from data/ JSON files
    =========================================================================== */
@@ -393,10 +400,16 @@ function computeFaqs(ing, lang) {
   }
   items.push({ q: t.faq_cups_q, a: t.faq_cups_a });
   const seen = new Set(items.map(f => f.q));
+  // admin-managed custom FAQs (multilingual, stored in ingredients.json)
   (ing.faqs || [])
     .map(f => ({ q: f.q?.[lang] || '', a: f.a?.[lang] || '' }))
     .filter(f => f.q && f.a && !seen.has(f.q))
-    .forEach(f => items.push(f));
+    .forEach(f => { items.push(f); seen.add(f.q); });
+  // editorial custom FAQ from system/faqs.bg.js (HTML-formatted, BG only)
+  const custom = CUSTOM_FAQS[ing.id];
+  if (custom && custom.q && custom.a && !seen.has(custom.q)) {
+    items.push({ q: custom.q, a: custom.a });
+  }
   return items;
 }
 
@@ -429,12 +442,19 @@ function breadcrumbLd(crumbs) {
     })),
   });
 }
+function stripHtml(html) {
+  return String(html)
+    .replace(/<br\s*\/?>/gi, " ")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&amp;/g, "&").replace(/&nbsp;/g, " ").replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+    .replace(/\s+/g, " ").trim();
+}
 function faqLd(faq) {
   return JSON.stringify({
     "@context": "https://schema.org", "@type": "FAQPage",
     mainEntity: faq.map((f) => ({
-      "@type": "Question", name: f.q,
-      acceptedAnswer: { "@type": "Answer", text: f.a },
+      "@type": "Question", name: stripHtml(f.q),
+      acceptedAnswer: { "@type": "Answer", text: stripHtml(f.a) },
     })),
   });
 }
