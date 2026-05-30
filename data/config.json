@@ -1,6 +1,6 @@
 {
   "langs": ["bg"],
-  "environment": "experiment",
+  "environment": "production",
   "ga4": "G-T53EWB6WNB",
   "site": {
     "domain": "https://merilo.pro",
