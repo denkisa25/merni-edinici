@@ -20,7 +20,7 @@ nav.crumbs a:hover{color:var(--paprika)}
 nav.crumbs span.sep{opacity:.45}
 nav.crumbs span.here{color:var(--ink)}
 .hero{padding:26px 0 8px}
-h1{font-family:"Spectral",serif;font-weight:800;font-size:clamp(28px,6.5vw,42px);line-height:1.08;letter-spacing:-.015em;max-width:16ch}
+h1{font-family:"Spectral",serif;font-weight:800;font-size:clamp(28px,6.5vw,42px);line-height:1.08;letter-spacing:-.015em}
 h1 em{font-style:italic;color:var(--paprika)}
 .answer{margin-top:18px;font-size:clamp(18px,4.4vw,21px);color:var(--ink);padding:16px 18px;
   background:linear-gradient(180deg,var(--card),var(--paper-2));border:1px solid var(--line);

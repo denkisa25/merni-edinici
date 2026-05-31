@@ -222,16 +222,16 @@ function computeQuestionPage(ing, pair, lang) {
   let title, meta, h1, answer, crumbLeaf, prefill;
   if (card.dir === "v2v") {
     const mlVal = fromU.ml, phrase = unitPhrase(pair.from, lang);
-    h1 = tmpl(t.q_h1_liquid, { unitPhrase: phrase, ing: name });
-    title = `${h1} | ${t.brand}`;
+    h1 = tmpl(t.q_h1_liquid, { unitPhrase: phrase, ing: `<em>${name}</em>` });
+    title = `${tmpl(t.q_h1_liquid, { unitPhrase: phrase, ing: name })} | ${t.brand}`;
     meta = tmpl(t.q_meta_liquid, { unitPhrase: phrase, ing: name, n: num(mlVal) });
     answer = tmpl(t.q_ans_liquid, { unitPhrase: phrase, ml: mlVal, ing: name, n: num(mlVal) });
     crumbLeaf = `${cap(phrase)} в милилитри`;
     prefill = { ing: ing.id, from: pair.from, to: pair.to, amt: 1, hubBase: `/${lang}/merki/` };
   } else if (card.dir === "v2m") {
     const ml = fromU.ml, grams = round(gramsFromVolume(ml, ing.density)), phrase = unitPhrase(pair.from, lang);
-    h1 = tmpl(t.q_h1, { unitPhrase: phrase, ing: name });
-    title = `${h1} | ${t.brand}`;
+    h1 = tmpl(t.q_h1, { unitPhrase: phrase, ing: `<em>${name}</em>` });
+    title = `${tmpl(t.q_h1, { unitPhrase: phrase, ing: name })} | ${t.brand}`;
     meta = tmpl(t.q_meta, { unitPhrase: phrase, ing: name, n: num(grams) });
     answer = tmpl(t.q_ans, { unitPhrase: phrase, ml, ing: name, n: num(grams) });
     crumbLeaf = `${cap(phrase)} в грамове`;
@@ -239,8 +239,8 @@ function computeQuestionPage(ing, pair, lang) {
   } else {
     const toPl = (toU.label_pl && toU.label_pl[lang]) || toU.label[lang];
     const nVol = round((REV_ANCHOR / ing.density) / toU.ml);
-    h1 = tmpl(t.qr_h1, { toPl, ing: name, anchor: REV_ANCHOR });
-    title = `${h1} | ${t.brand}`;
+    h1 = tmpl(t.qr_h1, { toPl, ing: `<em>${name}</em>`, anchor: REV_ANCHOR });
+    title = `${tmpl(t.qr_h1, { toPl, ing: name, anchor: REV_ANCHOR })} | ${t.brand}`;
     meta = tmpl(t.qr_meta, { toPl, ing: name, anchor: REV_ANCHOR, n: num(nVol) });
     answer = tmpl(t.qr_ans, { toPl, ing: name, anchor: REV_ANCHOR, n: num(nVol) });
     crumbLeaf = tmpl(t.qr_crumb, { toPl, anchor: REV_ANCHOR });
@@ -273,7 +273,10 @@ function computeHubPage(ing, lang) {
     const c = pairCard(ing, pair, lang);
     return { name: c.name, value: c.value, url: c.url };
   });
-  const h1 = (ing.title && ing.title[lang]) || tmpl(t.hub_h1, { Ing: cap(name), ing: name });
+  const h1Plain = (ing.title && ing.title[lang]) || tmpl(t.hub_h1, { Ing: cap(name), ing: name });
+  const h1 = (ing.title && ing.title[lang])
+    ? h1Plain
+    : tmpl(t.hub_h1_html, { Ing: cap(name) });
   const desc = (ing.desc && ing.desc[lang]) || "";
   const tableTitle = tmpl(
     ing.liquid ? (t.table_title_liquid || t.table_title) : t.table_title,
@@ -285,7 +288,7 @@ function computeHubPage(ing, lang) {
     : `1 чаша ≈ ${num(round(unitWeight(ing, "chasha")))} г`;
   return {
     lang, ingId: ing.id, url: baseUrl(lang, "merki", ing.id),
-    title: `${h1} | ${t.brand}`,
+    title: `${h1Plain} | ${t.brand}`,
     meta: tmpl(t.hub_meta, { ing: name }),
     h1,
     intro: tmpl(t.hub_intro, { ing: name }),
