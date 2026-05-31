@@ -313,7 +313,7 @@
   },
   {
     "id": "nisheste",
-    "density": 1.333,
+    "density": 0.8,
     "liquid": false,
     "names": {
       "bg": "нишесте"
@@ -321,6 +321,7 @@
     "measures": {
       "chl": 10,
       "sl": 20,
+      "coffee_cup": 60,
       "chasha": 160
     },
     "note": {
