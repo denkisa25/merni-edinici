@@ -46,7 +46,7 @@ const ADSENSE_PUB  = "ca-pub-6774843990559946";
 const ADSENSE_SLOT = "9011659196";
 const adBanner = () =>
   `<div class="ad" role="complementary">` +
-  `<ins class="adsbygoogle" style="display:block" ` +
+  `<ins class="adsbygoogle" style="display:block;width:100%" ` +
   `data-ad-client="${ADSENSE_PUB}" data-ad-slot="${ADSENSE_SLOT}" ` +
   `data-ad-format="auto" data-full-width-responsive="true"></ins>` +
   `<script>(adsbygoogle=window.adsbygoogle||[]).push({});<\/script></div>`;
