@@ -508,8 +508,6 @@ function ogImageSvg(ingName, answerLine) {
 const head = ({ lang, title, meta, canonical, pageScript = "calc.js", ogImage = "" }) => `<!DOCTYPE html>
 <html lang="${lang}">
 <head>
-${GA4_ID ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${GA4_ID}"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA4_ID}');</script>` : ""}
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${title}</title>
 <meta name="description" content="${meta}">
@@ -524,9 +522,10 @@ ${LANGS.map((l) => `<link rel="alternate" hreflang="${l}" href="${canonical}">`)
 <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;0,800;1,400&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/site.css?v=${BUILD_V}">
 ${NOINDEX ? '<meta name="robots" content="noindex">' : ""}
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6774843990559946" crossorigin="anonymous"></script>
 <script src="/assets/data.${lang}.js"></script>
-<script src="/assets/${pageScript}" defer></script>`;
+<script src="/assets/consent.js"></script>
+${pageScript ? `<script src="/assets/${pageScript}" defer></script>` : ""}`;
+
 
 const crumbsHtml = (crumbs) => crumbs.map((c, i) =>
   (c.url ? `<a href="${c.url}">${c.name}</a>` : `<span class="here">${c.name}</span>`) +
@@ -575,7 +574,7 @@ ${p.siblingUrl ? `<p class="sibling-link"><a href="${p.siblingUrl}">↔ Обра
 <section><a class="cta" href="${t.cta_url}">${t.cta}<small>${t.cta_sub}</small></a></section>
 <section><h2>${t.related}</h2><div class="related">${p.related.map(r=>`<a href="${r.url}">${r.name}</a>`).join("")}</div></section>
 <div class="feedback" id="feedback"><span>Беше ли полезно?</span><button data-vote="up">👍</button><button data-vote="down">👎</button><span class="feedback-msg"></span></div>
-<footer><p>${t.footer}</p></footer>
+<footer><p>${t.footer}</p><p class="footer-links"><a href="${t.privacy_url}">${t.privacy_policy}</a></p></footer>
 </div><script src="/assets/feedback.js" defer></script></body></html>`;
 }
 
@@ -607,7 +606,7 @@ ${p.faq.length > 0 ? `<section><h2>${t.faq_title}</h2>${p.faq.map(f=>`<details><
 <section><a class="cta" href="${t.cta_url}">${t.cta}<small>${t.cta_sub}</small></a></section>
 <section><h2>${t.related}</h2><div class="related">${p.related.map(r=>`<a href="${r.url}">${r.name}</a>`).join("")}</div></section>
 <div class="feedback" id="feedback"><span>Беше ли полезно?</span><button data-vote="up">👍</button><button data-vote="down">👎</button><span class="feedback-msg"></span></div>
-<footer><p>${t.footer}</p></footer>
+<footer><p>${t.footer}</p><p class="footer-links"><a href="${t.privacy_url}">${t.privacy_policy}</a></p></footer>
 </div><script src="/assets/feedback.js" defer></script></body></html>`;
 }
 
@@ -659,7 +658,7 @@ function renderPillar(p) {
 <p class="section-label">Категории</p>
 <div class="cats">${accordionHtml}</div>
 <section><a class="cta" href="${t.cta_url}">${t.cta}<small>${t.cta_sub}</small></a></section>
-<footer><p>${t.footer}</p></footer>
+<footer><p>${t.footer}</p><p class="footer-links"><a href="${t.privacy_url}">${t.privacy_policy}</a></p></footer>
 </div>
 <script>window.__HOME_INGS__=${homeIngs};</script>
 </body></html>`;
@@ -677,7 +676,7 @@ function renderCategory(p) {
 <div class="hero"><h1>${p.h1}</h1></div>
 <section><div class="qa-grid">${p.items.map(i=>`<a class="qa-card" href="${i.url}"><b>${i.name}</b><span class="v">${i.value}</span></a>`).join("")}</div></section>
 <section><a class="cta" href="${t.cta_url}">${t.cta}<small>${t.cta_sub}</small></a></section>
-<footer><p>${t.footer}</p></footer>
+<footer><p>${t.footer}</p><p class="footer-links"><a href="${t.privacy_url}">${t.privacy_policy}</a></p></footer>
 </div></body></html>`;
 }
 
@@ -730,7 +729,63 @@ ${breadcrumbLd(crumbs) ? `<script type="application/ld+json">${breadcrumbLd(crum
 <p class="factor" id="factor"></p>
 </div></div>
 <div id="output"></div>
-<footer><p>${t.footer}</p></footer>
+<footer><p>${t.footer}</p><p class="footer-links"><a href="${t.privacy_url}">${t.privacy_policy}</a></p></footer>
+</div></body></html>`;
+}
+
+/* ===========================================================================
+   PRIVACY & COOKIE POLICY PAGE
+   =========================================================================== */
+function renderPrivacyPage(lang) {
+  const t = T[lang];
+  const url = baseUrl(lang, "poveritelnost");
+  return `${head({ lang, title: `${t.privacy_policy} | ${t.brand}`, meta: "Политика за поверителност, бисквитки и партньорски връзки на Merilo.Pro.", canonical: url, pageScript: "" })}
+</head><body><div class="wrap">
+<header>${brandHtml(lang)}</header>
+<main class="privacy-page">
+<h1>${t.privacy_policy}</h1>
+<p class="privacy-updated">Последна актуализация: 2026-05-31</p>
+
+<h2>1. Кой управлява уебсайта</h2>
+<p>Merilo.Pro е безплатен инструмент за кухненски мерки. За въпроси относно данните: <a href="mailto:info@merilo.pro">info@merilo.pro</a></p>
+
+<h2>2. Какви данни събираме</h2>
+<p><strong>Данни за посещаемостта</strong> (само при дадено съгласие): Google Analytics 4 събира анонимни данни за посетените страници, устройството и браузъра. Информацията е агрегирана и не съдържа лични данни.</p>
+<p><strong>Рекламни данни</strong> (само при дадено съгласие): Google AdSense поставя бисквитки за показване на персонализирани реклами.</p>
+<p><strong>Предпочитания за бисквитки</strong>: Вашият избор се запазва в локалната памет на браузъра (localStorage) само на вашето устройство. Не се изпращат данни към сървър.</p>
+
+<h2>3. Бисквитки (Cookies)</h2>
+<p>Сайтът може да използва следните видове бисквитки:</p>
+<ul>
+<li><strong>Строго необходими</strong> — запазват предпочитанията ви за поверителност. Не изискват съгласие.</li>
+<li><strong>Аналитични</strong> (при съгласие) — Google Analytics 4 измерва посещаемостта анонимно.</li>
+<li><strong>Рекламни</strong> (при съгласие) — Google AdSense/DoubleClick показва релевантни реклами.</li>
+</ul>
+<p>Можете да оттеглите съгласието си по всяко време, като изчистите ключа <code>merilo_consent</code> от локалната памет на браузъра (DevTools → Application → Local Storage) и презаредите страницата.</p>
+
+<h2>4. Как да откажете или промените настройките</h2>
+<ul>
+<li>Opt-out от персонализирани реклами: <a href="https://adssettings.google.com" target="_blank" rel="noopener">adssettings.google.com</a></li>
+<li>Opt-out от Google Analytics: <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">tools.google.com/dlpage/gaoptout</a></li>
+<li>Политика на Google: <a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener">policies.google.com/technologies/ads</a></li>
+</ul>
+
+<h2>5. Партньорски и спонсорирани връзки</h2>
+<p>Сайтът може да съдържа партньорски (афилиейт) връзки. При покупка чрез тях може да получим комисиона <strong>без допълнителна цена за вас</strong>. Партньорските връзки са обозначени и не влияят на съдържанието или препоръките ни.</p>
+
+<h2>6. Трети страни</h2>
+<p>Използваме услуги на следните трети страни:</p>
+<ul>
+<li>Google LLC (Analytics, AdSense, Fonts) — <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a></li>
+</ul>
+
+<h2>7. Вашите права (GDPR)</h2>
+<p>Ако сте жител на ЕС/ЕИП, имате право да поискате достъп, коригиране или изтриване на свързаните с вас данни. Тъй като не събираме лична информация директно, повечето права се упражняват спрямо Google (вж. т. 4). За въпроси пишете на <a href="mailto:info@merilo.pro">info@merilo.pro</a>.</p>
+
+<h2>8. Промени в политиката</h2>
+<p>При съществени промени датата „Последна актуализация" ще бъде обновена. Препоръчваме периодично да преглеждате тази страница.</p>
+</main>
+<footer><p>${t.footer}</p><p class="footer-links"><a href="${t.privacy_url}">${t.privacy_policy}</a></p></footer>
 </div></body></html>`;
 }
 
@@ -773,6 +828,12 @@ function build() {
     const scalerUrl = baseUrl(lang, "preobrazuvane-na-recepta");
     write(join(SITE.outDir, lang, "preobrazuvane-na-recepta", "index.html"), renderScaler(lang));
     sitemap.push({ loc: scalerUrl, alternates: [{ lang, href: scalerUrl }] });
+    count++;
+
+    // 2c. Privacy & cookie policy page
+    const privacyUrl = baseUrl(lang, "poveritelnost");
+    write(join(SITE.outDir, lang, "poveritelnost", "index.html"), renderPrivacyPage(lang));
+    sitemap.push({ loc: privacyUrl, alternates: [{ lang, href: privacyUrl }] });
     count++;
 
     // 3. Category pages

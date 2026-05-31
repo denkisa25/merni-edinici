@@ -213,3 +213,25 @@ textarea:focus{outline:none;border-color:var(--paprika);box-shadow:0 0 0 3px rgb
   .out{background:#fff!important;color:#000!important;border:1px solid #ccc}.out h3{color:#000!important}.out-list .amt{color:#000!important}
   body{background:#fff!important;background-image:none!important}
   .table-card{box-shadow:none!important;border:1px solid #ccc}}
+/* ---- cookie consent banner ---- */
+#cookie-banner{position:fixed;bottom:0;left:0;right:0;background:var(--ink);color:#fff;padding:14px 20px;display:flex;align-items:center;flex-wrap:wrap;gap:12px;z-index:9999;font-size:13.5px;box-shadow:0 -2px 12px rgba(0,0,0,.25)}
+#cookie-banner a{color:#f5c77e;text-decoration:underline}
+.cookie-banner__text{flex:1;min-width:200px;margin:0}
+.cookie-banner__actions{display:flex;gap:8px;flex-shrink:0}
+.cookie-btn{padding:8px 16px;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;line-height:1}
+.cookie-btn--accept{background:var(--paprika);color:#fff}
+.cookie-btn--decline{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.4)}
+.cookie-btn--decline:hover{background:rgba(255,255,255,.1)}
+/* ---- footer links ---- */
+.footer-links{margin-top:6px;font-size:12px;opacity:.7}
+.footer-links a{color:inherit;text-decoration:underline}
+/* ---- privacy page ---- */
+.privacy-page{padding:20px 0 40px;max-width:660px}
+.privacy-page h1{font-size:clamp(22px,5vw,32px);margin-bottom:6px}
+.privacy-page h2{font-size:16px;font-weight:700;margin:28px 0 8px;color:var(--ink)}
+.privacy-page p,.privacy-page ul{font-size:15px;line-height:1.65;color:var(--ink);margin-bottom:10px}
+.privacy-page ul{padding-left:20px}
+.privacy-page li{margin-bottom:6px}
+.privacy-page a{color:var(--paprika-dk)}
+.privacy-page code{background:var(--paper-2);padding:2px 5px;border-radius:4px;font-size:13px}
+.privacy-updated{font-size:13px;color:var(--ink-soft);margin-bottom:24px}
