@@ -227,7 +227,7 @@ function computeQuestionPage(ing, pair, lang) {
     meta = tmpl(t.q_meta_liquid, { unitPhrase: phrase, ing: name, n: num(mlVal) });
     answer = tmpl(t.q_ans_liquid, { unitPhrase: phrase, ml: mlVal, ing: name, n: num(mlVal) });
     crumbLeaf = `${cap(phrase)} в милилитри`;
-    prefill = { ing: ing.id, from: pair.from, to: pair.to, amt: 1 };
+    prefill = { ing: ing.id, from: pair.from, to: pair.to, amt: 1, hubBase: `/${lang}/merki/` };
   } else if (card.dir === "v2m") {
     const ml = fromU.ml, grams = round(gramsFromVolume(ml, ing.density)), phrase = unitPhrase(pair.from, lang);
     h1 = tmpl(t.q_h1, { unitPhrase: phrase, ing: name });
@@ -235,7 +235,7 @@ function computeQuestionPage(ing, pair, lang) {
     meta = tmpl(t.q_meta, { unitPhrase: phrase, ing: name, n: num(grams) });
     answer = tmpl(t.q_ans, { unitPhrase: phrase, ml, ing: name, n: num(grams) });
     crumbLeaf = `${cap(phrase)} в грамове`;
-    prefill = { ing: ing.id, from: pair.from, to: pair.to, amt: 1 };
+    prefill = { ing: ing.id, from: pair.from, to: pair.to, amt: 1, hubBase: `/${lang}/merki/` };
   } else {
     const toPl = (toU.label_pl && toU.label_pl[lang]) || toU.label[lang];
     const nVol = round((REV_ANCHOR / ing.density) / toU.ml);
@@ -244,7 +244,7 @@ function computeQuestionPage(ing, pair, lang) {
     meta = tmpl(t.qr_meta, { toPl, ing: name, anchor: REV_ANCHOR, n: num(nVol) });
     answer = tmpl(t.qr_ans, { toPl, ing: name, anchor: REV_ANCHOR, n: num(nVol) });
     crumbLeaf = tmpl(t.qr_crumb, { toPl, anchor: REV_ANCHOR });
-    prefill = { ing: ing.id, from: pair.from, to: pair.to, amt: REV_ANCHOR };
+    prefill = { ing: ing.id, from: pair.from, to: pair.to, amt: REV_ANCHOR, hubBase: `/${lang}/merki/` };
   }
 
   return {
@@ -298,7 +298,7 @@ function computeHubPage(ing, lang) {
                              url: baseUrl(lang, "merki", "kategoria", ing.category) }] : []),
       { name: cap(name), url: "" },
     ],
-    prefill: { ing: ing.id, from: "chasha", to: ing.liquid ? "ml" : "g", amt: 1 },
+    prefill: { ing: ing.id, from: "chasha", to: ing.liquid ? "ml" : "g", amt: 1, hubBase: `/${lang}/merki/` },
     questionPages,
     tableTitle,
     faq,

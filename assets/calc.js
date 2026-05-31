@@ -183,7 +183,12 @@
       node.addEventListener("input", compute);
     });
     el.ing.addEventListener("input", function () {
-      // auto-switch to-unit between g and ml when user picks a different ingredient
+      // on ingredient pages: redirect to the new ingredient's hub so all content stays in sync
+      if (window.__PREFILL__ && window.__PREFILL__.hubBase) {
+        window.location.href = window.__PREFILL__.hubBase + el.ing.value + '/';
+        return;
+      }
+      // pillar / standalone calc: auto-switch to-unit between g and ml
       var ing = ING[el.ing.value];
       if (ing && (el.to.value === "g" || el.to.value === "ml")) {
         el.to.value = ing.liquid ? "ml" : "g";
