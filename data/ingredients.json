@@ -371,12 +371,16 @@
     "note": {
       "bg": "Кафявата захар се натъпква в чашата, затова тежи повече от кристалната."
     },
-    "title": {},
-    "desc": {},
+    "title": {
+      "bg": ""
+    },
+    "desc": {
+      "bg": ""
+    },
     "blocks": [],
     "faqs": [],
-    "source": "",
-    "verifiedOn": "",
+    "source": "King Arthur Baking",
+    "verifiedOn": "2026-05-31",
     "category": "zahari"
   },
   {
@@ -568,7 +572,7 @@
   },
   {
     "id": "kakao",
-    "density": 0.36,
+    "density": 0.5,
     "liquid": false,
     "names": {
       "bg": "какао"
@@ -576,17 +580,21 @@
     "note": {
       "bg": "Какаото е леко и лесно се сбива на бучки — пресявайте го, за да не го натъпчете в чашата."
     },
-    "title": {},
-    "desc": {},
+    "title": {
+      "bg": ""
+    },
+    "desc": {
+      "bg": ""
+    },
     "blocks": [],
     "faqs": [],
-    "source": "",
-    "verifiedOn": "",
+    "source": "Aqua-Calc, ScienceDirect",
+    "verifiedOn": "2026-05-31",
     "category": "podpravki"
   },
   {
     "id": "oves",
-    "density": 0.38,
+    "density": 0.41,
     "liquid": false,
     "names": {
       "bg": "овесени ядки"
@@ -594,12 +602,16 @@
     "note": {
       "bg": "Овесените ядки са люспести и между тях има много въздух, затова една чаша тежи изненадващо малко."
     },
-    "title": {},
-    "desc": {},
+    "title": {
+      "bg": ""
+    },
+    "desc": {
+      "bg": ""
+    },
     "blocks": [],
     "faqs": [],
-    "source": "",
-    "verifiedOn": "",
+    "source": "Cereals & Grains Association",
+    "verifiedOn": "2026-05-31",
     "category": "zrna"
   }
 ]
