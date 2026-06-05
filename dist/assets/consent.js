@@ -99,17 +99,39 @@
     b.id = 'cookie-banner';
     b.setAttribute('role', 'dialog');
     b.setAttribute('aria-label', 'Съгласие за бисквитки');
-    b.innerHTML =
-      '<p class="cookie-banner__text">Използваме бисквитки за реклами и анализ на посещаемостта.' +
-      ' <a href="#" id="learn-more-link">Научи повече</a></p>' +
-      '<div class="cookie-banner__actions">' +
-      '<button id="consent-all" class="cookie-btn cookie-btn--accept">Приемам</button>' +
-      '<button id="consent-min" class="cookie-btn cookie-btn--decline">Само необходими</button>' +
-      '</div>';
+
+    var text = document.createElement('p');
+    text.className = 'cookie-banner__text';
+    text.textContent = 'Използваме бисквитки за реклами и анализ на посещаемостта. ';
+
+    var learnBtn = document.createElement('button');
+    learnBtn.id = 'learn-more-link';
+    learnBtn.textContent = 'Научи повече';
+    learnBtn.style.cssText = 'background:none;border:none;color:#f5c77e;text-decoration:underline;cursor:pointer;font:inherit;font-size:inherit;padding:0;margin:0;margin-left:0;';
+    learnBtn.addEventListener('click', showModal);
+    text.appendChild(learnBtn);
+
+    var actions = document.createElement('div');
+    actions.className = 'cookie-banner__actions';
+
+    var acceptBtn = document.createElement('button');
+    acceptBtn.id = 'consent-all';
+    acceptBtn.className = 'cookie-btn cookie-btn--accept';
+    acceptBtn.textContent = 'Приемам';
+    acceptBtn.addEventListener('click', function () { applyConsent('all'); });
+
+    var declineBtn = document.createElement('button');
+    declineBtn.id = 'consent-min';
+    declineBtn.className = 'cookie-btn cookie-btn--decline';
+    declineBtn.textContent = 'Само необходими';
+    declineBtn.addEventListener('click', function () { applyConsent('minimal'); });
+
+    actions.appendChild(acceptBtn);
+    actions.appendChild(declineBtn);
+
+    b.appendChild(text);
+    b.appendChild(actions);
     document.body.appendChild(b);
-    document.getElementById('consent-all').addEventListener('click', function () { applyConsent('all'); });
-    document.getElementById('consent-min').addEventListener('click', function () { applyConsent('minimal'); });
-    document.getElementById('learn-more-link').addEventListener('click', function (e) { e.preventDefault(); showModal(); });
   }
 
   /* ---------- init --------------------------------------------------------- */
