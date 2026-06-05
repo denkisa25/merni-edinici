@@ -4,6 +4,7 @@
  */
 (function () {
   'use strict';
+  console.log('[consent.js] Script loaded and executing');
 
   var KEY         = 'merilo_consent';   // localStorage key
   var GA4_ID      = 'G-T53EWB6WNB';
@@ -94,7 +95,12 @@
   }
 
   function showBanner() {
-    if (document.getElementById('cookie-banner')) return;
+    console.log('[consent.js] showBanner() called');
+    if (document.getElementById('cookie-banner')) {
+      console.log('[consent.js] banner already exists, skipping');
+      return;
+    }
+    console.log('[consent.js] creating banner');
     var b = document.createElement('div');
     b.id = 'cookie-banner';
     b.setAttribute('role', 'dialog');
