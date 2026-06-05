@@ -1,5 +1,5 @@
 /*!
- * consent.js — cookie consent banner + conditional GA4 / AdSense loader
+ * consent.js — cookie consent banner + conditional GA4 / AdSense loader + privacy modal
  * GDPR / ePrivacy compliant. No external dependencies.
  */
 (function () {
@@ -12,14 +12,18 @@
   /* ---------- loaders ------------------------------------------------------ */
   function loadGA4() {
     if (!GA4_ID) return;
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { window.dataLayer.push(arguments); };
+    window.gtag('js', new Date());
+    window.gtag('config', GA4_ID, {
+      'anonymize_ip': true,
+      'allow_google_signals': false,
+      'allow_ad_personalization_signals': false
+    });
     var s = document.createElement('script');
     s.async = true;
     s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA4_ID;
     document.head.appendChild(s);
-    window.dataLayer = window.dataLayer || [];
-    window.gtag = function () { window.dataLayer.push(arguments); };
-    window.gtag('js', new Date());
-    window.gtag('config', GA4_ID);
   }
 
   function loadAds() {
@@ -28,6 +32,53 @@
     s.crossOrigin = 'anonymous';
     s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUB;
     document.head.appendChild(s);
+  }
+
+  /* ---------- modal ------------------------------------------------------- */
+  function createModal() {
+    var overlay = document.createElement('div');
+    overlay.id = 'cookie-modal-overlay';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-label', 'Политика за поверителност');
+
+    var modal = document.createElement('div');
+    modal.className = 'cookie-modal';
+    modal.innerHTML =
+      '<button id="modal-close" class="modal-close" aria-label="Затвори">&times;</button>' +
+      '<h2>Политика за поверителност</h2>' +
+      '<div class="modal-content">' +
+      '<h3>Какви данни събираме</h3>' +
+      '<p><strong>При дадено съгласие:</strong></p>' +
+      '<ul>' +
+      '<li><strong>Google Analytics 4</strong> — анонимни данни за посещаемостта, браузър, устройство</li>' +
+      '<li><strong>Google AdSense</strong> — персонализирани реклами (бисквитки)</li>' +
+      '<li><strong>Google Fonts</strong> — използваме шрифтове от Google, което предава IP адреса ви</li>' +
+      '</ul>' +
+      '<p><strong>При всеки случай:</strong></p>' +
+      '<ul>' +
+      '<li>Вашият избор се запазва локално (localStorage) — НЕ се пращат на сървър</li>' +
+      '<li>Всички данни са анонимни — без лична информация</li>' +
+      '</ul>' +
+      '<p><a href="/bg/poveritelnost/" target="_blank" rel="noopener">Прочетете пълната политика →</a></p>' +
+      '</div>';
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    document.getElementById('modal-close').addEventListener('click', closeModal);
+    overlay.addEventListener('click', function(e) { if (e.target === overlay) closeModal(); });
+  }
+
+  function closeModal() {
+    var overlay = document.getElementById('cookie-modal-overlay');
+    if (overlay) overlay.parentNode.removeChild(overlay);
+  }
+
+  function showModal() {
+    if (!document.getElementById('cookie-modal-overlay')) {
+      createModal();
+    }
   }
 
   /* ---------- banner ------------------------------------------------------- */
@@ -50,7 +101,7 @@
     b.setAttribute('aria-label', 'Съгласие за бисквитки');
     b.innerHTML =
       '<p class="cookie-banner__text">Използваме бисквитки за реклами и анализ на посещаемостта.' +
-      ' <a href="/bg/poveritelnost/">Научи повече</a></p>' +
+      ' <a href="#" id="learn-more-link">Научи повече</a></p>' +
       '<div class="cookie-banner__actions">' +
       '<button id="consent-all" class="cookie-btn cookie-btn--accept">Приемам</button>' +
       '<button id="consent-min" class="cookie-btn cookie-btn--decline">Само необходими</button>' +
@@ -58,6 +109,7 @@
     document.body.appendChild(b);
     document.getElementById('consent-all').addEventListener('click', function () { applyConsent('all'); });
     document.getElementById('consent-min').addEventListener('click', function () { applyConsent('minimal'); });
+    document.getElementById('learn-more-link').addEventListener('click', function (e) { e.preventDefault(); showModal(); });
   }
 
   /* ---------- init --------------------------------------------------------- */
