@@ -1,3 +1,15 @@
 DirectoryIndex index.html
 Options -Indexes
+
+RewriteEngine On
+
+# www → non-www (301)
+RewriteCond %{HTTP_HOST} ^www\.merilo\.pro$ [NC]
+RewriteRule ^(.*)$ https://merilo.pro/$1 [R=301,L]
+
+# http → https (if not already handled by cPanel/SSL)
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+# Root → /bg/merki/
 RedirectMatch 301 ^/$ /bg/merki/
