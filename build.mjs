@@ -418,31 +418,32 @@ function computeFaqs(ing, lang) {
   const t = T[lang];
   const name = ing.names[lang];
   const halfCupMl = UNITS.chasha.ml / 2;
-  const items = [];
-  if (ing.liquid) {
-    items.push({ q: tmpl(t.faq_half_cup_q, { ing: name }),
-                 a: tmpl(t.faq_half_cup_a_liquid, { ing: name, n: num(halfCupMl) }) });
-    items.push({ q: tmpl(t.faq_100ml_q, { ing: name }),
-                 a: tmpl(t.faq_100ml_a, { ing: name, n: num(round(100 * ing.density)) }) });
-  } else {
-    items.push({ q: tmpl(t.faq_half_cup_q, { ing: name }),
-                 a: tmpl(t.faq_half_cup_a, { ing: name, n: num(round(unitWeight(ing, "chasha", 0.5))) }) });
-    items.push({ q: tmpl(t.faq_100g_q, { ing: name }),
-                 a: tmpl(t.faq_100g_a, { ing: name, n: num(round((100 / ing.density) / UNITS.sl.ml)) }) });
-  }
-  items.push({ q: t.faq_cups_q, a: t.faq_cups_a });
-  const seen = new Set(items.map(f => f.q));
-  // admin-managed custom FAQs (multilingual, stored in ingredients.json)
-  (ing.faqs || [])
+  // ingredient-specific questions come first
+  const custom = (ing.faqs || [])
     .map(f => ({ q: f.q?.[lang] || '', a: f.a?.[lang] || '' }))
-    .filter(f => f.q && f.a && !seen.has(f.q))
-    .forEach(f => { items.push(f); seen.add(f.q); });
-  // editorial custom FAQ from system/faqs.bg.js (HTML-formatted, BG only)
-  const custom = CUSTOM_FAQS[ing.id];
-  if (custom && custom.q && custom.a && !seen.has(custom.q)) {
-    items.push({ q: custom.q, a: custom.a });
+    .filter(f => f.q && f.a);
+  const seen = new Set(custom.map(f => f.q));
+  // generic questions follow
+  const generic = [];
+  if (ing.liquid) {
+    generic.push({ q: tmpl(t.faq_half_cup_q, { ing: name }),
+                   a: tmpl(t.faq_half_cup_a_liquid, { ing: name, n: num(halfCupMl) }) });
+    generic.push({ q: tmpl(t.faq_100ml_q, { ing: name }),
+                   a: tmpl(t.faq_100ml_a, { ing: name, n: num(round(100 * ing.density)) }) });
+  } else {
+    generic.push({ q: tmpl(t.faq_half_cup_q, { ing: name }),
+                   a: tmpl(t.faq_half_cup_a, { ing: name, n: num(round(unitWeight(ing, "chasha", 0.5))) }) });
+    generic.push({ q: tmpl(t.faq_100g_q, { ing: name }),
+                   a: tmpl(t.faq_100g_a, { ing: name, n: num(round((100 / ing.density) / UNITS.sl.ml)) }) });
   }
-  return items;
+  generic.push({ q: t.faq_cups_q, a: t.faq_cups_a });
+  const filteredGeneric = generic.filter(f => !seen.has(f.q));
+  filteredGeneric.forEach(f => seen.add(f.q));
+  // editorial custom FAQ from system/faqs.bg.js (HTML-formatted, BG only)
+  const editorial = CUSTOM_FAQS[ing.id];
+  const editorialItem = (editorial && editorial.q && editorial.a && !seen.has(editorial.q))
+    ? [{ q: editorial.q, a: editorial.a }] : [];
+  return [...custom, ...filteredGeneric, ...editorialItem];
 }
 
 const US = { cup: 240, tbsp: 14.7868, tsp: 4.9289 }; // ml
