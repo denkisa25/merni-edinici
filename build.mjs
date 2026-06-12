@@ -87,6 +87,13 @@ function tmpl(template, vars) {
    =========================================================================== */
 function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
+const footerHtml = (t) =>
+  `<footer><p>${t.footer}</p><p class="footer-links">` +
+  `<a href="${t.privacy_url}">${t.privacy_policy}</a> · ` +
+  `<a href="${t.about_url}">${t.about_title}</a> · ` +
+  `<a href="${t.contact_url}">${t.contact_title}</a>` +
+  `</p></footer>`;
+
 function round(n) {
   if (!isFinite(n)) return n;
   if (n >= 100) return Math.round(n);
@@ -574,7 +581,7 @@ ${p.siblingUrl ? `<p class="sibling-link"><a href="${p.siblingUrl}">↔ Обра
 <section><a class="cta" href="${t.cta_url}">${t.cta}<small>${t.cta_sub}</small></a></section>
 <section><h2>${t.related}</h2><div class="related">${p.related.map(r=>`<a href="${r.url}">${r.name}</a>`).join("")}</div></section>
 <div class="feedback" id="feedback"><span>Беше ли полезно?</span><button data-vote="up">👍</button><button data-vote="down">👎</button><span class="feedback-msg"></span></div>
-<footer><p>${t.footer}</p><p class="footer-links"><a href="${t.privacy_url}">${t.privacy_policy}</a></p></footer>
+${footerHtml(t)}
 </div><script src="/assets/feedback.js" defer></script></body></html>`;
 }
 
@@ -606,7 +613,7 @@ ${p.faq.length > 0 ? `<section><h2>${t.faq_title}</h2>${p.faq.map(f=>`<details><
 <section><a class="cta" href="${t.cta_url}">${t.cta}<small>${t.cta_sub}</small></a></section>
 <section><h2>${t.related}</h2><div class="related">${p.related.map(r=>`<a href="${r.url}">${r.name}</a>`).join("")}</div></section>
 <div class="feedback" id="feedback"><span>Беше ли полезно?</span><button data-vote="up">👍</button><button data-vote="down">👎</button><span class="feedback-msg"></span></div>
-<footer><p>${t.footer}</p><p class="footer-links"><a href="${t.privacy_url}">${t.privacy_policy}</a></p></footer>
+${footerHtml(t)}
 </div><script src="/assets/feedback.js" defer></script></body></html>`;
 }
 
@@ -658,7 +665,7 @@ function renderPillar(p) {
 <p class="section-label">Категории</p>
 <div class="cats">${accordionHtml}</div>
 <section><a class="cta" href="${t.cta_url}">${t.cta}<small>${t.cta_sub}</small></a></section>
-<footer><p>${t.footer}</p><p class="footer-links"><a href="${t.privacy_url}">${t.privacy_policy}</a></p></footer>
+${footerHtml(t)}
 </div>
 <script>window.__HOME_INGS__=${homeIngs};</script>
 </body></html>`;
@@ -676,7 +683,7 @@ function renderCategory(p) {
 <div class="hero"><h1>${p.h1}</h1></div>
 <section><div class="qa-grid">${p.items.map(i=>`<a class="qa-card" href="${i.url}"><b>${i.name}</b><span class="v">${i.value}</span></a>`).join("")}</div></section>
 <section><a class="cta" href="${t.cta_url}">${t.cta}<small>${t.cta_sub}</small></a></section>
-<footer><p>${t.footer}</p><p class="footer-links"><a href="${t.privacy_url}">${t.privacy_policy}</a></p></footer>
+${footerHtml(t)}
 </div></body></html>`;
 }
 
@@ -729,7 +736,7 @@ ${breadcrumbLd(crumbs) ? `<script type="application/ld+json">${breadcrumbLd(crum
 <p class="factor" id="factor"></p>
 </div></div>
 <div id="output"></div>
-<footer><p>${t.footer}</p><p class="footer-links"><a href="${t.privacy_url}">${t.privacy_policy}</a></p></footer>
+${footerHtml(t)}
 </div></body></html>`;
 }
 
@@ -785,7 +792,112 @@ function renderPrivacyPage(lang) {
 <h2>8. Промени в политиката</h2>
 <p>При съществени промени датата „Последна актуализация" ще бъде обновена. Препоръчваме периодично да преглеждате тази страница.</p>
 </main>
-<footer><p>${t.footer}</p><p class="footer-links"><a href="${t.privacy_url}">${t.privacy_policy}</a></p></footer>
+${footerHtml(t)}
+</div></body></html>`;
+}
+
+/* ===========================================================================
+   ABOUT PAGE
+   =========================================================================== */
+function renderAboutPage(lang) {
+  const t = T[lang];
+  const url = baseUrl(lang, "za-nas");
+  const crumbs = [
+    { name: t.home, url: baseUrl(lang) },
+    { name: t.about_title, url: "" },
+  ];
+  return `${head({ lang, title: `${t.about_title} | ${t.brand}`, meta: "Научете повече за Мерило — безплатен инструмент за кухненски мерки, създаден за български домашни готвачи. Как работи, откъде идват данните и защо го направихме.", canonical: url, pageScript: "" })}
+<script type="application/ld+json">${breadcrumbLd(crumbs)}</script>
+<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@type": "AboutPage", "@id": url, "url": url, "name": `${t.about_title} | ${t.brand}`, "inLanguage": "bg", "isPartOf": { "@id": SITE_LD_ID } })}</script>
+</head><body><div class="wrap">
+<header>${brandHtml(lang)}
+<nav class="crumbs" aria-label="breadcrumb">${crumbsHtml(crumbs)}</nav></header>
+<main class="privacy-page">
+<h1>${t.about_title}</h1>
+
+<section>
+<h2>Откъде се появи идеята</h2>
+<p>Всеки, който е готвил по стара домашна рецепта, е срещал ситуацията: „2 чаши брашно", „3 с.л. захар", „1 к.ч. олио" — но без да знае колко точно е това в грамове. Ситуацията се усложнява, когато рецептата е от чуждестранен сайт и пише „1 cup" — различна мярка от българската чаша.</p>
+<p>Мерило се роди от точно тази нужда. Следейки рецепти в кухнята, разбрахме, че обемните мерки са непрецизни: чаша брашно, насипано внимателно, тежи значително по-малко от натъпкано такова. Везната дава точния отговор — но за да стигнеш до нея, ти трябва надежден справочник с реалните стойности за всяка съставка, базиран на <strong>българските мерни стандарти</strong>.</p>
+<p>Не намерихме подобен инструмент на български — нито за 200-мл водна чаша, нито за 60-мл кафена чаша. Затова го направихме сами.</p>
+</section>
+
+<section>
+<h2>Как работи калкулаторът</h2>
+<p>За всяка съставка в базата данни сме определили плътността (грамове на милилитър) въз основа на данни на ФАО (Организацията по прехрана и земеделие на ООН) и авторитетни кулинарни справочници. Оттук всяко преизчисление — от чаша към грамове, от лъжица към милилитри — е точна математика.</p>
+<p>Калкулаторът поддържа четирите основни български кухненски мерни единици:</p>
+<ul>
+<li><strong>Чаена чаша (ч.ч.)</strong> — 200 мл (стандартна водна чаша)</li>
+<li><strong>Кафена чаша (к.ч.)</strong> — 60 мл</li>
+<li><strong>Супена лъжица (с.л.)</strong> — 15 мл</li>
+<li><strong>Чаена лъжичка (ч.л.)</strong> — 5 мл</li>
+</ul>
+<p>Освен отделните съставки, инструментът за <a href="/${lang}/preobrazuvane-na-recepta/">преобразуване на рецепта</a> позволява да конвертирате всички мерки в дадена рецепта наведнъж — включително с промяна на броя порции.</p>
+</section>
+
+<section>
+<h2>За точността на данните</h2>
+<p>Стойностите в Мерило са <em>приблизителни</em> — това е неизбежно при мерене по обем. Плътността на брашното зависи от типа и степента на пресяване; захарта може да е насипана рехаво или натъпкана. За прецизно печене и готвене по рецепта винаги препоръчваме кухненска везна.</p>
+<p>Ако забележите неточност в стойностите, пишете ни на <a href="mailto:contact@merilo.pro">contact@merilo.pro</a> — ще проверим и ще коригираме.</p>
+</section>
+
+<section>
+<h2>Инструментът е безплатен</h2>
+<p>Мерило е безплатен и ще остане такъв. Сайтът се поддържа чрез ненатрапчиви реклами и евентуални партньорски препоръки за кухненски продукти. При покупка чрез тях може да получим малка комисиона, без допълнителна цена за вас.</p>
+</section>
+</main>
+${footerHtml(t)}
+</div></body></html>`;
+}
+
+/* ===========================================================================
+   CONTACT PAGE
+   =========================================================================== */
+function renderContactPage(lang) {
+  const t = T[lang];
+  const url = baseUrl(lang, "kontakti");
+  const crumbs = [
+    { name: t.home, url: baseUrl(lang) },
+    { name: t.contact_title, url: "" },
+  ];
+  return `${head({ lang, title: `${t.contact_title} | ${t.brand}`, meta: "Свържете се с екипа на Мерило — за въпроси, сигнали за неточни стойности или предложения за нови съставки.", canonical: url, pageScript: "" })}
+<script type="application/ld+json">${breadcrumbLd(crumbs)}</script>
+<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@type": "ContactPage", "@id": url, "url": url, "name": `${t.contact_title} | ${t.brand}`, "inLanguage": "bg", "isPartOf": { "@id": SITE_LD_ID } })}</script>
+</head><body><div class="wrap">
+<header>${brandHtml(lang)}
+<nav class="crumbs" aria-label="breadcrumb">${crumbsHtml(crumbs)}</nav></header>
+<main class="privacy-page">
+<h1>${t.contact_title}</h1>
+
+<section>
+<h2>Пишете ни</h2>
+<p>За въпроси, предложения или забелязани неточности в данните се свържете с нас по имейл:</p>
+<p><a href="mailto:contact@merilo.pro" style="font-size:1.1em;font-weight:600">contact@merilo.pro</a></p>
+<p>Отговаряме до 2 работни дни.</p>
+</section>
+
+<section>
+<h2>Докладвайте неточност</h2>
+<p>Ако смятате, че дадена стойност в калкулатора не е вярна, помогнете ни да я коригираме. Споделете:</p>
+<ul>
+<li>коя съставка и мярка е засегната</li>
+<li>каква стойност получавате на практика (напр. с везна)</li>
+<li>начина на измерване — рехаво насипано, натъпкано, пресято</li>
+</ul>
+<p>Всеки сигнал се проверява и при потвърждение стойността се актуализира.</p>
+</section>
+
+<section>
+<h2>Предложете нова съставка</h2>
+<p>Не намирате съставка, която ви е нужна? Пишете ни — добавяме приоритетно съставките, за които получаваме заявки от потребители.</p>
+</section>
+
+<section>
+<h2>Въпроси за поверителност</h2>
+<p>За въпроси свързани с данни и бисквитки вижте <a href="/${lang}/poveritelnost/">${t.privacy_policy}</a> или пишете на горния адрес.</p>
+</section>
+</main>
+${footerHtml(t)}
 </div></body></html>`;
 }
 
@@ -836,6 +948,18 @@ function build() {
     sitemap.push({ loc: privacyUrl, alternates: [{ lang, href: privacyUrl }] });
     count++;
 
+    // 2d. About page
+    const aboutUrl = baseUrl(lang, "za-nas");
+    write(join(SITE.outDir, lang, "za-nas", "index.html"), renderAboutPage(lang));
+    sitemap.push({ loc: aboutUrl, alternates: [{ lang, href: aboutUrl }] });
+    count++;
+
+    // 2e. Contact page
+    const contactUrl = baseUrl(lang, "kontakti");
+    write(join(SITE.outDir, lang, "kontakti", "index.html"), renderContactPage(lang));
+    sitemap.push({ loc: contactUrl, alternates: [{ lang, href: contactUrl }] });
+    count++;
+
     // 3. Category pages
     for (const cat of CATEGORIES) {
       const catPage = computeCategoryPage(cat, lang);
@@ -865,7 +989,7 @@ function build() {
   // 4. Sitemap + robots.txt + .htaccess (root + bg/ subdirectory)
   write(join(SITE.outDir, "sitemap.xml"), renderSitemap(sitemap));
   write(join(SITE.outDir, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${SITE.domain}/sitemap.xml\n`);
-  const base = "DirectoryIndex index.html\nOptions -Indexes\n";
+  const base = "DirectoryIndex index.html\nOptions -Indexes\n\nRewriteEngine On\n\n# www → non-www (301)\nRewriteCond %{HTTP_HOST} ^www\\.merilo\\.pro$ [NC]\nRewriteRule ^(.*)$ https://merilo.pro/$1 [R=301,L]\n\n# http → https (if not already handled by cPanel/SSL)\nRewriteCond %{HTTPS} off\nRewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]\n\n# Root → /bg/merki/\n";
   write(join(SITE.outDir, ".htaccess"), base + "RedirectMatch 301 ^/$ /bg/merki/\n");
   write(join(SITE.outDir, "bg", ".htaccess"), base + "RedirectMatch 301 ^/bg/?$ /bg/merki/\n");
 

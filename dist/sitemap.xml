@@ -13,6 +13,14 @@
     <xhtml:link rel="alternate" hreflang="bg" href="https://merilo.pro/bg/poveritelnost/"/>
   </url>
   <url>
+    <loc>https://merilo.pro/bg/za-nas/</loc>
+    <xhtml:link rel="alternate" hreflang="bg" href="https://merilo.pro/bg/za-nas/"/>
+  </url>
+  <url>
+    <loc>https://merilo.pro/bg/kontakti/</loc>
+    <xhtml:link rel="alternate" hreflang="bg" href="https://merilo.pro/bg/kontakti/"/>
+  </url>
+  <url>
     <loc>https://merilo.pro/bg/merki/kategoria/brasna/</loc>
     <xhtml:link rel="alternate" hreflang="bg" href="https://merilo.pro/bg/merki/kategoria/brasna/"/>
   </url>
