@@ -6,11 +6,13 @@ const state = {
   units: {},
   config: {},
   translations: {},   // { bg: {...}, ro: {...}, ... }
+  pages: [],
   langs: [],
   dirty: {},          // track which files have unsaved changes
 };
 
 let selectedIngId = null;
+let selectedPageSlug = null;
 let activeLang = 'bg';
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -65,14 +67,16 @@ function renderNavDots() {
 
 // ── Data loading ────────────────────────────────────────────────────────────
 async function loadAll() {
-  const [ingredients, units, config] = await Promise.all([
+  const [ingredients, units, config, pages] = await Promise.all([
     fetch('/data/ingredients.json').then(r => r.json()),
     fetch('/data/units.json').then(r => r.json()),
     fetch('/data/config.json').then(r => r.json()),
+    fetch('/data/pages.json').then(r => r.json()),
   ]);
   state.ingredients = ingredients;
   state.units = units;
   state.config = config;
+  state.pages = pages;
   state.langs = config.langs || ['bg'];
   activeLang = state.langs[0];
 
@@ -100,6 +104,7 @@ function renderTab(tab) {
   const renderers = {
     ingredients: renderIngredients,
     translations: renderTranslations,
+    pages: renderPages,
     units: renderUnits,
     settings: renderSettings,
     build: renderBuild,
@@ -701,6 +706,217 @@ function renderSettings() {
       toast('Saved config.json');
     } catch (e) { toast(e.message, true); }
   });
+}
+
+// ── PAGES tab ────────────────────────────────────────────────────────────────
+function renderPages() {
+  const panel = document.getElementById('tab-pages');
+  const rows = state.pages.map(page => {
+    const title = page.title?.bg || page.slug;
+    const sel = page.slug === selectedPageSlug ? ' selected' : '';
+    return `<div class="ing-row${sel}" data-slug="${esc(page.slug)}">
+      <span class="ing-id">${esc(page.slug)}</span>
+      <span class="ing-name">${esc(title)}</span>
+      <span class="ing-density" style="font-size:11px;color:var(--muted)">${esc(page.schema_type || '')}</span>
+    </div>`;
+  }).join('');
+
+  panel.innerHTML = `
+    <div class="page-header">
+      <div>
+        <div class="page-title">Pages</div>
+        <div class="page-sub">${state.pages.length} static pages · click to edit content</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-body">
+        <div class="ing-list">${rows}</div>
+      </div>
+    </div>
+    <div class="edit-drawer${selectedPageSlug ? ' open' : ''}" id="page-drawer"></div>`;
+
+  panel.querySelector('.ing-list').addEventListener('click', e => {
+    const row = e.target.closest('.ing-row');
+    if (!row) return;
+    selectedPageSlug = row.dataset.slug === selectedPageSlug ? null : row.dataset.slug;
+    renderPages();
+    if (selectedPageSlug) renderPageDrawer();
+  });
+
+  if (selectedPageSlug) renderPageDrawer();
+}
+
+function renderPageDrawer() {
+  const drawer = document.getElementById('page-drawer');
+  if (!drawer) return;
+  const page = state.pages.find(p => p.slug === selectedPageSlug);
+  if (!page) return;
+
+  function buildSectionsHtml() {
+    return (page.sections || []).map((sec, i) => {
+      const total = (page.sections || []).length;
+      return `
+      <div class="section-item" data-sec-idx="${i}" style="margin-bottom:10px;padding:12px;background:rgba(0,0,0,.14);border:1px solid var(--border);border-radius:var(--radius)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <span style="font-size:10px;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;font-weight:700">Section ${i + 1}</span>
+          <div style="display:flex;gap:6px">
+            ${i > 0 ? `<button class="btn btn-ghost btn-sm btn-sec-up" data-idx="${i}">↑</button>` : ''}
+            ${i < total - 1 ? `<button class="btn btn-ghost btn-sm btn-sec-down" data-idx="${i}">↓</button>` : ''}
+            <button class="btn btn-ghost btn-sm btn-sec-rm" data-idx="${i}" style="padding:3px 8px;font-size:11px">✕</button>
+          </div>
+        </div>
+        ${state.langs.map(l => `
+        <div style="margin-bottom:8px;padding:8px;background:rgba(91,141,238,.04);border:1px solid var(--border);border-radius:4px">
+          <div style="font-size:9px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">[${l.toUpperCase()}]</div>
+          <div class="field">
+            <label>Heading (h2)</label>
+            <input type="text" data-sec-field="h2.${l}" value="${esc(sec.h2?.[l] || '')}">
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label>Body HTML</label>
+            <textarea class="auto-resize" data-sec-field="body.${l}" style="min-height:80px">${esc(sec.body?.[l] || '')}</textarea>
+            <div class="sec-body-preview" style="margin-top:4px;padding:10px 12px;background:rgba(0,0,0,.22);border:1px solid rgba(91,141,238,.2);border-radius:4px;font-size:13px;color:var(--text);line-height:1.6;min-height:30px">${sec.body?.[l] || '<em style="color:var(--muted)">Preview…</em>'}</div>
+          </div>
+        </div>`).join('')}
+      </div>`;
+    }).join('');
+  }
+
+  function snapshotSections() {
+    document.querySelectorAll('#sections-list .section-item').forEach(el => {
+      const i = parseInt(el.dataset.secIdx);
+      if (!page.sections[i]) page.sections[i] = { h2: {}, body: {} };
+      el.querySelectorAll('[data-sec-field]').forEach(inp => {
+        const dot = inp.dataset.secField.indexOf('.');
+        const field = inp.dataset.secField.slice(0, dot);
+        const lang  = inp.dataset.secField.slice(dot + 1);
+        if (!page.sections[i][field]) page.sections[i][field] = {};
+        page.sections[i][field][lang] = inp.value;
+      });
+    });
+  }
+
+  function wirePreviewListeners(root) {
+    root.querySelectorAll('textarea[data-sec-field^="body"]').forEach(ta => {
+      const preview = ta.nextElementSibling;
+      if (!preview || !preview.classList.contains('sec-body-preview')) return;
+      ta.addEventListener('input', () => {
+        preview.innerHTML = ta.value.trim() || '<em style="color:var(--muted)">Preview…</em>';
+      });
+    });
+  }
+
+  function rebuildSections() {
+    const list = document.getElementById('sections-list');
+    list.innerHTML = buildSectionsHtml();
+    wirePreviewListeners(list);
+    wireSecButtons(list);
+    initAutoResize(list);
+  }
+
+  function wireSecButtons(root) {
+    root.querySelectorAll('.btn-sec-rm').forEach(btn => {
+      btn.addEventListener('click', () => {
+        snapshotSections();
+        page.sections.splice(parseInt(btn.dataset.idx), 1);
+        rebuildSections();
+      });
+    });
+    root.querySelectorAll('.btn-sec-up').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const i = parseInt(btn.dataset.idx);
+        snapshotSections();
+        [page.sections[i - 1], page.sections[i]] = [page.sections[i], page.sections[i - 1]];
+        rebuildSections();
+      });
+    });
+    root.querySelectorAll('.btn-sec-down').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const i = parseInt(btn.dataset.idx);
+        snapshotSections();
+        [page.sections[i], page.sections[i + 1]] = [page.sections[i + 1], page.sections[i]];
+        rebuildSections();
+      });
+    });
+  }
+
+  const langMeta = state.langs.map(l => `
+    <div style="margin-bottom:12px;padding:12px;background:rgba(91,141,238,.05);border:1px solid var(--border);border-radius:var(--radius)">
+      <div style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;font-weight:700">[${l.toUpperCase()}]</div>
+      <div class="field">
+        <label>Page Title</label>
+        <input type="text" data-page-field="title.${l}" value="${esc(page.title?.[l] || '')}">
+      </div>
+      <div class="field">
+        <label>Meta Description</label>
+        <textarea class="auto-resize" data-page-field="meta.${l}" style="min-height:56px">${esc(page.meta?.[l] || '')}</textarea>
+      </div>
+    </div>`).join('');
+
+  drawer.innerHTML = `
+    <div class="drawer-title">
+      <span>Editing: /${esc(page.slug)}/</span>
+      <button class="btn btn-ghost btn-sm" id="btn-close-page-drawer">✕ Close</button>
+    </div>
+    <div class="row row-2" style="margin-bottom:12px">
+      <div class="field">
+        <label>Slug (read-only)</label>
+        <input type="text" value="${esc(page.slug)}" disabled>
+      </div>
+      <div class="field">
+        <label>Schema type (read-only)</label>
+        <input type="text" value="${esc(page.schema_type || '')}" disabled>
+      </div>
+    </div>
+    ${langMeta}
+    <hr>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin-bottom:10px">
+      Sections
+      <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;font-size:10px"> — rendered as h2 + body HTML on the page</span>
+    </div>
+    <div id="sections-list">${buildSectionsHtml()}</div>
+    <button class="btn btn-ghost btn-sm" id="btn-add-section" style="margin-top:6px">+ Add section</button>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btn-save-page">Save pages.json</button>
+    </div>`;
+
+  drawer.classList.add('open');
+  initAutoResize(drawer);
+
+  const list = document.getElementById('sections-list');
+  wirePreviewListeners(list);
+  wireSecButtons(list);
+
+  document.getElementById('btn-add-section').addEventListener('click', () => {
+    snapshotSections();
+    const newSec = { h2: {}, body: {} };
+    state.langs.forEach(l => { newSec.h2[l] = ''; newSec.body[l] = ''; });
+    page.sections = page.sections || [];
+    page.sections.push(newSec);
+    rebuildSections();
+    document.getElementById('sections-list').lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+
+  document.getElementById('btn-close-page-drawer').onclick = () => {
+    selectedPageSlug = null;
+    drawer.classList.remove('open');
+    renderPages();
+  };
+
+  document.getElementById('btn-save-page').onclick = async () => {
+    drawer.querySelectorAll('[data-page-field]').forEach(el => {
+      const dot = el.dataset.pageField.indexOf('.');
+      const field = el.dataset.pageField.slice(0, dot);
+      const lang  = el.dataset.pageField.slice(dot + 1);
+      if (!page[field]) page[field] = {};
+      page[field][lang] = el.value;
+    });
+    snapshotSections();
+    try {
+      await save('data/pages.json', state.pages);
+      toast('Saved pages.json');
+    } catch (e) { toast(e.message, true); }
+  };
 }
 
 // ── BUILD tab ────────────────────────────────────────────────────────────────

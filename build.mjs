@@ -54,6 +54,7 @@ const adBanner = () =>
 const INGREDIENTS = JSON.parse(readFileSync("data/ingredients.json", "utf8"));
 const UNITS       = JSON.parse(readFileSync("data/units.json", "utf8"));
 const CATEGORIES  = JSON.parse(readFileSync("data/categories.json", "utf8"));
+const PAGES       = JSON.parse(readFileSync("data/pages.json", "utf8"));
 
 const CATEGORY_ICONS = {
   brasna:    '<path d="M7 8h10l1.2 11a2 2 0 0 1-2 2.2H7.8a2 2 0 0 1-2-2.2L7 8z"/><path d="M7 8c0-2 1.2-3 2.5-3.5C8.8 3.8 9.2 3 10 3M17 8c0-2-1.2-3-2.5-3.5"/><path d="M9.5 13.5h5"/>',
@@ -797,105 +798,31 @@ ${footerHtml(t)}
 }
 
 /* ===========================================================================
-   ABOUT PAGE
+   STATIC PAGES (about, contact, etc.) — driven by data/pages.json
    =========================================================================== */
-function renderAboutPage(lang) {
-  const t = T[lang];
-  const url = baseUrl(lang, "za-nas");
+function renderStaticPage(page, lang) {
+  const t     = T[lang];
+  const title = (page.title && page.title[lang]) || page.slug;
+  const meta  = (page.meta  && page.meta[lang])  || '';
+  const url   = baseUrl(lang, page.slug);
   const crumbs = [
     { name: t.home, url: baseUrl(lang) },
-    { name: t.about_title, url: "" },
+    { name: title,  url: '' },
   ];
-  return `${head({ lang, title: `${t.about_title} | ${t.brand}`, meta: "Научете повече за Мерило — безплатен инструмент за кухненски мерки, създаден за български домашни готвачи. Как работи, откъде идват данните и защо го направихме.", canonical: url, pageScript: "" })}
+  const sectionsHtml = (page.sections || []).map(sec => {
+    const h2   = (sec.h2   && sec.h2[lang])   || '';
+    const body = ((sec.body && sec.body[lang]) || '').replace(/\{lang\}/g, lang);
+    return `<section>\n<h2>${h2}</h2>\n${body}\n</section>`;
+  }).join('\n');
+  return `${head({ lang, title: `${title} | ${t.brand}`, meta, canonical: url, pageScript: '' })}
 <script type="application/ld+json">${breadcrumbLd(crumbs)}</script>
-<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@type": "AboutPage", "@id": url, "url": url, "name": `${t.about_title} | ${t.brand}`, "inLanguage": "bg", "isPartOf": { "@id": SITE_LD_ID } })}</script>
+<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@type': page.schema_type || 'WebPage', '@id': url, url, name: `${title} | ${t.brand}`, inLanguage: lang, isPartOf: { '@id': SITE_LD_ID } })}</script>
 </head><body><div class="wrap">
 <header>${brandHtml(lang)}
 <nav class="crumbs" aria-label="breadcrumb">${crumbsHtml(crumbs)}</nav></header>
 <main class="privacy-page">
-<h1>${t.about_title}</h1>
-
-<section>
-<h2>Откъде се появи идеята</h2>
-<p>Всеки, който е готвил по стара домашна рецепта, е срещал ситуацията: „2 чаши брашно", „3 с.л. захар", „1 к.ч. олио" — но без да знае колко точно е това в грамове. Ситуацията се усложнява, когато рецептата е от чуждестранен сайт и пише „1 cup" — различна мярка от българската чаша.</p>
-<p>Мерило се роди от точно тази нужда. Следейки рецепти в кухнята, разбрахме, че обемните мерки са непрецизни: чаша брашно, насипано внимателно, тежи значително по-малко от натъпкано такова. Везната дава точния отговор — но за да стигнеш до нея, ти трябва надежден справочник с реалните стойности за всяка съставка, базиран на <strong>българските мерни стандарти</strong>.</p>
-<p>Не намерихме подобен инструмент на български — нито за 200-мл водна чаша, нито за 60-мл кафена чаша. Затова го направихме сами.</p>
-</section>
-
-<section>
-<h2>Как работи калкулаторът</h2>
-<p>За всяка съставка в базата данни сме определили плътността (грамове на милилитър) въз основа на данни на ФАО (Организацията по прехрана и земеделие на ООН) и авторитетни кулинарни справочници. Оттук всяко преизчисление — от чаша към грамове, от лъжица към милилитри — е точна математика.</p>
-<p>Калкулаторът поддържа четирите основни български кухненски мерни единици:</p>
-<ul>
-<li><strong>Чаена чаша (ч.ч.)</strong> — 200 мл (стандартна водна чаша)</li>
-<li><strong>Кафена чаша (к.ч.)</strong> — 60 мл</li>
-<li><strong>Супена лъжица (с.л.)</strong> — 15 мл</li>
-<li><strong>Чаена лъжичка (ч.л.)</strong> — 5 мл</li>
-</ul>
-<p>Освен отделните съставки, инструментът за <a href="/${lang}/preobrazuvane-na-recepta/">преобразуване на рецепта</a> позволява да конвертирате всички мерки в дадена рецепта наведнъж — включително с промяна на броя порции.</p>
-</section>
-
-<section>
-<h2>За точността на данните</h2>
-<p>Стойностите в Мерило са <em>приблизителни</em> — това е неизбежно при мерене по обем. Плътността на брашното зависи от типа и степента на пресяване; захарта може да е насипана рехаво или натъпкана. За прецизно печене и готвене по рецепта винаги препоръчваме кухненска везна.</p>
-<p>Ако забележите неточност в стойностите, пишете ни на <a href="mailto:contact@merilo.pro">contact@merilo.pro</a> — ще проверим и ще коригираме.</p>
-</section>
-
-<section>
-<h2>Инструментът е безплатен</h2>
-<p>Мерило е безплатен и ще остане такъв. Сайтът се поддържа чрез ненатрапчиви реклами и евентуални партньорски препоръки за кухненски продукти. При покупка чрез тях може да получим малка комисиона, без допълнителна цена за вас.</p>
-</section>
-</main>
-${footerHtml(t)}
-</div></body></html>`;
-}
-
-/* ===========================================================================
-   CONTACT PAGE
-   =========================================================================== */
-function renderContactPage(lang) {
-  const t = T[lang];
-  const url = baseUrl(lang, "kontakti");
-  const crumbs = [
-    { name: t.home, url: baseUrl(lang) },
-    { name: t.contact_title, url: "" },
-  ];
-  return `${head({ lang, title: `${t.contact_title} | ${t.brand}`, meta: "Свържете се с екипа на Мерило — за въпроси, сигнали за неточни стойности или предложения за нови съставки.", canonical: url, pageScript: "" })}
-<script type="application/ld+json">${breadcrumbLd(crumbs)}</script>
-<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@type": "ContactPage", "@id": url, "url": url, "name": `${t.contact_title} | ${t.brand}`, "inLanguage": "bg", "isPartOf": { "@id": SITE_LD_ID } })}</script>
-</head><body><div class="wrap">
-<header>${brandHtml(lang)}
-<nav class="crumbs" aria-label="breadcrumb">${crumbsHtml(crumbs)}</nav></header>
-<main class="privacy-page">
-<h1>${t.contact_title}</h1>
-
-<section>
-<h2>Пишете ни</h2>
-<p>За въпроси, предложения или забелязани неточности в данните се свържете с нас по имейл:</p>
-<p><a href="mailto:contact@merilo.pro" style="font-size:1.1em;font-weight:600">contact@merilo.pro</a></p>
-<p>Отговаряме до 2 работни дни.</p>
-</section>
-
-<section>
-<h2>Докладвайте неточност</h2>
-<p>Ако смятате, че дадена стойност в калкулатора не е вярна, помогнете ни да я коригираме. Споделете:</p>
-<ul>
-<li>коя съставка и мярка е засегната</li>
-<li>каква стойност получавате на практика (напр. с везна)</li>
-<li>начина на измерване — рехаво насипано, натъпкано, пресято</li>
-</ul>
-<p>Всеки сигнал се проверява и при потвърждение стойността се актуализира.</p>
-</section>
-
-<section>
-<h2>Предложете нова съставка</h2>
-<p>Не намирате съставка, която ви е нужна? Пишете ни — добавяме приоритетно съставките, за които получаваме заявки от потребители.</p>
-</section>
-
-<section>
-<h2>Въпроси за поверителност</h2>
-<p>За въпроси свързани с данни и бисквитки вижте <a href="/${lang}/poveritelnost/">${t.privacy_policy}</a> или пишете на горния адрес.</p>
-</section>
+<h1>${title}</h1>
+${sectionsHtml}
 </main>
 ${footerHtml(t)}
 </div></body></html>`;
@@ -948,17 +875,13 @@ function build() {
     sitemap.push({ loc: privacyUrl, alternates: [{ lang, href: privacyUrl }] });
     count++;
 
-    // 2d. About page
-    const aboutUrl = baseUrl(lang, "za-nas");
-    write(join(SITE.outDir, lang, "za-nas", "index.html"), renderAboutPage(lang));
-    sitemap.push({ loc: aboutUrl, alternates: [{ lang, href: aboutUrl }] });
-    count++;
-
-    // 2e. Contact page
-    const contactUrl = baseUrl(lang, "kontakti");
-    write(join(SITE.outDir, lang, "kontakti", "index.html"), renderContactPage(lang));
-    sitemap.push({ loc: contactUrl, alternates: [{ lang, href: contactUrl }] });
-    count++;
+    // 2d. Static pages from data/pages.json (about, contact, etc.)
+    for (const page of PAGES) {
+      const pageUrl = baseUrl(lang, page.slug);
+      write(join(SITE.outDir, lang, page.slug, "index.html"), renderStaticPage(page, lang));
+      sitemap.push({ loc: pageUrl, alternates: [{ lang, href: pageUrl }] });
+      count++;
+    }
 
     // 3. Category pages
     for (const cat of CATEGORIES) {
