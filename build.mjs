@@ -930,6 +930,7 @@ function renderBlogIndex(lang) {
 <div class="hero"><h1>${t.blog_h1}</h1></div>
 <main class="blog-index">
 <p class="blog-intro-card">${t.blog_meta}</p>
+${adBanner()}
 ${cardsHtml}
 </main>
 ${footerHtml(t)}
@@ -982,7 +983,9 @@ function renderArticle(article, lang) {
 <a class="blog-back" href="${blogUrl}">← ${t.blog_title}</a>
 <div class="hero"><h1>${title}</h1><p class="lead">${lead}</p></div>
 <div class="article-meta"><span>${date}</span>${rtime ? `<span>${rtime}</span>` : ""}</div>
+${adBanner()}
 ${sectionsHtml}
+${adBanner()}
 <div class="blog-related"><h2>Още от блога</h2><div class="blog-related-links">${relatedHtml}</div></div>
 </article>
 <section><a class="cta" href="${t.cta_url}">${t.cta}<small>${t.cta_sub}</small></a></section>
