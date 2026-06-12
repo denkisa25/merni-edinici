@@ -287,6 +287,7 @@ function renderIngDrawer() {
     const titleVal = esc(ing.title?.[l] || '');
     const descVal = esc(ing.desc?.[l] || '');
     const noteVal = esc(ing.note?.[l] || '');
+    const tipVal  = esc(ing.tip?.[l]  || '');
     // Compute default hub title for placeholder hint
     const rawName = ing.names?.[l] || ing.id;
     const capName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
@@ -318,6 +319,10 @@ function renderIngDrawer() {
           <p style="font-size:13px;color:var(--muted)">${esc(state.translations[l]?.explainer_cup || '')}</p>
           <div style="margin-top:8px;font-size:10px;color:var(--muted);border-top:1px solid var(--border);padding-top:6px">Paragraphs 2 &amp; 3 come from <strong>Translations → explainer_generic / explainer_cup</strong></div>
         </div>
+      </div>
+      <div class="field" style="margin-top:12px">
+        <label>Measurement Tip <span style="color:var(--muted);font-size:10px;text-transform:none;letter-spacing:0">(shown as 💡 callout after the reference table · practical how-to)</span></label>
+        <textarea class="auto-resize" data-field="tip.${l}" style="min-height:56px">${tipVal}</textarea>
       </div>
     </div>`;
   }).join('');

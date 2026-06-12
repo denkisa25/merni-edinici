@@ -393,6 +393,12 @@ function buildExplainer(ing, lang) {
   return { title: t.explainer_title, paragraphs };
 }
 
+function tipBoxHtml(ing, lang) {
+  const tip = ing.tip?.[lang];
+  if (!tip) return '';
+  return `<div class="tip-box"><strong>💡 Съвет:</strong>${tip}</div>`;
+}
+
 function computeFaqs(ing, lang) {
   const t = T[lang];
   const name = ing.names[lang];
@@ -576,6 +582,7 @@ ${p.siblingUrl ? `<p class="sibling-link"><a href="${p.siblingUrl}">↔ Обра
 <tbody>${tableHtml(p.referenceRows)}</tbody></table></div>
 <p class="us-equiv">${usEquivLine(ing)}</p></section>
 <div class="page-actions"><button class="btn-print" onclick="window.print()">🖨 Принтирай таблицата</button><a class="btn-pin" href="https://pinterest.com/pin/create/button/?url=${encodeURIComponent(p.url)}&media=${encodeURIComponent(ogImage)}&description=${encodeURIComponent(p.title)}" target="_blank" rel="noopener">📌 Запази в Pinterest</a></div>
+${tipBoxHtml(ing, p.lang)}
 <div class="affil"><span>${t.affil}</span><a href="#" rel="sponsored nofollow">${t.affil_link}</a></div>
 <section class="explainer"><h2>${p.explainer.title}</h2>${p.explainer.paragraphs.map(x=>`<p>${x}</p>`).join("")}${trustLine(INGREDIENTS.find(i=>i.id===p.ingId), p.lang)}</section>
 <section><h2>${t.faq_title}</h2>${p.faq.map(f=>`<details><summary>${f.q}</summary><p>${f.a}</p></details>`).join("")}</section>
@@ -608,6 +615,7 @@ ${adBanner()}
 <tbody>${tableHtml(p.referenceRows)}</tbody></table></div>
 <p class="us-equiv">${usEquivLine(ing)}</p></section>
 <div class="page-actions"><button class="btn-print" onclick="window.print()">🖨 Принтирай таблицата</button><a class="btn-pin" href="https://pinterest.com/pin/create/button/?url=${encodeURIComponent(p.url)}&media=${encodeURIComponent(ogImage)}&description=${encodeURIComponent(p.title)}" target="_blank" rel="noopener">📌 Запази в Pinterest</a></div>
+${tipBoxHtml(ing, p.lang)}
 <div class="affil"><span>${t.affil}</span><a href="#" rel="sponsored nofollow">${t.affil_link}</a></div>
 <section class="explainer"><h2>${p.explainer.title}</h2>${p.explainer.paragraphs.map(x=>`<p>${x}</p>`).join("")}${trustLine(INGREDIENTS.find(i=>i.id===p.ingId), p.lang)}</section>
 ${p.faq.length > 0 ? `<section><h2>${t.faq_title}</h2>${p.faq.map(f=>`<details><summary>${f.q}</summary><p>${f.a}</p></details>`).join("")}</section>` : ""}
