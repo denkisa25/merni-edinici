@@ -639,6 +639,7 @@ ${tipBoxHtml(ing, p.lang)}
 <div class="affil"><span>${t.affil}</span><a href="#" rel="sponsored nofollow">${t.affil_link}</a></div>
 <section class="explainer"><h2>${p.explainer.title}</h2>${p.explainer.paragraphs.map(x=>`<p>${x}</p>`).join("")}${trustLine(INGREDIENTS.find(i=>i.id===p.ingId), p.lang)}</section>
 ${p.faq.length > 0 ? `<section><h2>${t.faq_title}</h2>${p.faq.map(f=>`<details><summary>${f.q}</summary><p>${f.a}</p></details>`).join("")}</section>` : ""}
+${blogTeaserHtml(ing, p.lang)}
 <section><a class="cta" href="${t.cta_url}">${t.cta}<small>${t.cta_sub}</small></a></section>
 <section><h2>${t.related}</h2><div class="related">${p.related.map(r=>`<a href="${r.url}">${r.name}</a>`).join("")}</div></section>
 <div class="feedback" id="feedback"><span>Беше ли полезно?</span><button data-vote="up">👍</button><button data-vote="down">👎</button><span class="feedback-msg"></span></div>
@@ -884,6 +885,20 @@ ${footerHtml(t)}
 /* ===========================================================================
    BLOG — index + individual article pages
    =========================================================================== */
+function blogTeaserHtml(ing, lang) {
+  const t = T[lang];
+  const match = ARTICLES.find(a => (a.relatedIngredients || []).includes(ing.id));
+  if (!match) return "";
+  const artUrl = baseUrl(lang, "blog", match.slug);
+  const artTitle = match.titles[lang] || "";
+  const artLead  = (match.leads[lang] || "").slice(0, 110) + "…";
+  return `<div class="blog-teaser">` +
+    `<p class="blog-teaser-label">Прочети в блога</p>` +
+    `<a href="${artUrl}">${artTitle}</a>` +
+    `<p class="blog-teaser-desc">${artLead}</p>` +
+    `</div>`;
+}
+
 function renderBlogIndex(lang) {
   const t = T[lang];
   const url = baseUrl(lang, "blog");
@@ -894,18 +909,29 @@ function renderBlogIndex(lang) {
   const cardsHtml = ARTICLES.map(a => {
     const title = a.titles[lang] || "";
     const lead  = a.leads[lang] || "";
+    const date  = a.publishedLabel?.[lang] || a.publishedAt;
     const aUrl  = baseUrl(lang, "blog", a.slug);
-    return `<article class="blog-card"><h2><a href="${aUrl}">${title}</a></h2>` +
-           `<p class="blog-lead">${lead}</p>` +
-           `<p><a class="blog-read-more" href="${aUrl}">${t.blog_read_more} →</a></p></article>`;
+    const thumb = a.thumb || "📖";
+    const thumbBg = a.thumbBg || "linear-gradient(135deg,var(--paper-2),var(--line))";
+    return `<a class="blog-card" href="${aUrl}">` +
+      `<div class="blog-thumb" style="background:${thumbBg}">${thumb}</div>` +
+      `<div class="blog-card-body">` +
+      `<span class="blog-date">${date}</span>` +
+      `<h2 class="blog-card-title">${title}</h2>` +
+      `<p class="blog-card-lead">${lead}</p>` +
+      `<span class="blog-read-more">${t.blog_read_more} →</span>` +
+      `</div></a>`;
   }).join("\n");
   return `${head({ lang, title: `${t.blog_h1} | ${t.brand}`, meta: t.blog_meta, canonical: url, pageScript: "" })}
 <script type="application/ld+json">${breadcrumbLd(crumbs)}</script>
 </head><body><div class="wrap">
 <header>${brandHtml(lang)}
 <nav class="crumbs" aria-label="breadcrumb">${crumbsHtml(crumbs)}</nav></header>
-<div class="hero"><h1>${t.blog_h1}</h1><p class="lead">${t.blog_meta}</p></div>
-<main class="blog-index">${cardsHtml}</main>
+<div class="hero"><h1>${t.blog_h1}</h1></div>
+<main class="blog-index">
+<p class="blog-intro-card">${t.blog_meta}</p>
+${cardsHtml}
+</main>
 ${footerHtml(t)}
 </div></body></html>`;
 }
@@ -915,17 +941,27 @@ function renderArticle(article, lang) {
   const title  = article.titles[lang] || "";
   const meta   = article.metas[lang] || "";
   const lead   = article.leads[lang] || "";
+  const date   = article.publishedLabel?.[lang] || article.publishedAt;
+  const rtime  = article.readingTime?.[lang] || "";
   const url    = baseUrl(lang, "blog", article.slug);
+  const blogUrl = baseUrl(lang, "blog");
   const crumbs = [
     { name: t.home,       url: baseUrl(lang) },
-    { name: t.blog_title, url: baseUrl(lang, "blog") },
+    { name: t.blog_title, url: blogUrl },
     { name: title,        url: "" },
   ];
   const sectionsHtml = (article.sections || []).map(sec => {
-    const h2   = (sec.h2 && sec.h2[lang]) || "";
-    const paras = (sec.paragraphs && sec.paragraphs[lang]) || [];
-    return `<section>\n<h2>${h2}</h2>\n${paras.map(p => `<p>${p}</p>`).join("\n")}\n</section>`;
+    const h2     = (sec.h2 && sec.h2[lang]) || "";
+    const paras  = (sec.paragraphs && sec.paragraphs[lang]) || [];
+    const callout = sec.callout?.[lang] || "";
+    return `<section>\n<h2>${h2}</h2>\n${paras.map(p => `<p>${p}</p>`).join("\n")}` +
+           `${callout ? `\n<p class="article-callout">${callout}</p>` : ""}` +
+           `\n</section>`;
   }).join("\n");
+  const others = ARTICLES.filter(a => a.id !== article.id);
+  const relatedHtml = others.map(a =>
+    `<a href="${baseUrl(lang, "blog", a.slug)}">${a.titles[lang] || ""}</a>`
+  ).join("\n");
   const articleLd = JSON.stringify({
     "@context": "https://schema.org",
     "@type": "Article",
@@ -943,8 +979,11 @@ function renderArticle(article, lang) {
 <header>${brandHtml(lang)}
 <nav class="crumbs" aria-label="breadcrumb">${crumbsHtml(crumbs)}</nav></header>
 <article class="article-page">
+<a class="blog-back" href="${blogUrl}">← ${t.blog_title}</a>
 <div class="hero"><h1>${title}</h1><p class="lead">${lead}</p></div>
+<div class="article-meta"><span>${date}</span>${rtime ? `<span>${rtime}</span>` : ""}</div>
 ${sectionsHtml}
+<div class="blog-related"><h2>Още от блога</h2><div class="blog-related-links">${relatedHtml}</div></div>
 </article>
 <section><a class="cta" href="${t.cta_url}">${t.cta}<small>${t.cta_sub}</small></a></section>
 ${footerHtml(t)}
