@@ -21,6 +21,22 @@
     <xhtml:link rel="alternate" hreflang="bg" href="https://merilo.pro/bg/kontakti/"/>
   </url>
   <url>
+    <loc>https://merilo.pro/bg/blog/</loc>
+    <xhtml:link rel="alternate" hreflang="bg" href="https://merilo.pro/bg/blog/"/>
+  </url>
+  <url>
+    <loc>https://merilo.pro/bg/blog/zashto-mernite-chashi-sa-razlichni/</loc>
+    <xhtml:link rel="alternate" hreflang="bg" href="https://merilo.pro/bg/blog/zashto-mernite-chashi-sa-razlichni/"/>
+  </url>
+  <url>
+    <loc>https://merilo.pro/bg/blog/kak-da-merim-tochno-bez-vezna/</loc>
+    <xhtml:link rel="alternate" hreflang="bg" href="https://merilo.pro/bg/blog/kak-da-merim-tochno-bez-vezna/"/>
+  </url>
+  <url>
+    <loc>https://merilo.pro/bg/blog/razlikata-mezhdu-chaena-i-kafena-chasha/</loc>
+    <xhtml:link rel="alternate" hreflang="bg" href="https://merilo.pro/bg/blog/razlikata-mezhdu-chaena-i-kafena-chasha/"/>
+  </url>
+  <url>
     <loc>https://merilo.pro/bg/merki/kategoria/brasna/</loc>
     <xhtml:link rel="alternate" hreflang="bg" href="https://merilo.pro/bg/merki/kategoria/brasna/"/>
   </url>

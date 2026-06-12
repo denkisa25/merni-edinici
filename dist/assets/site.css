@@ -164,6 +164,7 @@ textarea:focus{outline:none;border-color:var(--paprika);box-shadow:0 0 0 3px rgb
 .feedback button{font-size:20px;background:none;border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
 .feedback button:hover{border-color:var(--paprika)}
 .feedback-msg{font-size:13px;color:var(--paprika-dk);font-weight:600}
+.vote-count{font-size:13px;color:var(--ink-soft);margin:-16px 0 24px}
 /* ── Home accordion + search ─────────────────────────────────── */
 .section-label{font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);margin:26px 0 14px}
 .search{position:relative;margin:22px 0 8px;max-width:480px}
