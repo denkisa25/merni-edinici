@@ -42,14 +42,18 @@ function renderIngredientSelector(container, onSelect) {
 
   const btnRefs = {};
 
-  groups.forEach(group => {
+  groups.forEach((group, i) => {
+    const labelId = `ingredient-group-label-${i}`;
     const groupLabel = document.createElement('p');
     groupLabel.className = 'group-label';
+    groupLabel.id = labelId;
     groupLabel.textContent = group.label;
     section.appendChild(groupLabel);
 
     const grid = document.createElement('div');
     grid.className = 'ingredient-grid';
+    grid.setAttribute('role', 'group');
+    grid.setAttribute('aria-labelledby', labelId);
 
     group.items.forEach(ing => {
       const btn = document.createElement('button');
@@ -150,6 +154,8 @@ function renderResultDisplay(container) {
   const value = document.createElement('p');
   value.className = 'result-value';
   value.id = 'result-value';
+  value.setAttribute('role', 'status');
+  value.setAttribute('aria-live', 'polite');
   value.textContent = '— г';   // D-05: static placeholder; never produced by convert()
 
   section.append(label, value);

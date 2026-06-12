@@ -892,6 +892,7 @@ function build() {
     }
 
     // 4. Hub + question pages per ingredient
+    mkdirSync(join(SITE.outDir, "assets", "og"), { recursive: true });
     for (const ing of INGREDIENTS) {
       const hub = computeHubPage(ing, lang);
       writeFileSync(join(SITE.outDir, "assets", "og", `${ing.id}-hub.png`), ogImagePng(cap(ing.names[lang]), hub.ogAnswer));
