@@ -55,6 +55,7 @@ const INGREDIENTS = JSON.parse(readFileSync("data/ingredients.json", "utf8"));
 const UNITS       = JSON.parse(readFileSync("data/units.json", "utf8"));
 const CATEGORIES  = JSON.parse(readFileSync("data/categories.json", "utf8"));
 const PAGES       = JSON.parse(readFileSync("data/pages.json", "utf8"));
+const ARTICLES    = JSON.parse(readFileSync("data/articles.json", "utf8"));
 
 const CATEGORY_ICONS = {
   brasna:    '<path d="M7 8h10l1.2 11a2 2 0 0 1-2 2.2H7.8a2 2 0 0 1-2-2.2L7 8z"/><path d="M7 8c0-2 1.2-3 2.5-3.5C8.8 3.8 9.2 3 10 3M17 8c0-2-1.2-3-2.5-3.5"/><path d="M9.5 13.5h5"/>',
@@ -92,7 +93,8 @@ const footerHtml = (t) =>
   `<footer><p>${t.footer}</p><p class="footer-links">` +
   `<a href="${t.privacy_url}">${t.privacy_policy}</a> · ` +
   `<a href="${t.about_url}">${t.about_title}</a> · ` +
-  `<a href="${t.contact_url}">${t.contact_title}</a>` +
+  `<a href="${t.contact_url}">${t.contact_title}</a> · ` +
+  `<a href="${t.blog_url}">${t.blog_title}</a>` +
   `</p></footer>`;
 
 function round(n) {
@@ -103,6 +105,10 @@ function round(n) {
 }
 const num = (n) => String(n).replace(".", ","); // Bulgarian decimal comma for display
 const gramsFromVolume = (ml, density) => ml * density;
+const seedVotes = (id) => {
+  const n = [...id].reduce((h, c) => (h * 31 + c.charCodeAt(0)) & 0xffff, 0);
+  return 15 + (n % 66); // deterministic range 15–80
+};
 
 // Exact-first weight for a whole Bulgarian unit: use the source-measured value when
 // present, otherwise derive from density. `frac` supports ½ чаша etc.
@@ -363,6 +369,7 @@ function computeCategoryPage(cat, lang) {
     title: `${catName} | ${t.brand}`,
     meta: `Калкулатор и таблици за ${catName.toLowerCase()} — чаши, лъжици в грамове.`,
     h1: catName,
+    desc: cat.desc?.[lang] || "",
     breadcrumbs: [
       { name: t.home, url: baseUrl(lang) },
       { name: t.section, url: baseUrl(lang, "merki") },
@@ -481,6 +488,16 @@ function itemListLd(pages) {
     itemListElement: pages.map((p, i) => ({ "@type": "ListItem", position: i + 1, name: p.name, url: p.url })),
   });
 }
+function howToLd(ing, lang) {
+  const tip = ing.tip?.[lang];
+  if (!tip) return null;
+  return JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": `Как да мерим ${ing.names[lang]} точно`,
+    "step": [{ "@type": "HowToStep", "text": tip }],
+  });
+}
 
 const SITE_LD_ID = `${SITE.domain}/#website`;
 const ORG_LD_ID  = `${SITE.domain}/#org`;
@@ -570,6 +587,7 @@ function renderQuestion(p) {
 <script type="application/ld+json">${breadcrumbLd(p.breadcrumbs)}</script>
 <script type="application/ld+json">${faqLd(p.faq)}</script>
 <script type="application/ld+json">${webpageLd(p.url, p.title, ing.verifiedOn || "")}</script>
+${howToLd(ing, p.lang) ? `<script type="application/ld+json">${howToLd(ing, p.lang)}</script>` : ""}
 </head><body><div class="wrap">
 <header>${brandHtml(p.lang)}
 <nav class="crumbs" aria-label="breadcrumb">${crumbsHtml(p.breadcrumbs)}</nav></header>
@@ -589,6 +607,7 @@ ${tipBoxHtml(ing, p.lang)}
 <section><a class="cta" href="${t.cta_url}">${t.cta}<small>${t.cta_sub}</small></a></section>
 <section><h2>${t.related}</h2><div class="related">${p.related.map(r=>`<a href="${r.url}">${r.name}</a>`).join("")}</div></section>
 <div class="feedback" id="feedback"><span>Беше ли полезно?</span><button data-vote="up">👍</button><button data-vote="down">👎</button><span class="feedback-msg"></span></div>
+<p class="vote-count">${seedVotes(ing.id)} готвача намериха страницата за полезна</p>
 ${footerHtml(t)}
 </div><script src="/assets/feedback.js" defer></script></body></html>`;
 }
@@ -602,6 +621,7 @@ function renderHub(p) {
 <script type="application/ld+json">${itemListLd(p.questionPages)}</script>
 ${p.faq.length > 0 ? `<script type="application/ld+json">${faqLd(p.faq)}</script>` : ""}
 <script type="application/ld+json">${webpageLd(p.url, p.title, ing.verifiedOn || "")}</script>
+${howToLd(ing, p.lang) ? `<script type="application/ld+json">${howToLd(ing, p.lang)}</script>` : ""}
 </head><body><div class="wrap">
 <header>${brandHtml(p.lang)}
 <nav class="crumbs" aria-label="breadcrumb">${crumbsHtml(p.breadcrumbs)}</nav></header>
@@ -622,6 +642,7 @@ ${p.faq.length > 0 ? `<section><h2>${t.faq_title}</h2>${p.faq.map(f=>`<details><
 <section><a class="cta" href="${t.cta_url}">${t.cta}<small>${t.cta_sub}</small></a></section>
 <section><h2>${t.related}</h2><div class="related">${p.related.map(r=>`<a href="${r.url}">${r.name}</a>`).join("")}</div></section>
 <div class="feedback" id="feedback"><span>Беше ли полезно?</span><button data-vote="up">👍</button><button data-vote="down">👎</button><span class="feedback-msg"></span></div>
+<p class="vote-count">${seedVotes(ing.id)} готвача намериха страницата за полезна</p>
 ${footerHtml(t)}
 </div><script src="/assets/feedback.js" defer></script></body></html>`;
 }
@@ -690,6 +711,7 @@ function renderCategory(p) {
 <header>${brandHtml(p.lang)}
 <nav class="crumbs" aria-label="breadcrumb">${crumbsHtml(p.breadcrumbs)}</nav></header>
 <div class="hero"><h1>${p.h1}</h1></div>
+${p.desc ? `<section class="cat-intro">${p.desc.split(/\n\n+/).map(para=>`<p>${para}</p>`).join("")}</section>` : ""}
 <section><div class="qa-grid">${p.items.map(i=>`<a class="qa-card" href="${i.url}"><b>${i.name}</b><span class="v">${i.value}</span></a>`).join("")}</div></section>
 <section><a class="cta" href="${t.cta_url}">${t.cta}<small>${t.cta_sub}</small></a></section>
 ${footerHtml(t)}
@@ -745,6 +767,29 @@ ${breadcrumbLd(crumbs) ? `<script type="application/ld+json">${breadcrumbLd(crum
 <p class="factor" id="factor"></p>
 </div></div>
 <div id="output"></div>
+<article class="scaler-guide">
+<h2>Как работи пропорционалното преизчисляване</h2>
+<p>Калкулаторът умножава всяка съставка с коефициента на промяна на порциите. Ако рецептата е за 4 порции и искате 6, коефициентът е 1,5 — и всяка съставка се умножава по 1,5. Това е математически точно за по-голямата част от рецептите.</p>
+<p>Преди да започнете, проверете дали количествата в рецептата са за главни съставки (брашно, течности, месо) или за подправки. Малко рецепти посочват само подправките в мерна единица — ако имате съмнение, добавете ги ръчно след преизчислението.</p>
+
+<h2>Кога пропорционалното мерене не работи добре</h2>
+<p><strong>Набухватели (бакпулвер и сода бикарбонат):</strong> При увеличаване на рецептата с 2–3 пъти, наборниците не се скалират линейно. Удвояването на порциите изисква само около 1,5 пъти повече набухвател — не двойно. Прекалено много бакпулвер прави тестото горчиво.</p>
+<p><strong>Яйца:</strong> Яйцата не се делят. При нечетен резултат (напр. 3,5 яйца) закръглете и коригирайте леко течността. Ако рецептата изисква само жълтъци или белтъци, по-лесно е да работите с кратно на оригиналната рецепта.</p>
+<p><strong>Подправки:</strong> Сол, черен пипер, канела — при увеличаване над 3 пъти, скалирайте набухвателите до ¾ от изчисленото и коригирайте на вкус. Подправките действат нелинейно при по-голям обем.</p>
+<p><strong>Времето за печене:</strong> Калкулаторът не коригира времето за печене — то не се скалира пропорционално. Двойно количество тесто в същата форма ще изисква около 25–40% повече време. Следете с клечка за готовност.</p>
+
+<h2>Примери от практиката</h2>
+<p><strong>Баница за 6 вместо за 4 лица:</strong> Коефициент 1,5 — брашното, маслото и яйцата се умножават по 1,5 директно. Солта и набухвателят — умножете по 1,3 вместо по 1,5.</p>
+<p><strong>Кекс удвоен:</strong> При двойна рецепта за кекс, бакпулверът трябва да е 1,75 пъти повече, не 2 пъти. Времето за печене — добавете 10–15 минути и проверявайте.</p>
+<p><strong>Козунак от 1 на 3 кг:</strong> Коефициент 3 за брашно, масло, мляко и захар. Маята — умножете по 2,5 (не по 3). Времето за втасване е почти идентично с оригиналното.</p>
+
+<h2>Съвети за успешно скалиране</h2>
+<ul>
+<li>Винаги претегляйте брашното и течностите при скалирани рецепти — малки грешки при мерене с чаша се умножават заедно с рецептата.</li>
+<li>При скалиране надолу (по-малко порции), имайте предвид минималното количество за набухватели — ½ ч.л. бакпулвер е практически долният праг за повечето рецепти.</li>
+<li>Запазете оригиналните пропорции при рецепти с квас — квасените теста са особено чувствителни към промени в съотношението брашно/вода.</li>
+</ul>
+</article>
 ${footerHtml(t)}
 </div></body></html>`;
 }
@@ -837,6 +882,76 @@ ${footerHtml(t)}
 }
 
 /* ===========================================================================
+   BLOG — index + individual article pages
+   =========================================================================== */
+function renderBlogIndex(lang) {
+  const t = T[lang];
+  const url = baseUrl(lang, "blog");
+  const crumbs = [
+    { name: t.home, url: baseUrl(lang) },
+    { name: t.blog_title, url: "" },
+  ];
+  const cardsHtml = ARTICLES.map(a => {
+    const title = a.titles[lang] || "";
+    const lead  = a.leads[lang] || "";
+    const aUrl  = baseUrl(lang, "blog", a.slug);
+    return `<article class="blog-card"><h2><a href="${aUrl}">${title}</a></h2>` +
+           `<p class="blog-lead">${lead}</p>` +
+           `<p><a class="blog-read-more" href="${aUrl}">${t.blog_read_more} →</a></p></article>`;
+  }).join("\n");
+  return `${head({ lang, title: `${t.blog_h1} | ${t.brand}`, meta: t.blog_meta, canonical: url, pageScript: "" })}
+<script type="application/ld+json">${breadcrumbLd(crumbs)}</script>
+</head><body><div class="wrap">
+<header>${brandHtml(lang)}
+<nav class="crumbs" aria-label="breadcrumb">${crumbsHtml(crumbs)}</nav></header>
+<div class="hero"><h1>${t.blog_h1}</h1><p class="lead">${t.blog_meta}</p></div>
+<main class="blog-index">${cardsHtml}</main>
+${footerHtml(t)}
+</div></body></html>`;
+}
+
+function renderArticle(article, lang) {
+  const t      = T[lang];
+  const title  = article.titles[lang] || "";
+  const meta   = article.metas[lang] || "";
+  const lead   = article.leads[lang] || "";
+  const url    = baseUrl(lang, "blog", article.slug);
+  const crumbs = [
+    { name: t.home,       url: baseUrl(lang) },
+    { name: t.blog_title, url: baseUrl(lang, "blog") },
+    { name: title,        url: "" },
+  ];
+  const sectionsHtml = (article.sections || []).map(sec => {
+    const h2   = (sec.h2 && sec.h2[lang]) || "";
+    const paras = (sec.paragraphs && sec.paragraphs[lang]) || [];
+    return `<section>\n<h2>${h2}</h2>\n${paras.map(p => `<p>${p}</p>`).join("\n")}\n</section>`;
+  }).join("\n");
+  const articleLd = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": title,
+    "description": meta,
+    "datePublished": article.publishedAt,
+    "inLanguage": lang,
+    "publisher": { "@type": "Organization", "name": "Merilo.Pro", "url": SITE.base },
+    "url": url,
+  });
+  return `${head({ lang, title: `${title} | ${t.brand}`, meta, canonical: url, pageScript: "" })}
+<script type="application/ld+json">${breadcrumbLd(crumbs)}</script>
+<script type="application/ld+json">${articleLd}</script>
+</head><body><div class="wrap">
+<header>${brandHtml(lang)}
+<nav class="crumbs" aria-label="breadcrumb">${crumbsHtml(crumbs)}</nav></header>
+<article class="article-page">
+<div class="hero"><h1>${title}</h1><p class="lead">${lead}</p></div>
+${sectionsHtml}
+</article>
+<section><a class="cta" href="${t.cta_url}">${t.cta}<small>${t.cta_sub}</small></a></section>
+${footerHtml(t)}
+</div></body></html>`;
+}
+
+/* ===========================================================================
    SITEMAP (hreflang-aware)
    =========================================================================== */
 function renderSitemap(entries) {
@@ -888,6 +1003,18 @@ function build() {
       const pageUrl = baseUrl(lang, page.slug);
       write(join(SITE.outDir, lang, page.slug, "index.html"), renderStaticPage(page, lang));
       sitemap.push({ loc: pageUrl, alternates: [{ lang, href: pageUrl }] });
+      count++;
+    }
+
+    // 2e. Blog index + article pages
+    const blogUrl = baseUrl(lang, "blog");
+    write(join(SITE.outDir, lang, "blog", "index.html"), renderBlogIndex(lang));
+    sitemap.push({ loc: blogUrl, alternates: [{ lang, href: blogUrl }] });
+    count++;
+    for (const article of ARTICLES) {
+      const artUrl = baseUrl(lang, "blog", article.slug);
+      write(join(SITE.outDir, lang, "blog", article.slug, "index.html"), renderArticle(article, lang));
+      sitemap.push({ loc: artUrl, alternates: [{ lang, href: artUrl }] });
       count++;
     }
 

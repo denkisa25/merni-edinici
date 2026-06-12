@@ -67,5 +67,10 @@
   "about_title": "За Мерило",
   "about_url": "/bg/za-nas/",
   "contact_title": "Контакти",
-  "contact_url": "/bg/kontakti/"
+  "contact_url": "/bg/kontakti/",
+  "blog_title": "Статии",
+  "blog_url": "/bg/blog/",
+  "blog_h1": "Статии за мерки и готвене",
+  "blog_meta": "Полезни статии за кухненски мерки — разлики между чаши, техники за точно мерене и съвети за домашния готвач.",
+  "blog_read_more": "Прочети статията"
 }
