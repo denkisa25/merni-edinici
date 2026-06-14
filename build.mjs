@@ -27,6 +27,12 @@ const _faqsCtx = {};
 (new Function("globalThis", readFileSync("./system/faqs.bg.js", "utf8")))(_faqsCtx);
 const CUSTOM_FAQS = (_faqsCtx.__KITCHEN_FAQS__ || {}).FAQS || {}; // keyed by ingredient id
 
+// system/products.bg.js — same IIFE pattern; exposes RETAILERS, PRODUCTS, AFFILIATE.
+const _productsCtx = {};
+(new Function("globalThis", readFileSync("./system/products.bg.js", "utf8")))(_productsCtx);
+const { RETAILERS: VEZNI_RETAILERS = {}, PRODUCTS: VEZNI_PRODUCTS_LIST = [], AFFILIATE: VEZNI_AFFILIATE = {} }
+  = _productsCtx.__KITCHEN_PRODUCTS__ || {};
+
 /* ===========================================================================
    CONFIG + DATA LAYER — loaded from data/ JSON files
    =========================================================================== */
@@ -610,7 +616,7 @@ ${p.siblingUrl ? `<p class="sibling-link"><a href="${p.siblingUrl}">↔ Обра
 <p class="us-equiv">${usEquivLine(ing)}</p></section>
 <div class="page-actions"><button class="btn-print" onclick="window.print()">🖨 Принтирай таблицата</button><a class="btn-pin" href="https://pinterest.com/pin/create/button/?url=${encodeURIComponent(p.url)}&media=${encodeURIComponent(ogImage)}&description=${encodeURIComponent(p.title)}" target="_blank" rel="noopener">📌 Запази в Pinterest</a></div>
 ${tipBoxHtml(ing, p.lang)}
-<div class="affil"><span>${t.affil}</span><a href="#" rel="sponsored nofollow">${t.affil_link}</a></div>
+<div class="affil"><span>${t.affil}</span><a href="/bg/vezni/">${t.affil_link}</a></div>
 <section class="explainer"><h2>${p.explainer.title}</h2>${p.explainer.paragraphs.map(x=>`<p>${x}</p>`).join("")}${trustLine(INGREDIENTS.find(i=>i.id===p.ingId), p.lang)}</section>
 <section><h2>${t.faq_title}</h2>${p.faq.map(f=>`<details><summary>${f.q}</summary><p>${f.a}</p></details>`).join("")}</section>
 <section><a class="cta" href="${t.cta_url}">${t.cta}<small>${t.cta_sub}</small></a></section>
@@ -645,7 +651,7 @@ ${adBanner()}
 <p class="us-equiv">${usEquivLine(ing)}</p></section>
 <div class="page-actions"><button class="btn-print" onclick="window.print()">🖨 Принтирай таблицата</button><a class="btn-pin" href="https://pinterest.com/pin/create/button/?url=${encodeURIComponent(p.url)}&media=${encodeURIComponent(ogImage)}&description=${encodeURIComponent(p.title)}" target="_blank" rel="noopener">📌 Запази в Pinterest</a></div>
 ${tipBoxHtml(ing, p.lang)}
-<div class="affil"><span>${t.affil}</span><a href="#" rel="sponsored nofollow">${t.affil_link}</a></div>
+<div class="affil"><span>${t.affil}</span><a href="/bg/vezni/">${t.affil_link}</a></div>
 <section class="explainer"><h2>${p.explainer.title}</h2>${p.explainer.paragraphs.map(x=>`<p>${x}</p>`).join("")}${trustLine(INGREDIENTS.find(i=>i.id===p.ingId), p.lang)}</section>
 ${p.faq.length > 0 ? `<section><h2>${t.faq_title}</h2>${p.faq.map(f=>`<details><summary>${f.q}</summary><p>${f.a}</p></details>`).join("")}</section>` : ""}
 ${blogTeaserHtml(ing, p.lang)}
@@ -1014,6 +1020,170 @@ function renderSitemap(entries) {
 }
 
 /* ===========================================================================
+   VEZNI — affiliate buyer's guide for kitchen scales (/bg/vezni/)
+   =========================================================================== */
+function renderVezni(lang) {
+  const t   = T[lang];
+  const url = baseUrl(lang, "vezni");
+
+  const crumbs = [
+    { name: t.home,    url: baseUrl(lang) },
+    { name: t.section, url: baseUrl(lang, "merki") },
+    { name: "Коя кухненска везна да изберете", url: "" },
+  ];
+
+  const vezni_faqs = [
+    { q: "Каква везна е най-добра за домашно печене?",
+      a: "Електронна везна с капацитет до 5 кг, точност до 1 грам и функция тара покрива почти всичко в домашната кухня. Това е и комбинацията, която препоръчваме като основен избор." },
+    { q: "Колко точна трябва да е везната?",
+      a: "До 1 грам е достатъчно за всякакво печене и готвене. По-висока точност (0,1 г) има смисъл само при редовно мерене на много малки количества — мая, желатин, подправки или кафе." },
+    { q: "Механична или електронна везна?",
+      a: "За кухня — електронна. Механичните (с пружина и стрелка) са по-неточни и нямат тара. Механична има смисъл само ако държите на ретро вид или не искате да зависите от батерии." },
+    { q: "Мога ли да меря течности с кухненска везна?",
+      a: 'Да. Везните с режим „ml“ приемат, че течността има плътността на водата — което е вярно за вода и почти вярно за мляко. За масло, мед или сиропи е по-точно да мерите в грамове. Подробности има в таблиците ни за всяка съставка.' },
+    { q: "Защо везната показва различни стойности при едно и също нещо?",
+      a: "Най-честите причини са неравна повърхност, разреждащи се батерии или натиск върху платформата по време на мерене. Сложете везната на твърд равен плот и изчакайте показанието да се стабилизира." },
+    { q: "Трябва ли ми смарт везна с приложение?",
+      a: "Само ако активно следите калории и хранителни стойности. За печене и готвене обикновената точна везна е напълно достатъчна — вижте раздела за смарт везните по-горе." },
+    { q: "Как да се грижа за везната?",
+      a: "Бършете с леко влажна кърпа, без потапяне във вода (освен ако моделът не е водоустойчив). Вадете батериите, ако няма да я ползвате дълго. Не я претоварвайте над обявения капацитет." },
+  ];
+
+  function vezniCard(product, accent) {
+    const retailer     = VEZNI_RETAILERS[product.retailer] || {};
+    const resolvedUrl  = VEZNI_AFFILIATE[product.affiliateUrl] || "#";
+    const isAffiliate  = retailer.type === "affiliate";
+    const btnLabel     = isAffiliate ? `Виж в ${retailer.name} →` : `Купи от ${retailer.name} →`;
+    const linkAttrs    = isAffiliate
+      ? `href="${resolvedUrl}" target="_blank" rel="sponsored nofollow noopener"`
+      : `href="${resolvedUrl}"`;
+
+    const tierLabels   = { budget: "Бюджетен избор", standard: "Нашата препоръка", smart: "За напреднали" };
+    const tierLabel    = tierLabels[product.tier] || product.tier;
+
+    const specsLine    = [
+      `${product.specs.capacityKg} кг`,
+      `${product.specs.precisionG} г точност`,
+      product.specs.tare      ? "тара"      : null,
+      product.specs.bluetooth ? "Bluetooth" : null,
+    ].filter(Boolean).join(" · ");
+
+    const imgHtml      = product.image
+      ? `<img src="${product.image}" alt="${product.name || "Кухненска везна"}" class="tier-card__img" loading="lazy" width="300" height="225">`
+      : `<div class="tier-card__img-placeholder" aria-hidden="true"></div>`;
+
+    const prosHtml     = product.pros.map(p => `<li class="pro">${p}</li>`).join("");
+    const consHtml     = product.cons.map(c => `<li class="con">${c}</li>`).join("");
+    const priceHtml    = product.priceDisplay
+      ? `<p class="tier-card__price">${product.priceDisplay}<small>проверена цена</small></p>` : "";
+    const blurbHtml    = product.blurb
+      ? `<p class="tier-card__blurb">${product.blurb}</p>` : "";
+    const noteHtml     = (isAffiliate && retailer.note)
+      ? `<p class="tier-card__note">${retailer.note}</p>` : "";
+
+    return `<div class="tier-card${accent ? " tier-card--accent" : ""}">` +
+      `<span class="tier-card__label">${tierLabel}</span>` +
+      imgHtml +
+      `<h3 class="tier-card__name">${product.name || "Модел уточнява се"}</h3>` +
+      `<p class="tier-card__specs">${specsLine}</p>` +
+      priceHtml +
+      `<ul class="tier-card__list">${prosHtml}${consHtml}</ul>` +
+      blurbHtml +
+      `<a class="tier-card__btn${accent ? " tier-card__btn--accent" : ""}" ${linkAttrs}>${btnLabel}</a>` +
+      noteHtml +
+      `</div>`;
+  }
+
+  const budget   = VEZNI_PRODUCTS_LIST.find(p => p.tier === "budget");
+  const standard = VEZNI_PRODUCTS_LIST.find(p => p.tier === "standard");
+  const smart    = VEZNI_PRODUCTS_LIST.find(p => p.tier === "smart");
+
+  const disclosureHtml = `<div class="vezni-disclosure">Тази страница съдържа партньорски връзки. Ако купите продукт през тях, може да получим малка комисиона — без това да увеличава цената за вас. Препоръчваме само везни, които бихме използвали и сами.</div>`;
+
+  const cardsHtml = (budget && standard && smart)
+    ? `<div class="tier-cards">${vezniCard(budget, false)}${vezniCard(standard, true)}${vezniCard(smart, false)}</div>` +
+      `<p class="vezni-price-note">Цените са ориентировъчни и се обновяват периодично. Проверете актуалната цена при търговеца.</p>`
+    : "";
+
+  const articleLd = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Коя кухненска везна да изберете",
+    "description": "Как да изберете точна кухненска везна за печене и готвене — капацитет, точност, тара и смарт функции. Ясни препоръки за всеки бюджет.",
+    "datePublished": "2026-06-14",
+    "inLanguage": "bg",
+    "publisher": { "@type": "Organization", "name": "Merilo.Pro", "url": SITE.domain },
+    "url": url,
+  });
+
+  return `${head({ lang, title: "Коя кухненска везна да изберете (2026) — кратко ръководство | Мерило", meta: "Как да изберете точна кухненска везна за печене и готвене — капацитет, точност, тара и смарт функции. Ясни препоръки за всеки бюджет.", canonical: url, pageScript: "" })}
+<script type="application/ld+json">${breadcrumbLd(crumbs)}</script>
+<script type="application/ld+json">${faqLd(vezni_faqs)}</script>
+<script type="application/ld+json">${articleLd}</script>
+</head><body><div class="wrap">
+<header>${brandHtml(lang)}
+<nav class="crumbs" aria-label="breadcrumb">${crumbsHtml(crumbs)}</nav></header>
+<div class="hero">
+<h1>Коя кухненска везна да изберете</h1>
+<p class="answer">Кратко ръководство, което ще ви помогне да намерите точната везна за вашата кухня — без излишни функции и без да надплащате. Препоръчваме само модели, които бихме сложили и на собствения си плот.</p>
+</div>
+${disclosureHtml}
+<section>
+<h2>Накратко: нашите препоръки</h2>
+${cardsHtml}
+</section>
+<section class="vezni-content">
+<h2>Как да изберете кухненска везна</h2>
+<p>За повечето хора изборът се свежда до четири неща: капацитет, точност, функция тара и материал. Ето какво значат на практика.</p>
+<h3>Капацитет — колко може да измери</h3>
+<p>Капацитетът е максималното тегло, което везната отчита. По-голям капацитет не значи по-добра везна — значи просто по-широк диапазон. Ето кое за какво става:</p>
+<ul>
+<li><strong>до 1 кг</strong> — за малки количества: подправки, мая, сладкарски украси.</li>
+<li><strong>до 2 кг</strong> — за ежедневни рецепти със стандартни количества; стига и за хлебопекарна.</li>
+<li><strong>до 3 кг</strong> — ако често правите по-големи торти и сладкиши.</li>
+<li><strong>до 5 кг</strong> — най-разпространеният избор за домашно печене. Достатъчно гъвкав за почти всичко, без да е тромав. Ако се колебаете — това е безопасният залог.</li>
+<li><strong>до 15 кг</strong> — за големи количества и консервиране. За повечето кухни е повече, отколкото ще използвате.</li>
+</ul>
+<h3>Точност — колко дребно мери</h3>
+<p>Стъпката на измерване показва най-малката разлика, която везната отчита. <strong>Точност до 1 грам е напълно достатъчна за печене и готвене</strong> — на това ниво работят всички рецепти. Везни с точност 0,1 г имат смисъл само ако редовно мерите много малки количества (мая, желатин, подправки за прецизни рецепти) или мляно кафе. За домашна кухня обикновено са излишни.</p>
+<h3>Функция тара — задължителна</h3>
+<p>Тарата нулира теглото на купата, за да мерите само съдържанието. Слагате купата, натискате тарата, добавяте брашното — везната показва грамажа на брашното, не на купата плюс брашното. После пак нулирате и добавяте следващата съставка в същата купа. Това спестява и съдове, и време. Всяка прилична везна днес има тара — ако някоя няма, подминете я.</p>
+<h3>Материал и форма</h3>
+<ul>
+<li><strong>Стъкло</strong> — лесно за почистване, изглежда добре, но е по-хлъзгаво и крехко.</li>
+<li><strong>Неръждаема стомана</strong> — най-издръжливо, по-устойчиво на петна.</li>
+<li><strong>Пластмаса</strong> — най-евтино; върши работа, но се износва.</li>
+</ul>
+<p>Платформа или вградена купа? Плоската платформа е по-универсална — слагате собствената си купа отгоре. Везните с купа са удобни, но заемат повече място в шкафа.</p>
+<h3>Захранване</h3>
+<p>Повечето вървят на батерии (AAA, AA или плоска CR2032). Някои нови модели се зареждат през USB. Дребна, но полезна функция е автоматичното изключване — пести батерия. Проверете дали батериите са включени; често не са.</p>
+</section>
+<section class="vezni-content">
+<h2>Защо везна, а не чаши и лъжици</h2>
+<p>Чашите и лъжиците мерят обем, а рецептите всъщност зависят от теглото. Проблемът е, че една чаша брашно и една чаша захар тежат различно — защото съставките имат различна плътност. Дори една и съща чаша брашно може да тежи различно според това дали брашното е пресято, или сбито.</p>
+<p>Везната премахва това гадаене. Слагате купата, нулирате, сипвате точно колкото трябва. Резултатът е еднакъв всеки път — а при печенето точно повторяемостта прави разликата между сполучлива и провалена рецепта.</p>
+<p>Ако все пак ви трябва бърза справка между чаши, лъжици и грамове, вижте подробните ни таблици за <a href="/bg/merki/brashno/">брашно</a>, <a href="/bg/merki/zahar/">захар</a> и <a href="/bg/merki/">останалите съставки</a>. А за всекидневна точност — везната остава най-сигурният инструмент в кухнята.</p>
+</section>
+<section class="vezni-content">
+<h2>Смарт везни: струва ли си?</h2>
+<p>Смарт везните се свързват през Bluetooth с приложение на телефона. Идеята е да сканирате баркод или да изберете продукт от база данни, а приложението автоматично пресмята калории, белтъчини, въглехидрати и други стойности. За хора, които активно следят храненето си, това е удобно.</p>
+<p>Но преди да платите повече, две честни уговорки за българския потребител:</p>
+<ul>
+<li><strong>Приложението рядко е на български.</strong> Повечето модели на пазара работят с приложение на английски или немски.</li>
+<li><strong>Базите данни слабо познават българските продукти.</strong> Световните бази с баркодове са пълни предимно със западни марки. Сканирането на български продукт често не дава резултат или връща чужд аналог. Можете да въвеждате храните ръчно, но това отнема време и обезсмисля част от удобството.</li>
+</ul>
+<p><strong>Кратко:</strong> ако целта ви е прецизно печене и готвене, обикновена точна везна върши същата работа за по-малко пари. Смарт везна си струва само ако наистина ще следите хранителни стойности всеки ден — тогава вижте препоръката ни в раздела по-горе.</p>
+</section>
+<section>
+<h2>Често задавани въпроси</h2>
+${vezni_faqs.map(f => `<details><summary>${f.q}</summary><p>${f.a}</p></details>`).join("")}
+</section>
+${disclosureHtml}
+${footerHtml(t)}
+</div></body></html>`;
+}
+
+/* ===========================================================================
    GENERATE
    =========================================================================== */
 function write(path, content) {
@@ -1068,6 +1238,12 @@ function build() {
       sitemap.push({ loc: artUrl, alternates: [{ lang, href: artUrl }] });
       count++;
     }
+
+    // 2f. Kitchen scales affiliate guide
+    const vezniUrl = baseUrl(lang, "vezni");
+    write(join(SITE.outDir, lang, "vezni", "index.html"), renderVezni(lang));
+    sitemap.push({ loc: vezniUrl, alternates: [{ lang, href: vezniUrl }] });
+    count++;
 
     // 3. Category pages
     for (const cat of CATEGORIES) {

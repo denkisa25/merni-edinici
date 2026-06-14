@@ -37,6 +37,10 @@
     <xhtml:link rel="alternate" hreflang="bg" href="https://merilo.pro/bg/blog/razlikata-mezhdu-chaena-i-kafena-chasha/"/>
   </url>
   <url>
+    <loc>https://merilo.pro/bg/vezni/</loc>
+    <xhtml:link rel="alternate" hreflang="bg" href="https://merilo.pro/bg/vezni/"/>
+  </url>
+  <url>
     <loc>https://merilo.pro/bg/merki/kategoria/brasna/</loc>
     <xhtml:link rel="alternate" hreflang="bg" href="https://merilo.pro/bg/merki/kategoria/brasna/"/>
   </url>
