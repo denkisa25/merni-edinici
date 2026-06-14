@@ -295,3 +295,35 @@ textarea:focus{outline:none;border-color:var(--paprika);box-shadow:0 0 0 3px rgb
 /* ── Category page intro ────────────────────────────────────── */
 .cat-intro{max-width:660px;margin:4px 0 28px}
 .cat-intro p{font-size:clamp(14.5px,3.2vw,16px);line-height:1.72;color:var(--ink-soft);margin:0 0 12px}
+
+/* ── Vezni buyer's guide ─────────────────────────────────────── */
+.vezni-disclosure{background:var(--paper-2);border-left:4px solid var(--honey);border-radius:0 12px 12px 0;padding:13px 16px;font-size:13.5px;line-height:1.6;color:var(--ink-soft);margin:24px 0}
+.tier-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0}
+.tier-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow)}
+.tier-card--accent{border-color:var(--honey);border-width:2px}
+.tier-card__label{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-soft)}
+.tier-card--accent .tier-card__label{color:var(--honey)}
+.tier-card__img{width:100%;aspect-ratio:4/3;object-fit:contain;border-radius:10px;background:var(--paper-2)}
+.tier-card__img-placeholder{width:100%;aspect-ratio:4/3;border-radius:10px;background:var(--paper-2);border:1px dashed var(--line)}
+.tier-card__name{font-family:"Spectral",serif;font-weight:700;font-size:15px;line-height:1.3;color:var(--ink);margin:0}
+.tier-card__specs{font-size:12.5px;color:var(--ink-soft);line-height:1.5;margin:0}
+.tier-card__price{font-size:15px;font-weight:700;color:var(--ink);margin:0}
+.tier-card__price small{font-size:11px;font-weight:400;color:var(--ink-soft);display:block}
+.tier-card__list{list-style:none;padding:0;margin:0;font-size:13px;line-height:1.5;display:flex;flex-direction:column;gap:4px;flex:1}
+.tier-card__list .pro::before{content:"✔ ";color:#4a7c4a}
+.tier-card__list .con{color:var(--ink-soft)}
+.tier-card__list .con::before{content:"✖ ";color:var(--paprika-dk)}
+.tier-card__blurb{font-size:12.5px;color:var(--ink-soft);font-style:italic;margin:0}
+.tier-card__btn{display:block;text-align:center;background:var(--paprika);color:#fff;font-weight:700;font-size:14px;padding:12px 14px;border-radius:10px;text-decoration:none;transition:.15s;margin-top:auto}
+.tier-card__btn:hover{background:var(--paprika-dk)}
+.tier-card__btn--accent{background:var(--honey);color:#2A2420}
+.tier-card__btn--accent:hover{filter:brightness(.9)}
+.tier-card__note{font-size:11.5px;color:var(--ink-soft);text-align:center;margin:0}
+.vezni-price-note{font-size:12.5px;color:var(--ink-soft);text-align:center;font-style:italic;margin:4px 0 0}
+.vezni-content p{font-size:clamp(14.5px,3.2vw,16px);line-height:1.72;color:var(--ink);margin:0 0 14px}
+.vezni-content h3{font-family:"Spectral",serif;font-weight:700;font-size:clamp(16px,3.5vw,19px);line-height:1.25;color:var(--ink);margin:28px 0 10px}
+.vezni-content ul{padding-left:0;list-style:none;margin:0 0 16px}
+.vezni-content ul li{font-size:clamp(14.5px,3.2vw,16px);line-height:1.65;color:var(--ink);padding-left:16px;position:relative;margin-bottom:6px}
+.vezni-content ul li::before{content:"–";position:absolute;left:0;color:var(--ink-soft)}
+.vezni-content strong{color:var(--ink)}
+@media(max-width:620px){.tier-cards{grid-template-columns:1fr}}
